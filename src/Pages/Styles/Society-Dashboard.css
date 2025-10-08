@@ -1,0 +1,501 @@
+
+.css-lexha1 {
+  position: absolute !important;
+}
+
+.css-1qc48m0-MuiPaper-root-MuiAppBar-root {
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px !important;
+}
+
+.css-z2qibm-MuiListItem-root:hover,
+.css-ha8abz-MuiListItem-root:hover,
+.css-5n733a-MuiListItem-root:hover {
+  background-color: #fab600 !important;
+}
+
+/* .custom-hover-remove {
+  background-color: transparent !important;
+} */
+
+.custom-hover-remove.css-z2qibm-MuiListItem-root:hover,
+.custom-hover-remove.css-ha8abz-MuiListItem-root:hover,
+.custom-hover-remove.css-5n733a-MuiListItem-root:hover {
+  background-color: transparent !important;
+}
+
+.tooltip-inner {
+  background-color: white !important;
+  color: black !important;
+  max-width: 260px !important;
+  text-align: left !important;
+}
+
+.custom-checkbox input[type="checkbox"] {
+  /* appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none; */
+  width: 18px !important;
+  height: 18px !important;
+  border: 1px solid #d3d3d3 !important;
+  border-radius: 4px !important;
+  display: inline-block !important;
+  position: relative !important;
+  cursor: pointer !important;
+  margin-right: 10px !important;
+}
+
+.custom-checkbox input[type="checkbox"]:checked {
+  background-color: white !important;
+  border: 1px solid #ccc !important;
+}
+
+.custom-checkbox1.form-check-input:checked[type="checkbox"] {
+  all: unset;
+}
+
+.custom-checkbox.form-check-input {
+  all: unset;
+  /* Removes default styles */
+}
+
+.form-check-input:checked[type="checkbox"] {
+  --bs-form-check-bg-image: none;
+}
+
+.custom-checkbox input[type="checkbox"]:checked::after {
+  /* content: "✔"; */
+  content: url("/checkmark1.svg") !important;
+  font-size: 1px;
+  color: #0056b3 !important;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.custom-checkbox input[type="checkbox"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.custom-checkbox1 input[type="checkbox"] {
+  /* appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none; */
+  width: 18px !important;
+  height: 18px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 4px !important;
+  background-color: white !important;
+  display: inline-block !important;
+  position: relative !important;
+  cursor: pointer !important;
+  margin-right: 10px !important;
+}
+
+.custom-checkbox1 input[type="checkbox"]:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.custom-checkbox1 input[type="checkbox"]:checked {
+  background-color: #ffe8aa !important;
+  border: 1px solid #fab600 !important;
+}
+
+.custom-checkbox1.form-check-input {
+  all: unset;
+  /* Removes default styles */
+  width: 16px;
+  /* Adjust as needed */
+  height: 16px;
+  border: 1px solid #000;
+  cursor: pointer;
+}
+
+.custom-checkbox1 input[type="checkbox"]:checked::after {
+  content: url("/checkmark.svg") !important;
+  font-size: 16px !important;
+  color: #fab600 !important;
+  font-weight: bold !important;
+  position: absolute !important;
+  top: 50% !important;
+  left: 50% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+/* .custom-checkbox1 input[type="checkbox"]:checked::after {
+    content: url("/checkmark.svg");
+    background-image: url("/checkmark.svg"); 
+    background-size: contain;
+    background-repeat: no-repeat;
+    width: 16px;
+    height: 16px;
+    font-weight: bold;
+    display: block;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+} */
+
+/* .active-card {
+  background-color: #d8f1ff !important;
+  color: #00517f !important;
+} */
+
+.striped-thead th {
+  background-color: #eaeaea !important;
+}
+
+table tbody tr td {
+  text-align: left !important;
+}
+
+.striped-thead thead th {
+  color: #212529 !important;
+  font-weight: bold;
+}
+
+.eye-bg {
+  background: #fab60038;
+  padding: 4px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.pagination-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-btn {
+  background: none;
+  border: none;
+  color: black;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.pagination-number {
+  /* background-color: #019F88; */
+  border: none;
+  color: black;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 7px;
+  border-radius: 6px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.pagination-number.active {
+  background-color: #019F88;
+  color: white;
+  border: none;
+}
+
+.withdraw-btn {
+  background-color: #019F88 !important;
+  border: 0 !important;
+  font-size: 12px !important;
+  padding: 5px 10px !important;
+  border-radius: 5px !important;
+  font-weight: 600 !important;
+  height: 30px !important;
+}
+
+.new-campaign-btn {
+  background-color: #019F88 !important;
+  border: 0 !important;
+  font-size: 12px !important;
+  padding: 5px 10px !important;
+  color: white !important;
+  height: 100% !important;
+  width: 100% !important;
+  border-radius: 5px !important;
+  font-weight: 600 !important;
+}
+
+.invoice-btn {
+  background-color: #c9f6de !important;
+  color: #007666 !important;
+  font-weight: bold !important;
+  padding: 2px 10px !important;
+  border: 1px solid #91d6b0 !important;
+  font-size: 12px !important;
+}
+
+.invoice-btn:hover {
+  background-color: #c9f6de !important;
+  border-color: inherit !important;
+  color: inherit !important;
+}
+
+.custom-modal {
+  max-width: 600px !important;
+  z-index: 99999999999999;
+}
+
+.clear-all {
+  background: #eff9ff;
+  padding: 5px 10px;
+  border-radius: 15px;
+  color: #00517f !important;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.clearfilter-btn {
+  background: #c9f6de !important;
+  padding: 5px !important;
+  border-radius: 5px !important;
+  color: #007666 !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  border: 1px solid #91d6b0 !important;
+  /* width: 170px !important; */
+}
+
+.sidebar-menu {
+  display: flex;
+  flex-direction: column;
+  height: 90vh;
+}
+
+.top-items {
+  flex-grow: 1;
+}
+
+.bottom-items {
+  margin-top: auto;
+}
+
+/* .modal-content {
+  border-radius: 0px !important;
+} */
+
+.bs-tooltip-bottom .tooltip-arrow::before {
+  bottom: -1px;
+  border-width: 0 calc(var(--bs-tooltip-arrow-width) * 0.5) var(--bs-tooltip-arrow-height);
+  border-bottom-color: #ffffff !important;
+}
+
+.custom-modal-content {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+  /* Transparent black modal */
+  border: none;
+  box-shadow: none;
+}
+
+.override-col-12>div {
+  flex: 0 0 100% !important;
+  max-width: 100% !important;
+}
+
+.upload-btn {
+  background-color: #FFE8AA;
+  /* Yellow color */
+  color: #3C3C3C;
+  font-weight: 600;
+  border: none;
+  border-radius: 5px;
+  padding: 5px 20px;
+  display: flex;
+  font-size: 14px;
+  align-items: center;
+  gap: 10px;
+}
+
+.upload-btn:hover {
+  background-color: #FFE8AA;
+  color: #3C3C3C;
+}
+
+.date-badge {
+  background-color: #C2CFE0;
+  color: #3C3C3C;
+  font-weight: 600;
+  font-size: 12px;
+  padding: 1px 17px;
+  border-radius: 20px;
+  display: inline-block;
+}
+
+.custom-checkbox2 {
+  appearance: none;
+  width: 17px;
+  height: 17px;
+  border-radius: 2px;
+  cursor: pointer;
+  display: inline-block;
+  caret-color: transparent;
+  background-color: #F5F5F5;
+}
+
+.custom-checkbox2:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.flats-badge {
+  background: #F5F5F5;
+  color: #747474;
+  font-weight: bold;
+  padding: 3px 10px;
+  font-size: 12px !important;
+  border-radius: 5px;
+}
+
+.save-draft-btn {
+  background-color: #EBEBEB !important;
+  color: #000000 !important;
+  font-weight: bold !important;
+  padding: 3px 15px !important;
+  font-size: 12px !important;
+  border-radius: 15px !important;
+}
+
+.campaign-btn {
+  background-color: #019F88 !important;
+  border: 0 !important;
+  font-size: 12px !important;
+  padding: 5px 10px !important;
+  border-radius: 20px !important;
+  font-weight: 600 !important;
+  height: 30px !important;
+  width: 150px;
+}
+
+.FilterbuttonStyle {
+  padding: 5px 10px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  background-color: #c9f6de !important;
+  border: 1px solid #91d6b0 !important;
+  color: #007666 !important;
+}
+
+.clearbuttonStyle {
+  padding: 5px 10px !important;
+  font-size: 14px !important;
+  font-weight: 600 !important;
+  background-color: #FFE2E2 !important;
+  border: 1px solid #F80000 !important;
+  color: #464255 !important;
+}
+
+.custom-modal1 {
+  max-width: 600px !important;
+  z-index: 99999999999999;
+}
+
+.wallet-card {
+  flex: 1;
+  min-width: 300px;
+  background: linear-gradient(to bottom right, #FFE49B, #FAB600);
+  border-radius: 10px;
+  padding: 20px 20px 0;
+  color: #000;
+  position: relative;
+}
+
+
+
+.add-fund-card {
+  flex: 1;
+  min-width: 300px;
+  background-color: #fff;
+  border-radius: 10px;
+  padding: 20px 20px 10px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.addFundBtn {
+  background-color: #019F88 !important;
+  color: white;
+  padding: 4px 8px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  width: 180px;
+  /* Prevent full width */
+  font-size: 12px;
+  display: inline-block;
+}
+
+.note {
+  font-size: 12px;
+  color: #999;
+  margin-top: 5px;
+}
+
+.warning {
+  font-size: 10px;
+  color: red;
+  margin-top: 5px;
+}
+
+.adv-settings {
+  width: 60px !important;
+  font-size: 12px !important;
+}
+
+.download-img {
+  z-index: 2 !important;
+  font-size: 12px !important;
+  background-color: #019F88 !important;
+  padding: 3px 10px !important;
+}
+
+.download-icon {
+  position: absolute !important;
+  left: 0 !important;
+  bottom: 0;
+  background-color: #0068c9 !important;
+  padding: 2px 0 !important;
+  margin: 0 !important;
+  min-width: 20px !important;
+}
+
+.preview-ads {
+  z-index: 2 !important;
+  font-size: 12px !important;
+  padding: 3px 13px !important;
+}
+
+.ads-modal-img {
+  height:  200px !important;
+}
+
+.text-bg {
+  background-color: #DCF8C6 !important;
+}
+
+@media (max-width: 400px) {
+  .download-img , .preview-ads {
+    padding: 3px 0px !important;
+    font-size: 10px !important;
+  }
+
+  .wallet-card , .add-fund-card {
+    min-width: auto;
+  }
+}
+
+@media (max-width: 412px) {
+  .wallet-img {
+    display: none;
+  }
+}
+
+@media (max-width: 512px) {
+  .ads-modal-img {
+  height:  auto !important;
+}
+}
+
+
+

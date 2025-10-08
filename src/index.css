@@ -1,0 +1,44 @@
+/* Global styles */
+
+/* Import Google Fonts at the top */
+@import url('https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,opsz,wght@0,6..12,200..1000;1,6..12,200..1000&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
+
+/* Apply font globally */
+body {
+    margin: 0;
+    padding: 0;
+}
+
+/* Material-UI Typography Styling */
+.css-rizt0-MuiTypography-root {
+    font-size: 14px !important; /* Ensure this is applied */
+}
+
+/* Optionally, apply font to all text elements */
+* {
+    font-family: "Nunito Sans", sans-serif !important;
+}
+
+/* Chrome, Safari, Edge, Opera */
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}
+
+.formik-error {
+  font-size: 12px !important;
+}
+
+
+
+.text-gradient {
+  background: linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
