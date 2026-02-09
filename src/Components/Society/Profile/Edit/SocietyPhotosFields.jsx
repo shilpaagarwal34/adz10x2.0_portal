@@ -158,7 +158,7 @@ const SocietyPhotosFields = () => {
             "society_profile_img_1_5_path",
             updatedImages.map((img) => img.file || img.preview).filter(Boolean)
           );
-          console.log(updatedImages);
+          // console.log(updatedImages);
 
           toast.success("Image Deleted Successfully");
         } else {

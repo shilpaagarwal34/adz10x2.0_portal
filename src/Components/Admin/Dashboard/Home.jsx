@@ -100,7 +100,7 @@ const Home = () => {
   const cards = [
     {
       title: "Total Revenue",
-      value: data?.totalPotential_Earnings,
+      value: data?.totalRevenue_Earnings,
       subtitle: "Total Wallet Amount",
       subValue: data?.totalWalletAmount,
       icon: "/dashboardLogo/Icon-1.svg", // your svg src here

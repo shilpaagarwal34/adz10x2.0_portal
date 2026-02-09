@@ -401,7 +401,7 @@ const ProfileEdit = () => {
         );
         await dispatch(fetchProfileData());
       } else {
-        console.log(result.payload);
+        // console.log(result.payload);
         const errorMsg = "Failed to update profile";
         toast.error(errorMsg);
       }

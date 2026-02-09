@@ -130,7 +130,7 @@ export const formatTime = (hour) => {
 
 export function convertTo24HourFormat(time) {
   if (!time) return;
-  console.log(time);
+  // console.log(time);
   const match = time.match(/(\d+):(\d+)\s(AM|PM)/i);
   if (!match) {
     console.error("Invalid time format:", time);
@@ -239,7 +239,7 @@ export const downloadFile = (imgPath) => {
 };
 
 export const downloadInvoice = (url) => {
-  console.log(url);
+  // console.log(url);
   if (!url) return;
   const filename = url.split("/").pop();
   const downloadUrl = `${base_url}/download-inv/${filename}`;

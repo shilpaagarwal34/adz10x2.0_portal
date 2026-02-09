@@ -168,7 +168,7 @@ const CampaignView = () => {
       const response = await postChangeSocietyCampaignStatus(formData);
       // Assuming 'response' contains status or message
       if (response.status === 200) {
-        console.log(response);
+        // console.log(response);
         toast.success(response.message);
         navigate(-1);
       } else {

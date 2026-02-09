@@ -33,7 +33,7 @@ export const getTimeSlots = async (payload) => {
       }
     );
 
-    console.log("API success:", response.data);
+    // console.log("API success:", response.data);
     return response.data;
   } catch (error) {
     console.error("API error:", error.response?.data || error.message);
@@ -52,7 +52,7 @@ export const fetchAdByID = async (payload) => {
       }
     );
 
-    console.log("API success:", response.data);
+    // console.log("API success:", response.data);
     return response.data;
   } catch (error) {
     console.error("API error:", error.response?.data || error.message);

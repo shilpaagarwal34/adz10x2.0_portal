@@ -70,7 +70,7 @@ export const updateSocietyUserStatus = (data) => async (dispatch) => {
       `${api_routes.admin.post_common_status_change}`,
       data
     );
-    console.log(response);
+    // console.log(response);
     dispatch(updateSocietyUserStatusSuccess({ data }));
   } catch (error) {
     const errorMessaage = error.response

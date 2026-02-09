@@ -97,6 +97,7 @@ const ApprovedAdView = () => {
                 campaignData?.campaign_logs?.campaign_ads_amount
               }
               society={campaignData?.society}
+              log={campaignData?.campaign_logs}
             />
           )}
 

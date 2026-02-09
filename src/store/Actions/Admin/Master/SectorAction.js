@@ -56,7 +56,7 @@ export const updateSectorStatus = (data) => async (dispatch) => {
       `${api_routes.admin.post_common_status_change}`,
       data
     );
-    console.log(response);
+    // console.log(response);
     dispatch(updateSectorStatusSuccess({ data }));
     toast.success("Sector status updated");
   } catch (error) {

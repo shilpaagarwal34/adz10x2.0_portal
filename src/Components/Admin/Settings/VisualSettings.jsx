@@ -193,7 +193,7 @@ const renderDropzone = (label, type) => {
           headers: { "Content-Type": "multipart/form-data" },
         }
       );
-      console.log("Upload successful", response.data);
+      // console.log("Upload successful", response.data);
       toast.success(response.data?.message);
       // Optionally, refresh previews from response or re-fetch data
     } catch (error) {

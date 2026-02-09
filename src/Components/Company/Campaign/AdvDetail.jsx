@@ -6,7 +6,7 @@ import {
 } from "../../../helper/helper.js";
 import { base_url } from "../../../config/api.js";
 
-function AdvDetails({ campaignData, campaignAdAmount, society }) {
+function AdvDetails({ campaignData, campaignAdAmount, society, log = null }) {
   // console.log(campaignData)
   return (
     <div className="rounded">
@@ -86,9 +86,16 @@ function AdvDetails({ campaignData, campaignAdAmount, society }) {
             <div className="mb-3">
               <p className="m-0 fw-bold">Ad Slot Time</p>
               <p className="m-0">
-                {`${formatTimeWithAMPM(
+                {/* {`${formatTimeWithAMPM(
                   campaignData?.live_start_date
-                )} - ${formatTimeWithAMPM(campaignData?.live_end_date, 1)}`}
+                )} - ${formatTimeWithAMPM(campaignData?.live_end_date, 1)}`} */}
+                {log?.slot_start_time && log?.slot_end_time && (
+                  <p className="m-0">
+                    {`${formatTimeWithAMPM(
+                      log?.live_start_date,
+                    )} - ${formatTimeWithAMPM(log?.live_end_date, 1)}`}
+                  </p>
+                )}
               </p>
             </div>
           </div>

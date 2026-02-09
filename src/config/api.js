@@ -1,5 +1,5 @@
-// const api_url = "http://192.168.0.239:2000/api";
-// const base_url = "http://192.168.0.239:2000";
+// const api_url = "http://192.168.0.217:2000/api";
+// const base_url = "http://192.168.0.217:2000";
 
 // const api_url = "http://157.119.40.164:3000/api"; //stagging server url
 // const base_url = "http://157.119.40.164:3000";
@@ -12,7 +12,7 @@ const base_url = "https://api.adz10x.com"
 
 const api_routes = {
   society: {
-    fetch_society_list: `/all-society`,
+    fetch_society_list: `/all-society`,   
 
     email_exist: `${api_url}/check-email-exist`, // Using template literal to concatenate
     mobile_exist: `${api_url}/check-mobile-exist`,

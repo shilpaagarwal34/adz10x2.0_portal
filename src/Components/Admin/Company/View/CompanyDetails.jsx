@@ -17,7 +17,7 @@ const CompanyDetails = ({ company, isEditable }) => {
           allow_edit: isChecked,
         }
       );
-      console.log("Response:", response.data);
+      // console.log("Response:", response.data);
     } catch (error) {
       console.error("API error:", error);
     }

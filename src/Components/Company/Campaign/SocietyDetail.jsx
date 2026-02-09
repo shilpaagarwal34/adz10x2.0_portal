@@ -134,7 +134,10 @@ const SocietyDeatil = ({
         <hr style={{ margin: "0px -17px 10px", borderColor: "#989898" }} />
 
         {/* Society List */}
-        <div className="px-3">
+        <div className="px-3" style={{
+            maxHeight: "400px",
+            overflowY: "auto",
+          }}>
           {loadingSocities ? (
             [...Array(4)].map((_, i) => (
               <Row key={i} className="align-items-center mb-2">

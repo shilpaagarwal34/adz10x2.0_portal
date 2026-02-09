@@ -14,7 +14,7 @@ export const fetchCampaignConfig = () => async (dispatch) => {
     const response = await axiosInstance.get(
       `${api_routes.admin.get_campaign_configuration}`
     );
-    console.log(response);
+    // console.log(response);
     dispatch(setData(response?.data?.data));
   } catch (error) {
     dispatch(setError(error.message));

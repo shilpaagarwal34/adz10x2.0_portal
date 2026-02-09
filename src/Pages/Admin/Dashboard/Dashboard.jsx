@@ -37,7 +37,7 @@ const Dashboard = () => {
 
   const toggleDrawer = () => {
   setOpen((prevOpen) => {
-    console.log("Toggling drawer. New state:", !prevOpen); // ✅ Log toggle
+    // console.log("Toggling drawer. New state:", !prevOpen); // ✅ Log toggle
     return !prevOpen;
   });
 };

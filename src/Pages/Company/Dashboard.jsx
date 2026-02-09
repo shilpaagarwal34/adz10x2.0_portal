@@ -56,7 +56,7 @@ function Dashboard() {
       })
       .catch((error) => {
         const msg = error?.response?.data?.message || error.message;
-        console.log(msg);
+        // console.log(msg);
       });
   }, []);
 

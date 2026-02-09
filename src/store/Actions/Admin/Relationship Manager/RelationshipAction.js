@@ -29,7 +29,7 @@ export const fetchSocietyCommission = async (
     setLoadingCommission(true);
     const res = await axiosInstance.get(api_routes.admin.get_society_comission);
     const data = res?.data?.data;
-    console.log(data)
+    // console.log(data)
     setCommissionType(data.society_commission); // "INR" or "%"
     setCommissionValues({
       "Brand Promotion": data.society_brand_promotion || "",
@@ -72,7 +72,7 @@ export const fetchCompanyCommission = async (
     setLoadingCommission(true);
     const res = await axiosInstance.get(api_routes.admin.get_company_comission);
     const data = res?.data?.data;
-    console.log(res);
+    // console.log(res);
 
     setCommissionType(data.society_commission); // "INR" or "%"
     setCommissionValues({
@@ -98,7 +98,7 @@ export const updateCompanyCommission = async (payload) => {
         },
       }
     );
-    console.log(res);
+    // console.log(res);
     return res.data;
   } catch (err) {
     console.error("Failed to update Company commission:", err);

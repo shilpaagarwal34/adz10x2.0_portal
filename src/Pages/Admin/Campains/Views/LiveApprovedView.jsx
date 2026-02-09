@@ -188,7 +188,7 @@ const LiveApprovedView = () => {
     if (!formData?.after24PreviewUrl)
       newErrors.after24Screenshot = "Screenshot required.";
 
-    console.log(formData);
+    // console.log(formData);
 
     return newErrors;
   };

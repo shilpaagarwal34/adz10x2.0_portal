@@ -32,7 +32,7 @@ function StatusDropdown({ campaignId }) {
         `${api_routes.admin.post_change_status_for_campaign}`,
         payload
       );
-      console.log(response);
+      // console.log(response);
       if (response.status === 200) {
         toast.success("Status updated successfully!"); // Toast message on success
         navigate(-1);

@@ -35,7 +35,7 @@ export const createArea = createAsyncThunk(
   "menu/createArea",
   async (newAreaData, { rejectWithValue }) => {
     try {
-      console.log("Sending payload:", newAreaData); // Check the payload before the request
+      // console.log("Sending payload:", newAreaData); // Check the payload before the request
       const response = await axiosInstance.post(
         `${api_routes.admin.post_area_create}`,
         newAreaData
@@ -75,7 +75,7 @@ export const deleteArea = createAsyncThunk(
         `${api_routes.admin.post_common_delete}`,
         data
       );
-      console.log(response);
+      // console.log(response);
       return data;
     } catch (error) {
       console.log(error);
@@ -92,7 +92,7 @@ export const deleteArea = createAsyncThunk(
 // AREAS FOR DROPDOWN
 export const fetchDropdownAreas = async (cityId = "") => {
   try {
-    console.log(cityId)
+    // console.log(cityId)
     const response = await axiosInstance.get(
       `${api_routes.admin.get_all_areas}/${cityId}`
     );

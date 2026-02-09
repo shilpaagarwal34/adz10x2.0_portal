@@ -7,7 +7,7 @@ import {
 const countLabels = ["pending", "live", "approved"];
 
 const CampaingCount = ({ counter, user }) => {
-  console.log(counter);
+  // console.log(counter);
   const navigate = useNavigate();
 
   return (

@@ -125,7 +125,7 @@ const handleResetPassword = async (
     toast.success(response?.data?.message || "Password reset successful");
     onSuccess(response.data); // optional success handler
   } catch (error) {
-    console.log("Reset Password Error:", error);
+    // console.log("Reset Password Error:", error);
     const errorMessage =
       error?.response?.data?.message || "Something went wrong!";
     toast.error(errorMessage);
@@ -139,7 +139,7 @@ export const logoutUser = createAsyncThunk(
   async ({ user, userType }, { rejectWithValue }) => {
     try {
       // await axiosInstance.post(api_routes.society.post_logout_user);
-      console.log(user);
+      // console.log(user);
       if (userType === "admin")
         await axiosInstance.post("/admin-logout", {
           user_id: user?.id,
