@@ -1,6 +1,7 @@
 import { useFormikContext, Field, ErrorMessage } from "formik";
 import { useState } from "react";
 import { Form, Row, Col } from "react-bootstrap";
+import { base_url } from "../../../../config/api.js";
 
 const BillingFieldsData = () => {
   const { values, setFieldValue } = useFormikContext();
@@ -27,7 +28,7 @@ const BillingFieldsData = () => {
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Account Holder Name <span className="text-danger">*</span>
+              Account Holder Name
             </Form.Label>
             <Field
               as={Form.Control}
@@ -47,7 +48,7 @@ const BillingFieldsData = () => {
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Bank Name <span className="text-danger">*</span>
+              Bank Name
             </Form.Label>
             <Field
               as={Form.Control}
@@ -67,7 +68,7 @@ const BillingFieldsData = () => {
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Account No. <span className="text-danger">*</span>
+              Account No.
             </Form.Label>
             <Field
               as={Form.Control}
@@ -89,7 +90,7 @@ const BillingFieldsData = () => {
         <Col md={4} className="mb-2">
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Branch Name <span className="text-danger">*</span>
+              Branch Name
             </Form.Label>
             <Field
               as={Form.Control}
@@ -109,7 +110,7 @@ const BillingFieldsData = () => {
         <Col md={4} className="mb-2">
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Bank IFSC Code <span className="text-danger">*</span>
+              Bank IFSC Code
             </Form.Label>
             <Field
               as={Form.Control}
@@ -145,7 +146,7 @@ const BillingFieldsData = () => {
         <Col md={12} className="mb-2">
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Billing Address Line 1 <span className="text-danger">*</span>
+              Billing Address Line 1
             </Form.Label>
             <Field
               as={Form.Control}
@@ -174,6 +175,43 @@ const BillingFieldsData = () => {
               // value={values.billing_address_line_2}
               type="text"
               placeholder="Enter Address"
+            />
+          </Form.Group>
+        </Col>
+        <Col md={12} className="mb-2">
+          <Form.Group>
+            <Form.Label className="fw-bold custom-label">
+              Billing QR Code (Optional)
+            </Form.Label>
+            <Form.Control
+              className="form-control-sm"
+              type="file"
+              accept="image/jpeg,image/png,image/jpg"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                setFieldValue("billing_qr_code_path", file || "");
+              }}
+            />
+            {typeof values.billing_qr_code_path === "string" &&
+              values.billing_qr_code_path && (
+                <a
+                  href={`${base_url}/${values.billing_qr_code_path}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="d-inline-block mt-1"
+                >
+                  View current QR code
+                </a>
+              )}
+            {values.billing_qr_code_path instanceof File && (
+              <p className="mb-0 mt-1 text-muted">
+                Selected: {values.billing_qr_code_path.name}
+              </p>
+            )}
+            <ErrorMessage
+              name="billing_qr_code_path"
+              component="div"
+              className="text-danger formik-error"
             />
           </Form.Group>
         </Col>

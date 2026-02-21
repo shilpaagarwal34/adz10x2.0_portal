@@ -1,26 +1,39 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col } from "react-bootstrap";
+import { Row, Col, Modal } from "react-bootstrap";
 import UsersTable from "../../../Components/Common/Users/UsersTable.jsx";
 import HeaderButton from "../../../Components/Common/Users/HeaderButton.jsx";
 import UserModal from "../../../Components/Common/Users/UserModal.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSocietyUsers } from "../../../store/Actions/Society/Users/UserActions.js";
+import { fetchProfileData } from "../../../store/Actions/Society/Profile/ProfileActions.js";
+import { useNavigate } from "react-router-dom";
 
 const Users = () => {
+  const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
   const [show, setShow] = useState(false);
+  const [showProfileIncompleteModal, setShowProfileIncompleteModal] =
+    useState(false);
   const [editUser, setEditUser] = useState(null); // State to track the user being edited
   const [currentPage, setCurrentPage] = useState(1);
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const { users, loading, error, total, tableName } = useSelector(
     (state) => state.society.users
   );
+  const { profileCompletedPercentage } = useSelector((state) => state.society.profile);
 
   useEffect(() => {
+    if (!hasAuthToken) return;
     dispatch(fetchSocietyUsers({ page: currentPage, limit, search }));
-  }, [dispatch, currentPage, limit, search]);
+  }, [dispatch, currentPage, limit, search, hasAuthToken]);
+
+  useEffect(() => {
+    if (!hasAuthToken) return;
+    dispatch(fetchProfileData());
+  }, [dispatch, hasAuthToken]);
 
   const handleEditUser = (user) => {
     setEditUser(user); // Set the user to be edited
@@ -28,6 +41,11 @@ const Users = () => {
   };
 
   const handleAddUser = () => {
+    if (!hasAuthToken) return;
+    if (Number(profileCompletedPercentage || 0) < 100) {
+      setShowProfileIncompleteModal(true);
+      return;
+    }
     setEditUser(null); // Reset user data for "Add" mode
     setShow(true); // Show the modal
   };
@@ -55,7 +73,7 @@ const Users = () => {
     <div style={{ height: "100vh" }} className="pt-4">
       <Row className="card m-2 mx-sm-4 border-0 d-flex p-4">
         <Col className="d-flex justify-content-end">
-          <HeaderButton onClick={handleAddUser} />
+          <HeaderButton onClick={handleAddUser} disabled={!hasAuthToken} />
         </Col>
       </Row>
 
@@ -74,6 +92,68 @@ const Users = () => {
         handleSearchChange={handleSearchChange}
         tableName={tableName}
       />
+
+      <Modal
+        show={showProfileIncompleteModal}
+        onHide={() => setShowProfileIncompleteModal(false)}
+        centered
+      >
+        <div
+          style={{
+            borderRadius: "12px",
+            overflow: "hidden",
+            border: "1px solid #e8eef4",
+          }}
+        >
+          <div
+            style={{
+              background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
+              padding: "14px 18px",
+              color: "#fff",
+            }}
+            className="d-flex justify-content-between align-items-center"
+          >
+            <h5 className="mb-0 fw-bold">Complete Profile Required</h5>
+            <button
+              type="button"
+              className="btn btn-sm btn-light"
+              onClick={() => setShowProfileIncompleteModal(false)}
+            >
+              X
+            </button>
+          </div>
+          <Modal.Body>
+            <p className="text-muted mb-3" style={{ fontSize: "14px" }}>
+              Your profile is incomplete. Please complete profile to 100% before
+              adding users. Do you want to go to Edit Profile now?
+            </p>
+            <div className="d-flex gap-2 justify-content-end">
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm"
+                onClick={() => setShowProfileIncompleteModal(false)}
+              >
+                No
+              </button>
+              <button
+                type="button"
+                className="btn btn-sm text-white"
+                style={{
+                  background:
+                    "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
+                  border: "none",
+                }}
+                onClick={() => {
+                  setShowProfileIncompleteModal(false);
+                  navigate("/society/profile/edit");
+                }}
+              >
+                Yes
+              </button>
+            </div>
+          </Modal.Body>
+        </div>
+      </Modal>
     </div>
   );
 };

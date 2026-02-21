@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { logoutUser } from "../store/Actions/Auth/authActions.js";
 import { ConfirmDeleteToast } from "../utils/ConfirmDeleteToast.jsx";
+import SupportChatbot from "../Components/Common/SupportChatbot.jsx";
 
 const Layout = ({ children }) => {
   const dispatch = useDispatch();
@@ -70,6 +71,7 @@ const Layout = ({ children }) => {
         <Navbar handleLogout={handleLogout} toggleSidebar={toggleSidebar} />
         <ToastContainer />
         <div className="content">{children}</div>
+        <SupportChatbot />
       </div>
     </div>
   );

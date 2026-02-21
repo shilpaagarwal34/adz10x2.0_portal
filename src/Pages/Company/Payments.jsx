@@ -15,6 +15,7 @@ import useSearchPagination from "../../customHooks/usePaginationSearch.js";
 
 const Payments = () => {
   const dispatch = useDispatch();
+  const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
   const { payments, total, loading, from_date, to_date } = useSelector(
     (state) => state.company.payments
   ); // Access the payments data from Redux state
@@ -31,6 +32,7 @@ const Payments = () => {
 
   // Fetch data when the page loads or when search, entries, or currentPage changes
   useEffect(() => {
+    if (!hasAuthToken) return;
     dispatch(
       fetchPayments({
         searchQuery,
@@ -40,13 +42,18 @@ const Payments = () => {
         to_date,
       })
     ).then(() => setHasLoadedOnce(true));
-  }, [searchQuery, entries, currentPage, from_date, to_date, dispatch]);
+  }, [searchQuery, entries, currentPage, from_date, to_date, dispatch, hasAuthToken]);
 
   return (
     <div className="pt-3  pb-5">
       <DateFilter onDateFilter={(dates) => dispatch(setDateFilter(dates))} />
 
       <div className="card border-0 p-3 mx-2 mx-sm-4 my-3">
+        {!hasAuthToken && (
+          <div className="alert alert-info py-2 mb-3" role="alert">
+            Draft view: sign up or log in to view real payment records.
+          </div>
+        )}
         {/* Search & Filter Section */}
 
         <SearchAndFilter

@@ -21,6 +21,7 @@ import {
   Payment,
   Assessment,
   People,
+  ViewList,
   Menu as MenuIcon,
   ChevronLeft,
 } from "@mui/icons-material";
@@ -67,6 +68,7 @@ const reportMenu = {
 const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
   const location = useLocation();
   const isActive = location.pathname.includes("/dashboard/campaign-view");
+  const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
   const { menu, privileges, user_type } = useSelector(
     (state) => state.auth.user || {}
   );
@@ -90,6 +92,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
   };
 
   const hasPrivilege = (privilege) => {
+    if (!user_type) return true; // browse mode: show normal portal menus
     if (user_type === "Society_User" && privileges)
       return privileges.includes(privilege);
     else if (user_type === "Society_Admin") return true;
@@ -259,6 +262,15 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               user_type === "Society_Admin" ? menu.profile : true
             )}
 
+          {hasPrivilege("profile") &&
+            renderListItem(
+              "/society/media-management",
+              "Media Management",
+              <ViewList />,
+              location.pathname.startsWith("/society/media-management"),
+              user_type === "Society_Admin" ? menu.profile : true
+            )}
+
           {hasPrivilege("campaign") &&
             renderListItem(
               "/society/advertisement",
@@ -316,14 +328,15 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               user_type === "Society_Admin" ? menu.settings : true
             )}
 
-          {renderListItem(
-            null, // No route for logout
-            "Logout",
-            <InfoOutlinedIcon />,
-            false, // No path check needed
-            menu.logout, // Check if user is allowed
-            handleLogout // 👈 Attach the click handler
-          )}
+          {hasAuthToken &&
+            renderListItem(
+              null, // No route for logout
+              "Logout",
+              <InfoOutlinedIcon />,
+              false, // No path check needed
+              menu?.logout, // Check if user is allowed
+              handleLogout // 👈 Attach the click handler
+            )}
         </div>
       </List>
 

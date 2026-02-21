@@ -8,6 +8,7 @@ import { fetchCompanyUsers } from "../../../store/Actions/Company/Users/UserActi
 import SocietyTableSkeleton from "../../../Components/Skeletons/Admin/SocietyTableSkeleton.jsx";
 
 const Users = () => {
+  const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
   const [show, setShow] = useState(false);
   const [editUser, setEditUser] = useState(null); // State to track the user being edited
   const [currentPage, setCurrentPage] = useState(1);
@@ -20,8 +21,9 @@ const Users = () => {
   );
 
   useEffect(() => {
+    if (!hasAuthToken) return;
     dispatch(fetchCompanyUsers({ page: currentPage, limit, search }));
-  }, [dispatch, currentPage, limit, search, total]);
+  }, [dispatch, currentPage, limit, search, total, hasAuthToken]);
 
   const handleEditUser = (user) => {
     setEditUser(user); // Set the user to be edited
@@ -29,6 +31,7 @@ const Users = () => {
   };
 
   const handleAddUser = () => {
+    if (!hasAuthToken) return;
     setEditUser(null); // Reset user data for "Add" mode
     setShow(true); // Show the modal
   };
@@ -56,7 +59,7 @@ const Users = () => {
     <div className="pt-4">
       <Row className="card m-2 mx-sm-4 border-0 d-flex p-4 pb-5">
         <Col className="d-flex justify-content-end">
-          <HeaderButton onClick={handleAddUser} />
+          <HeaderButton onClick={handleAddUser} disabled={!hasAuthToken} />
         </Col>
       </Row>
 

@@ -103,3 +103,19 @@ export const PublicAdminRoute = ({ children }) => {
 
   return children;
 };
+
+export const ProtectedActionRoute = ({ children, allowedUserTypes = [] }) => {
+  const token = localStorage.getItem("auth_token");
+  const userData = JSON.parse(localStorage.getItem("user_data") || "null");
+  const userType = userData?.user_type;
+
+  if (!token) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (allowedUserTypes.length && !allowedUserTypes.includes(userType)) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return children;
+};

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import AuthPromptModal from "../../../Components/Common/AuthPromptModal.jsx";
 
 // Stylesheets
 import "bootstrap/dist/css/bootstrap.min.css";
@@ -24,6 +25,8 @@ import { fetchProfileData } from "../../../store/Actions/Company/Profile/Profile
 const Profile = () => {
   const dispatch = useDispatch();
   const [loading, setLoading] = useState(true);
+  const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+  const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
 
   const { profileData, status, profileCompletedPercentage, error } =
     useSelector((state) => state.company.profile);
@@ -35,10 +38,80 @@ const Profile = () => {
   }, [status]);
 
   useEffect(() => {
+    if (!hasAuthToken) return;
     dispatch(fetchProfileData());
-  }, [dispatch]);
+  }, [dispatch, hasAuthToken]);
+
+  useEffect(() => {
+    if (!hasAuthToken) {
+      setShowAuthPrompt(true);
+    }
+  }, [hasAuthToken]);
 
   const isLoading = loading || status === "loading";
+
+  if (!hasAuthToken) {
+    const draftProfileData = {
+      company_name: "Draft Company",
+      sector: "-",
+      company_brand_name: "-",
+      company_profile_photo_path: "",
+      kyc_status: "pending",
+      name: "Draft User",
+      mobile_number: "-",
+      email: "-",
+      company_aggrement_copy_path: null,
+      edit_permission: false,
+      company_profile: {
+        company_mobile_number: "-",
+        company_email_id: "-",
+        website: "-",
+        party_name: "-",
+        gst_number: "-",
+        billing_address_line_1: "-",
+        billing_address_line_2: "",
+        pan_card_path: null,
+        gst_certificate_path: null,
+        other_document_path: null,
+      },
+    };
+
+    return (
+      <>
+        <div className="row g-0 custom-label pb-5">
+          <div className="col-12 col-lg-8 p-2 p-sm-3">
+            <div className="card shadow-sm p-2 p-sm-3 rounded border-0 ">
+              <CompanyInfo
+                profileData={draftProfileData}
+                percentage={0}
+                isLoading={false}
+              />
+              <CompanyDetails
+                companyDetails={draftProfileData?.company_profile}
+                isLoading={false}
+              />
+              <CompanyContactInfo contactInfo={draftProfileData} isLoading={false} />
+              <CompanyBillingInfo
+                billingInfo={draftProfileData?.company_profile}
+                isLoading={false}
+              />
+            </div>
+          </div>
+
+          <div className="col-12 col-lg-4 p-2 p-sm-3">
+            <StatusCard kyc_status="pending" />
+            <Documents documents={draftProfileData} />
+          </div>
+        </div>
+        <AuthPromptModal
+          show={showAuthPrompt}
+          onHide={() => setShowAuthPrompt(false)}
+          title="Complete Company Profile"
+          description="Your profile is in draft mode. Sign up or log in to complete profile and launch campaigns."
+        />
+      </>
+    );
+  }
 
   // if (error) {
   //   // console.log(error)

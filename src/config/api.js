@@ -7,8 +7,8 @@
 // const api_url = "https://test-api.m-staging.in/api";
 // const base_url = "https://test-api.m-staging.in";
 
-const api_url = "https://api.adz10x.com/api";
-const base_url = "https://api.adz10x.com"
+const api_url = import.meta.env.VITE_API_URL;
+const base_url = import.meta.env.VITE_BASE_URL;
 
 const api_routes = {
   society: {
@@ -26,6 +26,8 @@ const api_routes = {
     // Campaign
     get_campaign_days: `${api_url}/admin-campaign-days`,
     post_campaign_ads_setting: `/society-profile-update`,
+    get_media_rate_cards: `/society/media-rate-cards`,
+    post_media_rate_cards: `/society/media-rate-cards`,
 
     // user routes
     get_users: `${api_url}/society/system-table`,
@@ -67,6 +69,7 @@ const api_routes = {
     post_login: `${api_url}/login`,
     post_forget_password: `${api_url}/forgot-password`,
     post_change_password: `${api_url}/change-password`,
+    chatbot_query: `/chatbot/query`,
     get_cities: `${api_url}/all-cities`,
     get_areas: `${api_url}/areas`,
     get_company_list: `/all-company`,
@@ -106,6 +109,7 @@ const api_routes = {
     get_campagin_list: `/company/campaign-datatable`,
     get_campaign_days_for_calendar: `/admin-all-campaign-days`,
     get_ad_by_id: `/company/ads-view`,
+    get_media_rate_cards: `/company/media-rate-cards`,
 
     fetch_notification: `/company/notification`,
     clear_notification: `/company/notification-clear-all`,

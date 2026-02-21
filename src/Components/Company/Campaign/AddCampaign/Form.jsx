@@ -32,6 +32,19 @@ const dayNameToNumber = {
   Saturday: 6,
 };
 
+const MEDIA_SLOT_OPTIONS = [
+  { value: "lift_branding_panels", label: "Lift branding panels" },
+  { value: "notice_board_sponsorship", label: "Notice board sponsorship" },
+  { value: "gate_entry_exit_branding", label: "Gate entry/exit branding" },
+  { value: "society_kiosk", label: "Society kiosk" },
+  {
+    value: "society_newsletter_sponsor_slots",
+    label: "Society newsletter sponsor slots",
+  },
+  { value: "whatsapp_promotional_day", label: "WhatsApp promotional day" },
+  { value: "event_sponsorship", label: "Event sponsorship" },
+];
+
 export default function CampaignForm({
   setSocieties,
   formData,
@@ -174,6 +187,12 @@ export default function CampaignForm({
 
     if (!formData?.campaignType)
       newErrors.campaignType = "Campaign type is required";
+    if (
+      formData?.campaignType === "brand_promotion" &&
+      !formData?.media_type
+    ) {
+      newErrors.media_type = "Media slot is required";
+    }
     if (!formData?.creativeType)
       newErrors.creativeType = "Creative type is required";
     if (!formData.campaignName)
@@ -263,6 +282,7 @@ export default function CampaignForm({
         : formData.campaignType === "survey"
         ? ["surveyUrl"]
         : []),
+      ...(formData.campaignType === "brand_promotion" ? ["media_type"] : []),
       ...(formData.search_by_google_location
         ? ["campaign_address", "radius_km"]
         : ["campaign_city_id", "campaign_area_id"]),
@@ -302,6 +322,7 @@ export default function CampaignForm({
     formData.creativeType,
     formData.campaignDate,
     formData.campaignName,
+    formData.media_type,
     formData.leadUrl,
     formData.surveyUrl,
     formData.radius_km,
@@ -494,6 +515,34 @@ export default function CampaignForm({
           </Col>
         ) : null}
       </Row>
+
+      {formData?.campaignType === "brand_promotion" && (
+        <Row className="mb-3">
+          <Col md={4}>
+            <Form.Group>
+              <Form.Label>
+                Media Slot <span className="text-danger">*</span>
+              </Form.Label>
+              <Form.Select
+                name="media_type"
+                className="form-select-sm"
+                onChange={handleChange}
+                value={formData?.media_type || ""}
+              >
+                <option value="">Select Media Slot</option>
+                {MEDIA_SLOT_OPTIONS.map((slot) => (
+                  <option key={slot.value} value={slot.value}>
+                    {slot.label}
+                  </option>
+                ))}
+              </Form.Select>
+              {errors.media_type && (
+                <div className="formik-error text-danger">{errors.media_type}</div>
+              )}
+            </Form.Group>
+          </Col>
+        </Row>
+      )}
 
       <Row className="mb-3">
         <Col md={8}>

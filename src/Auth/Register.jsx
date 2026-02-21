@@ -30,6 +30,7 @@ const Register = () => {
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const currentStep = parseInt(searchParams.get("step") || "1", 10); // Default to step 1 if no query param
+  const signupType = searchParams.get("type");
   const registrationData = useRef({
     token: null,
     otp: null,
@@ -38,12 +39,30 @@ const Register = () => {
   // Check if selectedCard exists in localStorage
   const persistedCard = localStorage.getItem("selectedCard");
   const [selectedCard, setSelectedCard] = useState(
-    persistedCard ? parseInt(persistedCard, 10) : null
+    signupType === "society"
+      ? 1
+      : signupType === "company"
+      ? 2
+      : persistedCard
+      ? parseInt(persistedCard, 10)
+      : null
   );
 
   useEffect(() => {
-    setSearchParams({ step: currentStep.toString() });
-  }, [currentStep, setSearchParams]);
+    if (signupType === "society") {
+      setSelectedCard(1);
+      localStorage.setItem("selectedCard", "1");
+    } else if (signupType === "company") {
+      setSelectedCard(2);
+      localStorage.setItem("selectedCard", "2");
+    }
+  }, [signupType]);
+
+  useEffect(() => {
+    const nextParams = { step: currentStep.toString() };
+    if (signupType) nextParams.type = signupType;
+    setSearchParams(nextParams);
+  }, [currentStep, setSearchParams, signupType]);
 
   // Ensure proper navigation for back/forward browser buttons
   useEffect(() => {
@@ -67,7 +86,9 @@ const Register = () => {
 
   // Handle next step
   const handleNextStep = () => {
-    setSearchParams({ step: (currentStep + 1).toString() });
+    const nextParams = { step: (currentStep + 1).toString() };
+    if (signupType) nextParams.type = signupType;
+    setSearchParams(nextParams);
   };
 
   const { fullLogo } = useSelector((state) => state.settings);

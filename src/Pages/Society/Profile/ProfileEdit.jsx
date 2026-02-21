@@ -18,7 +18,6 @@ import SocietyDocuments from "../../../Components/Society/Profile/Edit/SocietyDo
 import SocietyPhotosFields from "../../../Components/Society/Profile/Edit/SocietyPhotosFields.jsx";
 import GoogleMapUrlField from "../../../Components/Society/Profile/Edit/GoogleMapUrlField.jsx";
 import LoctionFieldsData from "../../../Components/Society/Profile/Edit/LocationFields.jsx";
-import AdvertisementSetting from "../../../Components/Society/Profile/Edit/AdvertisementSetting.jsx";
 
 // skeleton
 import AdvertisementSettingsSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/AdvertisementSettingsSkeleton.jsx";
@@ -44,9 +43,10 @@ const profileSubmitBtn = {
 const ProfileEdit = () => {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
-  const [adsSlot, setAdsSlot] = useState([]);
-  const [adsPerDay, setAdsPerDay] = useState(3);
   const [submit, setSubmit] = useState(false);
+  const [showBillingSection, setShowBillingSection] = useState(false);
+  const [showPhotosSection, setShowPhotosSection] = useState(false);
+  const [showDocumentsSection, setShowDocumentsSection] = useState(false);
 
   const { profileData, status, error } = useSelector(
     (state) => state.society.profile
@@ -71,9 +71,6 @@ const ProfileEdit = () => {
       dispatch(fetchAreasByCity(profileData.city_id)); // Dispatch action to fetch area data based on area_id
     }
 
-    if (profileData?.society_profile)
-      setAdsPerDay(profileData?.society_profile?.ads_per_day);
-
     if (profileData.latitude && profileData.longitude) {
       setSelectedCoordinates({
         lat: parseFloat(profileData.latitude),
@@ -82,19 +79,16 @@ const ProfileEdit = () => {
     }
   }, [dispatch, profileData]);
 
-  const { society_profile } = profileData;
+  const society_profile = profileData?.society_profile || {};
 
   const initialValues = {
     //society_information
     society_name: profileData?.society_name || "",
     number_of_flat: society_profile?.number_of_flat || "",
     society_email: society_profile?.society_email || "",
-    whatsapp_group_name: society_profile?.whatsapp_group_name || "",
-    number_of_members: society_profile?.number_of_members || "",
-    society_whatsapp_img_path: society_profile?.society_whatsapp_img_path || "",
     address_line_1: society_profile?.address_line_1 || "",
     address_line_2: society_profile?.address_line_2 || "",
-    society_profile_img_path: profileData.society_profile_img_path || "",
+    society_profile_img_path: profileData?.society_profile_img_path || "",
 
     //contact information
     name: profileData?.name || "",
@@ -109,6 +103,7 @@ const ProfileEdit = () => {
     bank_ifsc_code: society_profile?.bank_ifsc_code || "",
     billing_address_line_1: society_profile?.billing_address_line_1 || "",
     billing_address_line_2: society_profile?.billing_address_line_2 || "",
+    billing_qr_code_path: society_profile?.billing_qr_code_path || "",
 
     // Google map Url
     google_page_url: society_profile?.google_page_url || "",
@@ -136,13 +131,6 @@ const ProfileEdit = () => {
     society_email: Yup.string()
       .email("Invalid email address.")
       .required("Email Address is required."),
-    whatsapp_group_name: Yup.string().required(
-      "WhatsApp Group Name is required."
-    ),
-    number_of_members: Yup.string().required("Number of members is required."),
-    society_whatsapp_img_path: Yup.string().required(
-      "Society WhatsApp Group Image is required."
-    ),
     address_line_1: Yup.string().required("Address is required."),
     address_line_2: Yup.string(),
     society_profile_img_path: Yup.string().required(
@@ -157,23 +145,20 @@ const ProfileEdit = () => {
       .required("Email is required"),
 
     // Billing Information
-    account_holder_name: Yup.string().required(
-      "Account holder name is required."
-    ),
-    bank_name: Yup.string().required("Bank Name is required."),
-    account_no: Yup.string().required("Account Number is required."),
-    branch_name: Yup.string().required("Branch Name is required."),
-    bank_ifsc_code: Yup.string().required("IFSC code is required."),
-    billing_address_line_1: Yup.string().required(
-      "Billing Address is required."
-    ),
+    account_holder_name: Yup.string(),
+    bank_name: Yup.string(),
+    account_no: Yup.string(),
+    branch_name: Yup.string(),
+    bank_ifsc_code: Yup.string(),
+    billing_address_line_1: Yup.string(),
     billing_address_line_2: Yup.string(),
+    billing_qr_code_path: Yup.mixed().nullable(),
 
     // Google map URL
     google_page_url: Yup.string(),
 
     // Society Documents
-    pan_card_path: Yup.string().required("PAN Card is Required"),
+    pan_card_path: Yup.string(),
     gst_certificate_path: Yup.string(),
     other_document_path: Yup.string(),
 
@@ -199,7 +184,6 @@ const ProfileEdit = () => {
           }
         )
       )
-      .min(1, "At least 1 image is required")
       .max(5, "Maximum 5 images allowed"),
     // society_profile_img_1_5_path: Yup.array()
     //   .of(
@@ -330,10 +314,10 @@ const ProfileEdit = () => {
         if (
           key !== "society_profile_img_1_5_path" &&
           key !== "society_profile_img_path" &&
-          key !== "society_whatsapp_img_path" &&
           key !== "other_document_path" &&
           key !== "gst_certificate_path" &&
-          key !== "pan_card_path"
+          key !== "pan_card_path" &&
+          key !== "billing_qr_code_path"
         ) {
           formData.append(key, values[key]);
         }
@@ -356,17 +340,6 @@ const ProfileEdit = () => {
         );
       }
 
-      // Add society_whatsapp_img_path to FormData if it's a valid File
-      if (
-        values.society_whatsapp_img_path &&
-        values.society_whatsapp_img_path instanceof File
-      ) {
-        formData.append(
-          "society_whatsapp_img_path",
-          values.society_whatsapp_img_path
-        );
-      }
-
       if (
         values.other_document_path &&
         values.other_document_path instanceof File
@@ -384,9 +357,12 @@ const ProfileEdit = () => {
       if (values.pan_card_path && values.pan_card_path instanceof File) {
         formData.append("pan_card_path", values.pan_card_path);
       }
-
-      formData.append("ads_slot", JSON.stringify(adsSlot));
-      formData.append("ads_per_day", adsPerDay);
+      if (
+        values.billing_qr_code_path &&
+        values.billing_qr_code_path instanceof File
+      ) {
+        formData.append("billing_qr_code_path", values.billing_qr_code_path);
+      }
 
       setSubmit(true);
 
@@ -416,7 +392,7 @@ const ProfileEdit = () => {
     }
   };
 
-  if (isLoading || status === "loading") {
+  if (isLoading) {
     return (
       <div className="row">
         <div className="col-8">
@@ -438,6 +414,14 @@ const ProfileEdit = () => {
           <SocietyLocationSkeleton />
           <AdvertisementSettingsSkeleton />
         </div>
+      </div>
+    );
+  }
+
+  if (status === "failed") {
+    return (
+      <div className="text-danger px-3">
+        Error loading profile: {error || "Unable to load profile data"}
       </div>
     );
   }
@@ -471,33 +455,65 @@ const ProfileEdit = () => {
                     {/* 2 fields pending in societyForm to convert as Field */}
                     <SocietyFormData values={values} />
                     <ContactFieldsData values={values} />
-                    <BillingFieldsData values={values} />
-                    <SocietyPhotosFields values={values} />
                     <GoogleMapUrlField values={values} />
 
-                    <h5 className="mb-3 fw-bold">Society Documents</h5>
-                    <Row className="mb-3">
-                      <SocietyDocuments
-                        values={values}
-                        label={
-                          <span>
-                            Pan Card <span className="text-danger">*</span>
-                          </span>
-                        }
-                        name="pan_card_path"
-                      />
+                    <div className="mb-3 border rounded">
+                      <button
+                        type="button"
+                        className="btn w-100 text-start d-flex justify-content-between align-items-center fw-bold"
+                        onClick={() => setShowBillingSection((prev) => !prev)}
+                      >
+                        <span>Billing Details</span>
+                        <span>{showBillingSection ? "−" : "+"}</span>
+                      </button>
+                      {showBillingSection && <BillingFieldsData values={values} />}
+                    </div>
+                    <div className="mb-3 border rounded">
+                      <button
+                        type="button"
+                        className="btn w-100 text-start d-flex justify-content-between align-items-center fw-bold"
+                        onClick={() => setShowPhotosSection((prev) => !prev)}
+                      >
+                        <span>Society Photos</span>
+                        <span>{showPhotosSection ? "−" : "+"}</span>
+                      </button>
+                      {showPhotosSection && (
+                        <div className="px-2 pb-2">
+                          <SocietyPhotosFields values={values} />
+                        </div>
+                      )}
+                    </div>
 
-                      <SocietyDocuments
-                        values={values}
-                        label={<span>Document 1</span>}
-                        name="gst_certificate_path"
-                      />
-                      <SocietyDocuments
-                        values={values}
-                        label="Document 2"
-                        name="other_document_path"
-                      />
-                    </Row>
+                    <div className="mb-3 border rounded">
+                      <button
+                        type="button"
+                        className="btn w-100 text-start d-flex justify-content-between align-items-center fw-bold"
+                        onClick={() => setShowDocumentsSection((prev) => !prev)}
+                      >
+                        <span>Society Documents</span>
+                        <span>{showDocumentsSection ? "−" : "+"}</span>
+                      </button>
+                      {showDocumentsSection && (
+                        <Row className="mb-3 px-2">
+                          <SocietyDocuments
+                            values={values}
+                            label={<span>Pan Card</span>}
+                            name="pan_card_path"
+                          />
+
+                          <SocietyDocuments
+                            values={values}
+                            label={<span>Document 1</span>}
+                            name="gst_certificate_path"
+                          />
+                          <SocietyDocuments
+                            values={values}
+                            label="Document 2"
+                            name="other_document_path"
+                          />
+                        </Row>
+                      )}
+                    </div>
 
                     <button
                       type="submit"
@@ -522,13 +538,6 @@ const ProfileEdit = () => {
                     setSelectedLocation={setSelectedLocation}
                     selectedCoordinates={selectedCoordinates}
                     setSelectedCoordinates={setSelectedCoordinates}
-                  />
-                  <AdvertisementSetting
-                    onAdsSlotChange={setAdsSlot}
-                    userType="society"
-                    societyId={profileData?.society?.id}
-                    setAdsPerDay={setAdsPerDay}
-                    adsPerDay={adsPerDay}
                   />
                 </div>
               </div>

@@ -40,6 +40,7 @@ const AddCampaign = () => {
     my_ads_location_latitude: null,
     my_ads_location_longitude: null,
     radius_km: "1",
+    media_type: "",
     brand_promotions_creative: "",
     society_ids: [], // for when isChecked = true
     upload_creative_image_path: null, // for common image
@@ -128,6 +129,7 @@ const AddCampaign = () => {
               surveyUrl: campaign.survey_url || "",
               campaignName: campaign.campaign_name,
               campaignDate: campaignDate,
+              media_type: campaign.media_type || "",
               campaign_ads_amount: campaign.campaign_ads_amount,
               campaign_amount: campaign?.campaign_amount,
               search_by_google_location:
@@ -250,6 +252,7 @@ const AddCampaign = () => {
 
     appendIfExists("campaign_name", formData?.campaignName);
     appendIfExists("campaign_type", formData?.campaignType);
+    appendIfExists("media_type", formData?.media_type);
     appendIfExists("creative_type", formData?.creativeType);
     appendIfExists("campaign_date", formData?.campaignDate);
     appendIfExists("campaign_city_id", formData?.campaign_city_id);
@@ -388,6 +391,19 @@ const AddCampaign = () => {
   };
 
   const handleCreateCampaign = async (status, amount, setSubmit) => {
+    const token = localStorage.getItem("auth_token");
+    const userData = JSON.parse(localStorage.getItem("user_data") || "null");
+    const isCompanyUser =
+      userData?.user_type === "Company_Admin" ||
+      userData?.user_type === "Company_User";
+
+    if (!token || !isCompanyUser) {
+      toast.info("Please sign in to start a campaign.");
+      navigate("/login");
+      setSubmit(false);
+      return;
+    }
+
     try {
       const payload = buildFormData(formData, status, amount);
 

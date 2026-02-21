@@ -65,6 +65,7 @@ const reportMenu = {
 
 const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
   const navigate = useNavigate();
+  const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
 
   const location = useLocation();
   const [openDropdowns, setOpenDropdowns] = useState(new Set());
@@ -92,6 +93,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
   };
 
   const hasPrivilege = (privilege) => {
+    if (!user_type) return true; // browse mode: show normal portal menus
     if (user_type === "Company_User" && privileges)
       return privileges.includes(privilege);
     else if (user_type === "Company_Admin") return true;
@@ -371,16 +373,17 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               user_type === "Company_Admin" ? menu.settings : true
             )}
 
-          {renderListItem(
-            null, // No `to` prop as we're handling the navigation manually
-            "Logout",
-            <InfoOutlinedIcon />,
-            false, // No path check, since it's handled manually
-            menu?.logout,
-            () => {
-              handleLogout();
-            }
-          )}
+          {hasAuthToken &&
+            renderListItem(
+              null, // No `to` prop as we're handling the navigation manually
+              "Logout",
+              <InfoOutlinedIcon />,
+              false, // No path check, since it's handled manually
+              menu?.logout,
+              () => {
+                handleLogout();
+              }
+            )}
         </div>
       </List>
 

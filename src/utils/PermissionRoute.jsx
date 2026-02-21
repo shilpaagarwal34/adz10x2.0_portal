@@ -3,7 +3,9 @@ import { useSelector } from "react-redux";
 const PermissionRoute = ({ permission, children }) => {
   const { user } = useSelector((state) => state.auth);
 
-  // if (!user) return null;
+  // Allow read-only browsing for non-authenticated visitors.
+  // Action-level guards handle sensitive operations.
+  if (!user) return children;
 
   const { user_type, privileges, menu } = user;
 

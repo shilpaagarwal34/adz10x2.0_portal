@@ -36,7 +36,9 @@ const paymentSlice = createSlice({
       .addCase(fetchSocietyBalanceAmount.rejected, (state, action) => {
         state.fetchLoading = false;
         state.error = action.error.message;
-        toast.error(`Failed to load balance: ${action.error.message}`);
+        if (localStorage.getItem("auth_token")) {
+          toast.error(`Failed to load balance: ${action.error.message}`);
+        }
       })
 
       // Payment list fetch
@@ -55,7 +57,9 @@ const paymentSlice = createSlice({
       .addCase(fetchSocietyPayments.rejected, (state, action) => {
         state.fetchLoading = false;
         state.error = action.error.message;
-        toast.error(`Failed to load payments: ${action.error.message}`);
+        if (localStorage.getItem("auth_token")) {
+          toast.error(`Failed to load payments: ${action.error.message}`);
+        }
       })
 
       // update store after withdrawl request

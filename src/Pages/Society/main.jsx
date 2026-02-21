@@ -5,6 +5,7 @@ import Dashboard from "./Dashboard.jsx";
 // Profile
 import Profile from "./Profile/Profile.jsx";
 import ProfileEdit from "./Profile/ProfileEdit.jsx";
+import MediaManagement from "./MediaManagement.jsx";
 
 // Advertisement
 import Advertisement from "./Advertisement.jsx";
@@ -25,6 +26,7 @@ import Footer from "./Footer.jsx";
 import Notifications from "./Notifications.jsx";
 import Report from "./Report.jsx";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
+import { ProtectedActionRoute } from "../../utils/ProtectedRoutes.jsx";
 import { AdsModalProvider } from "../../Context/AdsModalContext.jsx";
 import AdsModal from "../Admin/Campains/AdsModal.jsx";
 import SampleModal from "../../Components/Society/Advertisement/SampleImageModal.jsx";
@@ -60,8 +62,21 @@ function Society() {
           <Route
             path="/profile/edit"
             element={
+              <ProtectedActionRoute
+                allowedUserTypes={["Society_Admin", "Society_User"]}
+              >
+                <PermissionRoute permission="profile">
+                  <ProfileEdit />
+                </PermissionRoute>
+              </ProtectedActionRoute>
+            }
+          />
+
+          <Route
+            path="/media-management"
+            element={
               <PermissionRoute permission="profile">
-                <ProfileEdit />
+                <MediaManagement />
               </PermissionRoute>
             }
           />

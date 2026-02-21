@@ -18,8 +18,6 @@ import AdminLogin from "./Auth/AdminLogin.jsx";
 import ForgetPassword from "./Auth/Admin/ForgetPassword.jsx";
 import OTPVerificationPage from "./Auth/OTPVerificationPage .jsx";
 import {
-  ProtectedSocietyRoute,
-  ProtectedCompanyRoute,
   ProtectedAdminRoute,
   PublicRoute,
   PublicAdminRoute,
@@ -128,21 +126,13 @@ const App = () => {
         {/* Protected society route */}
         <Route
           path="/society/*"
-          element={
-            <ProtectedSocietyRoute>
-              <Main />
-            </ProtectedSocietyRoute>
-          }
+          element={<Main />}
         />
 
         {/* Protected company route */}
         <Route
           path="/company/*"
-          element={
-            <ProtectedCompanyRoute>
-              <Company />
-            </ProtectedCompanyRoute>
-          }
+          element={<Company />}
         />
 
         <Route

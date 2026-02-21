@@ -185,7 +185,6 @@ const SocietyPhotosFields = () => {
     <>
       <h5 className="mb-3 fw-bold">
         Society Photos
-        <span className="text-danger">*</span>
         <span className="formik-error text-danger"> (Upload Size 50 MB)</span>
       </h5>
       <div className="d-flex flex-wrap gap-3">

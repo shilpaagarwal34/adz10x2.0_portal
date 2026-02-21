@@ -8,6 +8,7 @@ import { toast, ToastContainer } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { ConfirmDeleteToast } from "../utils/ConfirmDeleteToast.jsx";
 import { logoutUser } from "../store/Actions/Auth/authActions.js";
+import SupportChatbot from "../Components/Common/SupportChatbot.jsx";
 
 const CompanyLayout = ({ children }) => {
   const dispatch = useDispatch();
@@ -76,6 +77,7 @@ const CompanyLayout = ({ children }) => {
         <Navbar user={user} toggleSidebar={toggleSidebar} />
         <ToastContainer />
         <div className="content">{children}</div>
+        <SupportChatbot />
       </div>
     </div>
   );

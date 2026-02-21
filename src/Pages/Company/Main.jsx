@@ -11,6 +11,7 @@ import Wallet from "./Wallet/Wallet.jsx";
 import Settings from "./Settings.jsx";
 import Users from "./Users/Users.jsx";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
+import { ProtectedActionRoute } from "../../utils/ProtectedRoutes.jsx";
 import CampaignView from "../../Components/Company/Campaign/CampaignView.jsx";
 import Report from "./Report.jsx";
 import ApprovedAdView from "../../Components/Company/Campaign/Approved/ApprovedAdvView.jsx";
@@ -65,18 +66,26 @@ function Company() {
           <Route
             path="/campaign/newcampaign"
             element={
-              <PermissionRoute permission="advertisement">
-                <AddCampaign />
-              </PermissionRoute>
+              <ProtectedActionRoute
+                allowedUserTypes={["Company_Admin", "Company_User"]}
+              >
+                <PermissionRoute permission="advertisement">
+                  <AddCampaign />
+                </PermissionRoute>
+              </ProtectedActionRoute>
             }
           />
 
           <Route
             path="/campaign/:campaignId/edit"
             element={
-              <PermissionRoute permission="advertisement">
-                <AddCampaign />
-              </PermissionRoute>
+              <ProtectedActionRoute
+                allowedUserTypes={["Company_Admin", "Company_User"]}
+              >
+                <PermissionRoute permission="advertisement">
+                  <AddCampaign />
+                </PermissionRoute>
+              </ProtectedActionRoute>
             }
           />
 
