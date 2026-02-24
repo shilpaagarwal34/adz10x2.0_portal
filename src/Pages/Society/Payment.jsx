@@ -19,6 +19,7 @@ import Pagination from "../../Components/Common/Pagination.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import SocietyTableSkeleton from "../../Components/Skeletons/Admin/SocietyTableSkeleton.jsx";
 import AuthPromptModal from "../../Components/Common/AuthPromptModal.jsx";
+import CompleteProfileModal from "../../Components/Common/CompleteProfileModal.jsx";
 import { useNavigate } from "react-router-dom";
 
 const Payment = () => {
@@ -26,6 +27,7 @@ const Payment = () => {
   const [show, setShow] = useState(false);
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
   const [showWithdrawGuardModal, setShowWithdrawGuardModal] = useState(false);
+  const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
   const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
 
   const dispatch = useDispatch();
@@ -34,6 +36,10 @@ const Payment = () => {
   const handleShow = () => {
     if (!hasAuthToken) {
       setShowAuthPrompt(true);
+      return;
+    }
+    if (Number(profileCompletedPercentage || 0) < 100) {
+      setShowCompleteProfileModal(true);
       return;
     }
     if (Number(balanceAmount || 0) > 0 && !hasRequiredWithdrawDetails) {
@@ -57,6 +63,9 @@ const Payment = () => {
     pendingAmount,
   } = useSelector((state) => state.society.payments);
   const profileData = useSelector((state) => state.society.profile?.profileData || {});
+  const profileCompletedPercentage = useSelector(
+    (state) => state.society.profile?.profileCompletedPercentage ?? 0
+  );
 
   const hasRequiredWithdrawDetails = (() => {
     const profile = profileData?.society_profile || {};
@@ -217,6 +226,12 @@ const Payment = () => {
         onHide={() => setShowAuthPrompt(false)}
         title="Access Payments"
         description="Sign up or log in to view payment history and withdraw your earnings."
+      />
+      <CompleteProfileModal
+        show={showCompleteProfileModal}
+        onHide={() => setShowCompleteProfileModal(false)}
+        profileEditPath="/society/profile/edit"
+        message="Your profile is incomplete. Please complete profile to 100% before withdrawing. Do you want to go to Edit Profile now?"
       />
       <Modal
         show={showWithdrawGuardModal}

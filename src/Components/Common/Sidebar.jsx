@@ -229,7 +229,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Dashboard",
               <HomeIcon />,
               location.pathname === "/society",
-              user_type === "Society_Admin" ? menu.dashboard : true
+              true
             )}
 
           {hasPrivilege("profile") &&
@@ -259,7 +259,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
                 />
               </svg>,
               location.pathname.startsWith("/society/profile"),
-              user_type === "Society_Admin" ? menu.profile : true
+              true
             )}
 
           {hasPrivilege("profile") &&
@@ -268,7 +268,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Media Management",
               <ViewList />,
               location.pathname.startsWith("/society/media-management"),
-              user_type === "Society_Admin" ? menu.profile : true
+              true
             )}
 
           {hasPrivilege("campaign") &&
@@ -277,7 +277,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Advertisement",
               <Campaign />,
               location.pathname.startsWith("/society/advertisement"),
-              user_type === "Society_Admin" ? menu.advertisement : true
+              true
             )}
 
           {hasPrivilege("wallet") &&
@@ -286,7 +286,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Wallet",
               <AccountBalanceWalletOutlinedIcon />,
               location.pathname.startsWith("/society/wallet"),
-              user_type === "Society_Admin" ? menu.advertisement : true
+              true
             )}
 
           {hasPrivilege("payments") &&
@@ -295,7 +295,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Payments",
               <Payment />,
               location.pathname === "/society/payment" || isActive,
-              user_type === "Society_Admin" ? menu.payments : true
+              true
             )}
 
           {hasPrivilege("users") &&
@@ -304,7 +304,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Users",
               <People />,
               location.pathname.startsWith("/society/users"),
-              user_type === "Society_Admin" ? menu.users : true
+              true
             )}
 
           {hasPrivilege("reports") &&
@@ -313,7 +313,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               reportMenu.label,
               reportMenu.icon,
               reportMenu.children,
-              user_type === "Society_Admin" ? menu.report : true
+              true
             )}
         </div>
 

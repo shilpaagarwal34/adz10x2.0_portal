@@ -1,15 +1,25 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import {
   formatCampaignType,
   formatToTitleCase,
 } from "../../../helper/helper.js";
+import CompleteProfileModal from "../../Common/CompleteProfileModal.jsx";
 
 const CampaignTable = ({ data, status }) => {
   const navigate = useNavigate();
+  const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
+  const profileCompletedPercentage = useSelector(
+    (state) => state.society.profile?.profileCompletedPercentage ?? 0
+  );
 
   const handleViewRedirection = (campaignStatus, advertisementId) => {
+    if (Number(profileCompletedPercentage || 0) < 100) {
+      setShowCompleteProfileModal(true);
+      return;
+    }
     switch (campaignStatus) {
       case "pending":
         navigate(`/society/advertisement/pending/${advertisementId}/view`);
@@ -46,6 +56,7 @@ const CampaignTable = ({ data, status }) => {
   };
 
   return (
+    <>
     <Table bordered className="custom-label" style={{ minWidth: "1000px" }}>
       <thead>
         <tr className="striped-thead">
@@ -104,6 +115,13 @@ const CampaignTable = ({ data, status }) => {
         ))}
       </tbody>
     </Table>
+      <CompleteProfileModal
+        show={showCompleteProfileModal}
+        onHide={() => setShowCompleteProfileModal(false)}
+        profileEditPath="/society/profile/edit"
+        message="Your profile is incomplete. Please complete profile to 100% before viewing campaign details. Do you want to go to Edit Profile now?"
+      />
+    </>
   );
 };
 

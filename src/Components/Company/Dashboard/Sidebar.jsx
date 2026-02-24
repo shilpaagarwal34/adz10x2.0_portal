@@ -274,7 +274,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Dashboard",
               <HomeIcon />,
               location.pathname === "/company",
-              user_type === "Company_Admin" ? menu.dashboard : true
+              true
             )}
 
           {hasPrivilege("profile") &&
@@ -304,7 +304,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
                 />
               </svg>,
               location.pathname.startsWith("/company/profile"),
-              user_type === "Company_Admin" ? menu.profile : true
+              true
             )}
 
           {hasPrivilege("campaign") &&
@@ -313,7 +313,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Campaign",
               <Campaign />,
               location.pathname.startsWith("/company/campaign"),
-              user_type === "Company_Admin" ? menu.advertisement : true
+              true
             )}
 
           {hasPrivilege("wallet") &&
@@ -322,7 +322,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Wallet",
               <AccountBalanceWalletOutlinedIcon />,
               location.pathname.startsWith("/company/wallet"),
-              user_type === "Company_Admin" ? menu.wallet : true
+              true
             )}
 
           {hasPrivilege("payments") &&
@@ -331,7 +331,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Payments",
               <Payment />,
               location.pathname === "/company/payments" || isActive,
-              user_type === "Company_Admin" ? menu.payments : true
+              true
             )}
 
           {hasPrivilege("users") &&
@@ -340,7 +340,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Users",
               <People />,
               location.pathname.startsWith("/company/users"),
-              user_type === "Company_Admin" ? menu.users : true
+              true
             )}
 
           {/* {hasPrivilege("reports") &&
@@ -358,7 +358,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               reportMenu.label,
               reportMenu.icon,
               reportMenu.children,
-              user_type === "Company_Admin" ? menu.users : true
+              true
             )}
         </div>
 

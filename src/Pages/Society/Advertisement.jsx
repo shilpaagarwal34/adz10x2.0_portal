@@ -9,6 +9,7 @@ import PaginationSkeleton from "../../Components/Skeletons/PaginationSkeleton.js
 import Pagination from "../../Components/Common/Pagination.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSocietyCampaigns } from "../../store/Actions/Society/Campaign/CampaignActions.js";
+import { fetchProfileData } from "../../store/Actions/Society/Profile/ProfileActions.js";
 import SocietyTableSkeleton from "../../Components/Skeletons/Admin/SocietyTableSkeleton.jsx";
 
 const Advertisement = () => {
@@ -57,6 +58,10 @@ const Advertisement = () => {
   const { campaigns, total, loading } = useSelector(
     (state) => state.company.campaign
   );
+
+  useEffect(() => {
+    dispatch(fetchProfileData());
+  }, [dispatch]);
 
   useEffect(() => {
     dispatch(

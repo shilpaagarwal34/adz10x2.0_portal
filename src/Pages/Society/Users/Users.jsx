@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { Row, Col, Modal } from "react-bootstrap";
+import { Row, Col } from "react-bootstrap";
 import UsersTable from "../../../Components/Common/Users/UsersTable.jsx";
 import HeaderButton from "../../../Components/Common/Users/HeaderButton.jsx";
 import UserModal from "../../../Components/Common/Users/UserModal.jsx";
+import CompleteProfileModal from "../../../Components/Common/CompleteProfileModal.jsx";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchSocietyUsers } from "../../../store/Actions/Society/Users/UserActions.js";
 import { fetchProfileData } from "../../../store/Actions/Society/Profile/ProfileActions.js";
-import { useNavigate } from "react-router-dom";
 
 const Users = () => {
   const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
@@ -18,7 +18,6 @@ const Users = () => {
   const [limit, setLimit] = useState(10);
   const [search, setSearch] = useState("");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
   const { users, loading, error, total, tableName } = useSelector(
     (state) => state.society.users
@@ -93,67 +92,12 @@ const Users = () => {
         tableName={tableName}
       />
 
-      <Modal
+      <CompleteProfileModal
         show={showProfileIncompleteModal}
         onHide={() => setShowProfileIncompleteModal(false)}
-        centered
-      >
-        <div
-          style={{
-            borderRadius: "12px",
-            overflow: "hidden",
-            border: "1px solid #e8eef4",
-          }}
-        >
-          <div
-            style={{
-              background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
-              padding: "14px 18px",
-              color: "#fff",
-            }}
-            className="d-flex justify-content-between align-items-center"
-          >
-            <h5 className="mb-0 fw-bold">Complete Profile Required</h5>
-            <button
-              type="button"
-              className="btn btn-sm btn-light"
-              onClick={() => setShowProfileIncompleteModal(false)}
-            >
-              X
-            </button>
-          </div>
-          <Modal.Body>
-            <p className="text-muted mb-3" style={{ fontSize: "14px" }}>
-              Your profile is incomplete. Please complete profile to 100% before
-              adding users. Do you want to go to Edit Profile now?
-            </p>
-            <div className="d-flex gap-2 justify-content-end">
-              <button
-                type="button"
-                className="btn btn-outline-primary btn-sm"
-                onClick={() => setShowProfileIncompleteModal(false)}
-              >
-                No
-              </button>
-              <button
-                type="button"
-                className="btn btn-sm text-white"
-                style={{
-                  background:
-                    "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
-                  border: "none",
-                }}
-                onClick={() => {
-                  setShowProfileIncompleteModal(false);
-                  navigate("/society/profile/edit");
-                }}
-              >
-                Yes
-              </button>
-            </div>
-          </Modal.Body>
-        </div>
-      </Modal>
+        profileEditPath="/society/profile/edit"
+        message="Your profile is incomplete. Please complete profile to 100% before adding users. Do you want to go to Edit Profile now?"
+      />
     </div>
   );
 };
