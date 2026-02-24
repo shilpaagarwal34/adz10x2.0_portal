@@ -6,6 +6,7 @@ import { fetchAreasByCity } from "../../../store/Actions/Common/commonActions.js
 import { base_url } from "../../../config/api.js";
 import { Avatar } from "@mui/material";
 import { useAdsModal } from "../../../Context/AdsModalContext.jsx";
+import CompleteProfileModal from "../../Common/CompleteProfileModal.jsx";
 
 const ProfileDetail = ({ profileData, percentage = 0 }) => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
   const { society_profile } = profileData;
   const { openSampleModal } = useAdsModal();
   const [showBilling, setShowBilling] = useState(false);
+  const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
 
   useEffect((state) => {
     dispatch(fetchAreasByCity(profileData?.city_id));
@@ -96,16 +98,20 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
             </div>
             <p className="fw-bold mt-2 m-0">Profile Completion</p>
           </div>
-          {profileData?.edit_permission && (
-            <div className="d-flex flex-column align-items-start ms-1">
-              <img
-                src="/edit.svg"
-                alt="Edit"
-                style={{ cursor: "pointer" }}
-                onClick={() => navigate("/society/profile/edit")}
-              />
-            </div>
-          )}
+          <div className="d-flex flex-column align-items-start ms-1">
+            <img
+              src="/edit.svg"
+              alt="Edit"
+              style={{ cursor: "pointer" }}
+              onClick={() => {
+                if (Number(percentage || 0) < 100) {
+                  setShowCompleteProfileModal(true);
+                } else {
+                  navigate("/society/profile/edit");
+                }
+              }}
+            />
+          </div>
         </div>
       </div>
 
@@ -285,6 +291,12 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
           </div>
         )}
       </div>
+      <CompleteProfileModal
+        show={showCompleteProfileModal}
+        onHide={() => setShowCompleteProfileModal(false)}
+        profileEditPath="/society/profile/edit"
+        message="Your profile is incomplete. Please complete profile to 100% before editing. Do you want to go to Edit Profile now?"
+      />
     </div>
   );
 };
