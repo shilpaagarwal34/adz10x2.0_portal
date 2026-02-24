@@ -12,7 +12,6 @@ import {
   ListItemText,
   Box,
   IconButton,
-  Tooltip,
   Collapse,
 } from "@mui/material";
 import {
@@ -106,38 +105,17 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
     pathCheck,
     isAllowed,
     onClick = null
-  ) => {
-    const listItem = (
-      <ListItem
-        className={
-          isAllowed
-            ? getClass(pathCheck, "custom-hover-remove")
-            : "not-authorised"
-        }
-        sx={{
-          cursor: isAllowed ? "pointer" : "not-allowed",
-          opacity: isAllowed ? 1 : 0.6,
-          pointerEvents: isAllowed ? "auto" : "none", // 🔒 disables interaction
-        }}
-        {...(isAllowed && to ? { component: Link, to } : {})}
-        {...(isAllowed && onClick ? { onClick } : {})}
-      >
-        <ListItemIcon>{icon}</ListItemIcon>
-        <ListItemText primary={label} />
-      </ListItem>
-    );
-
-    return isAllowed ? (
-      listItem
-    ) : (
-      <Tooltip
-        title="You are not authorized to access this section"
-        placement="right"
-      >
-        <Box>{listItem}</Box>
-      </Tooltip>
-    );
-  };
+  ) => (
+    <ListItem
+      className={getClass(pathCheck, "custom-hover-remove")}
+      sx={{ cursor: "pointer" }}
+      {...(to ? { component: Link, to } : {})}
+      {...(onClick ? { onClick } : {})}
+    >
+      <ListItemIcon>{icon}</ListItemIcon>
+      <ListItemText primary={label} />
+    </ListItem>
+  );
 
   // const renderSingleLevelMenu = (key, label, icon, children = [], isAllowed) => {
   //   const isOpen = openDropdowns.has(key);
@@ -199,14 +177,10 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
     const menuContent = (
       <React.Fragment key={key}>
         <ListItem
-          onClick={isAllowed ? () => handleToggle(key) : undefined}
-          className={`${isOpen ? "active-master" : "custom-hover-remove"} ${
-            !isAllowed ? "not-authorised" : ""
-          }`}
+          onClick={() => handleToggle(key)}
+          className={isOpen ? "active-master" : "custom-hover-remove"}
           sx={{
-            cursor: isAllowed ? "pointer" : "not-allowed",
-            opacity: isAllowed ? 1 : 0.6,
-            pointerEvents: isAllowed ? "auto" : "none",
+            cursor: "pointer",
             ...(key === "payment-report"
               ? { margin: "0 10px !important" }
               : {}),
@@ -217,7 +191,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
           {isOpen ? <ExpandLess /> : <ExpandMore />}
         </ListItem>
 
-        <Collapse in={isOpen && isAllowed} timeout="auto" unmountOnExit>
+        <Collapse in={isOpen} timeout="auto" unmountOnExit>
           <List component="div" disablePadding>
             {flattenedChildren.map((item) => (
               <ListItem
@@ -239,17 +213,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
       </React.Fragment>
     );
 
-    return isAllowed ? (
-      menuContent
-    ) : (
-      <Tooltip
-        key={key}
-        title="You are not authorized to access this section"
-        placement="right"
-      >
-        <Box>{menuContent}</Box>
-      </Tooltip>
-    );
+    return menuContent;
   };
 
   return (
@@ -370,19 +334,17 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Settings",
               <Settings />,
               location.pathname === "/company/settings",
-              user_type === "Company_Admin" ? menu.settings : true
+              true
             )}
 
           {hasAuthToken &&
             renderListItem(
-              null, // No `to` prop as we're handling the navigation manually
+              null,
               "Logout",
               <InfoOutlinedIcon />,
-              false, // No path check, since it's handled manually
-              menu?.logout,
-              () => {
-                handleLogout();
-              }
+              false,
+              true,
+              () => handleLogout()
             )}
         </div>
       </List>
