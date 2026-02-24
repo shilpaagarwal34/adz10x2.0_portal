@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { Formik, Form } from "formik";
 import * as Yup from "yup";
 import {
@@ -42,6 +43,7 @@ const profileSubmitBtn = {
 
 const ProfileEdit = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
   const [submit, setSubmit] = useState(false);
   const [showBillingSection, setShowBillingSection] = useState(false);
@@ -67,10 +69,10 @@ const ProfileEdit = () => {
   }, [status]);
 
   useEffect(() => {
-    if (profileData && profileData.area_id) {
+    if (!profileData || typeof profileData !== "object") return;
+    if (profileData.area_id) {
       dispatch(fetchAreasByCity(profileData.city_id)); // Dispatch action to fetch area data based on area_id
     }
-
     if (profileData.latitude && profileData.longitude) {
       setSelectedCoordinates({
         lat: parseFloat(profileData.latitude),
@@ -376,6 +378,7 @@ const ProfileEdit = () => {
           })
         );
         await dispatch(fetchProfileData());
+        navigate("/society/profile");
       } else {
         // console.log(result.payload);
         const errorMsg = "Failed to update profile";

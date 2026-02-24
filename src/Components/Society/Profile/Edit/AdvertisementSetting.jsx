@@ -77,6 +77,7 @@ const AdvertisementSetting = ({
   const [rateAction, setRateAction] = useState("submit");
   const [showProfileIncompleteDialog, setShowProfileIncompleteDialog] =
     useState(false);
+  const [rateErrorIndices, setRateErrorIndices] = useState([]);
   const { days, loading: campaignLoading } = useSelector(
     (state) => state.society.campaignDays
   );
@@ -144,6 +145,44 @@ const AdvertisementSetting = ({
     fetchSelectedDays();
   }, []);
 
+  const defaultGenericTerms =
+    "Rates and terms as per society policy. Creative file should be shared at least 48 hours before publishing. Society approval is mandatory before any live display.";
+
+  const buildDefaultRows = (data = []) =>
+    mediaSlots.map((slot) => {
+      const existing = data.find((item) => item.media_type === slot.value);
+      const societyRate = Number(existing?.society_rate || 0);
+      const commission = getCommissionPct(slot.media_type);
+      const platformRate = Number(((societyRate * commission) / 100).toFixed(2));
+      const defaultWhatsappDetails = {
+        selected_days: [],
+        from_time: "",
+        to_time: "",
+        whatsapp_group_name: profileData?.society_profile?.whatsapp_group_name || "",
+        whatsapp_image: profileData?.society_profile?.society_whatsapp_img_path || "",
+        number_of_flats: Number(profileData?.society_profile?.number_of_flat || 0),
+      };
+      return {
+        id: existing?.id || null,
+        media_type: slot.media_type,
+        label: slot.label,
+        duration_days: 0,
+        generic_terms: defaultGenericTerms,
+        is_offered: Boolean(existing),
+        society_rate: societyRate,
+        platform_commission_pct: commission,
+        platform_rate: platformRate,
+        company_rate: Number((societyRate + platformRate).toFixed(2)),
+        society_terms: Array.isArray(existing?.society_terms) ? existing.society_terms : [],
+        whatsapp_details:
+          slot.media_type === "whatsapp_promotional_day"
+            ? { ...defaultWhatsappDetails, ...(existing?.whatsapp_details || {}) }
+            : null,
+        effective_from: existing?.effective_from || new Date().toISOString().slice(0, 10),
+        effective_to: existing?.effective_to || null,
+      };
+    });
+
   useEffect(() => {
     if (userType === "admin") return;
 
@@ -162,7 +201,7 @@ const AdvertisementSetting = ({
           setSocietyTermsOptions(selectedTermsOptions);
         }
 
-        const rows = (platformConfig.length
+        const slotsWithCards = (platformConfig.length
           ? platformConfig.map((platform) => ({
               media_type: platform.media_type,
               label:
@@ -182,7 +221,16 @@ const AdvertisementSetting = ({
                 card: existing || null,
               };
             })
-        ).map((slot) => {
+        );
+        // Dedupe by media_type so toggling "Offered" only affects one row
+        const seen = new Set();
+        const slotsDeduped = slotsWithCards.filter((s) => {
+          const key = s.media_type ?? "__undefined";
+          if (seen.has(key)) return false;
+          seen.add(key);
+          return true;
+        });
+        const rows = slotsDeduped.map((slot) => {
           const existing = slot.card;
           const societyRate = Number(existing?.society_rate || 0);
           const commission = getCommissionPct(slot.media_type);
@@ -200,7 +248,7 @@ const AdvertisementSetting = ({
             media_type: slot.media_type,
             label: slot.label,
             duration_days: slot.duration_days,
-            generic_terms: slot.generic_terms,
+            generic_terms: slot.generic_terms || defaultGenericTerms,
             is_offered: Boolean(existing),
             society_rate: societyRate,
             platform_commission_pct: commission,
@@ -224,11 +272,16 @@ const AdvertisementSetting = ({
         setMediaRates(rows);
       } catch (error) {
         console.error(error);
+        // Show default media slots when API fails so the page is not empty
+        setMediaRates(buildDefaultRows([]));
       }
     };
 
     loadMediaRates();
-  }, [userType, profileData]);
+    // Intentionally run only on mount (and userType): do NOT depend on profileData,
+    // or the effect re-runs when profile loads and overwrites user's "Offered" toggles.
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userType]);
 
   const handleDayChange = (day) => {
     setCheckedDays((prev) => ({
@@ -260,7 +313,10 @@ const AdvertisementSetting = ({
     !adminHasPrivilege("company_edit");
 
   const updateSocietyRate = (mediaType, value) => {
-    const numericValue = Number(value || 0);
+    setRateErrorIndices((prev) => prev.filter((i) => mediaRates[i]?.media_type !== mediaType));
+    const isEmpty = value === "" || value == null;
+    const numericValue = isEmpty ? 0 : Number(value);
+    const displayValue = isEmpty ? "" : numericValue;
     setMediaRates((prev) =>
       prev.map((item) => {
         if (item.media_type !== mediaType) return item;
@@ -268,7 +324,7 @@ const AdvertisementSetting = ({
         const platformRate = Number(((numericValue * commission) / 100).toFixed(2));
         return {
           ...item,
-          society_rate: numericValue,
+          society_rate: displayValue,
           platform_commission_pct: commission,
           platform_rate: platformRate,
           company_rate: Number((numericValue + platformRate).toFixed(2)),
@@ -277,13 +333,14 @@ const AdvertisementSetting = ({
     );
   };
 
-  const toggleOffered = (mediaType, checked) => {
+  const toggleOffered = (index, checked) => {
+    if (!checked) setRateErrorIndices((prev) => prev.filter((i) => i !== index));
     setMediaRates((prev) =>
-      prev.map((item) => {
-        if (item.media_type !== mediaType) return item;
+      prev.map((item, i) => {
+        if (i !== index) return item;
         if (checked) {
           const baseRate = Number(item.society_rate || 0);
-          const commission = getCommissionPct(mediaType);
+          const commission = getCommissionPct(item.media_type);
           const platformRate = Number(((baseRate * commission) / 100).toFixed(2));
           return {
             ...item,
@@ -324,6 +381,7 @@ const AdvertisementSetting = ({
     if (!mediaRates.length) return;
     setRateAction(mode);
     setRateSaving(true);
+    setRateErrorIndices([]);
     try {
       const selectedCards = mediaRates.filter((item) => item.is_offered);
       if (!selectedCards.length) {
@@ -332,15 +390,18 @@ const AdvertisementSetting = ({
         return;
       }
 
+      // For both draft and submit: require rate > 0 for every offered item; highlight empty fields
+      const invalidIndices = mediaRates
+        .map((item, idx) => (item.is_offered && Number(item.society_rate || 0) <= 0 ? idx : -1))
+        .filter((idx) => idx >= 0);
+      if (invalidIndices.length) {
+        setRateErrorIndices(invalidIndices);
+        toast.error("Please enter society rate for all offered items.");
+        setRateSaving(false);
+        return;
+      }
+
       if (mode === "submit") {
-        const invalidRate = selectedCards.find(
-          (item) => Number(item.society_rate || 0) <= 0
-        );
-        if (invalidRate) {
-          toast.error(`Set rate for ${invalidRate.label}.`);
-          setRateSaving(false);
-          return;
-        }
 
         const invalidWhatsappCard = selectedCards.find((item) => {
           if (item.media_type !== "whatsapp_promotional_day") return false;
@@ -390,7 +451,9 @@ const AdvertisementSetting = ({
         );
       }
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Failed to update media rates");
+      const msg = error?.response?.data?.message || "Failed to update media rates";
+      const detail = error?.response?.data?.error;
+      toast.error(detail ? `${msg}: ${detail}` : msg);
     } finally {
       setRateSaving(false);
     }
@@ -595,9 +658,9 @@ const AdvertisementSetting = ({
           {!showMediaManagementOnly && <h6 className="fw-bold">Media Rate Card</h6>}
           {showMediaManagementOnly ? (
             <div className="d-flex flex-column gap-3 mt-2">
-              {mediaRates.map((item) => (
+              {mediaRates.map((item, idx) => (
                 <div
-                  key={item.media_type}
+                  key={`${item.media_type}-${idx}`}
                   style={{
                     border: "1px solid #e2e8f0",
                     borderRadius: "14px",
@@ -644,9 +707,10 @@ const AdvertisementSetting = ({
                     <FormControlLabel
                       control={
                         <Switch
+                          id={`offered-${item.media_type}-${idx}`}
                           checked={item.is_offered}
                           onChange={(e) =>
-                            toggleOffered(item.media_type, e.target.checked)
+                            toggleOffered(idx, e.target.checked)
                           }
                           size="small"
                         />
@@ -938,12 +1002,18 @@ const AdvertisementSetting = ({
                           size="small"
                           type="number"
                           label="Society Rate"
-                          value={item.society_rate}
+                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
                           onChange={(e) =>
                             updateSocietyRate(item.media_type, e.target.value)
                           }
                           disabled={!item.is_offered}
                           inputProps={{ min: 0 }}
+                          error={rateErrorIndices.includes(idx)}
+                          helperText={
+                            rateErrorIndices.includes(idx)
+                              ? "Please enter a rate for this offered item"
+                              : ""
+                          }
                         />
                       </div>
                     </div>
@@ -965,14 +1035,14 @@ const AdvertisementSetting = ({
                   </tr>
                 </thead>
                 <tbody>
-                  {mediaRates.map((item) => (
-                    <tr key={item.media_type}>
+                  {mediaRates.map((item, idx) => (
+                    <tr key={`${item.media_type}-${idx}`}>
                       <td className="text-center">
                         <Form.Check
                           type="checkbox"
                           checked={item.is_offered}
                           onChange={(e) =>
-                            toggleOffered(item.media_type, e.target.checked)
+                            toggleOffered(idx, e.target.checked)
                           }
                         />
                       </td>
@@ -1007,13 +1077,18 @@ const AdvertisementSetting = ({
                         <Form.Control
                           type="number"
                           min="0"
-                          value={item.society_rate}
+                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
                           onChange={(e) =>
                             updateSocietyRate(item.media_type, e.target.value)
                           }
-                          className="form-control-sm"
+                          className={`form-control-sm ${rateErrorIndices.includes(idx) ? "border-danger" : ""}`}
                           disabled={!item.is_offered}
                         />
+                        {rateErrorIndices.includes(idx) && (
+                          <small className="text-danger d-block mt-1">
+                            Please enter a rate
+                          </small>
+                        )}
                       </td>
                     </tr>
                   ))}

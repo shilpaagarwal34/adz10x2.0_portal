@@ -7,8 +7,13 @@
 // const api_url = "https://test-api.m-staging.in/api";
 // const base_url = "https://test-api.m-staging.in";
 
-const api_url = import.meta.env.VITE_API_URL;
-const base_url = import.meta.env.VITE_BASE_URL;
+// Fallback for production build when .env wasn't set (e.g. dist copied to server)
+const api_url =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.PROD ? "https://api.adz10x.in/api" : undefined);
+const base_url =
+  import.meta.env.VITE_BASE_URL ||
+  (import.meta.env.PROD ? "https://api.adz10x.in" : undefined);
 
 const api_routes = {
   society: {

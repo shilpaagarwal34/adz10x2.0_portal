@@ -4,6 +4,29 @@ import {
   updateProfile,
 } from "../../../Actions/Society/Profile/ProfileActions.js";
 
+/** Compute profile completion (0–100). Basic 5 fields 30%, contact 3 fields 35%, location 4 fields 35%. Billing, photos, documents, Google URL not required for 100%. */
+function computeProfileCompletion(reg) {
+  if (!reg || typeof reg !== "object") return 0;
+  const profile = reg.society_profile || {};
+  const filled = (v) => v != null && v !== "" && String(v).trim() !== "";
+  let completion = 0;
+  const basic = [
+    reg.society_name,
+    profile.number_of_flat,
+    profile.society_email,
+    profile.address_line_1,
+    profile.address_line_2,
+  ].filter(filled).length;
+  completion += (basic / 5) * 30;
+  const contact = [reg.name, reg.mobile_number, reg.email].filter(filled).length;
+  completion += (contact / 3) * 35;
+  const location = [reg.address, reg.city_id, reg.area_id, reg.pincode].filter(
+    filled
+  ).length;
+  completion += (location / 4) * 35;
+  return Math.round(Math.min(100, completion));
+}
+
 const initialState = {
   profileData: {},
   error: null,
@@ -22,8 +45,13 @@ const ProfileSlice = createSlice({
       })
       .addCase(fetchProfileData.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.profileCompletedPercentage = action.payload?.profile_completion;
-        state.profileData = action.payload?.society_registration;
+        const next = action.payload?.society_registration;
+        state.profileData = next != null ? next : state.profileData;
+        const computed = computeProfileCompletion(state.profileData);
+        state.profileCompletedPercentage =
+          typeof action.payload?.profile_completion === "number"
+            ? Math.max(action.payload.profile_completion, computed)
+            : computed;
       })
       .addCase(fetchProfileData.rejected, (state, action) => {
         state.status = "failed";

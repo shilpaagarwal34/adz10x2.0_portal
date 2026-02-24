@@ -42,6 +42,10 @@ export default defineConfig({
     },
   },
   build: {
-    outDir: "dist", // output folder for build
+    outDir: "dist",
+    rollupOptions: {
+      // Avoid EMFILE (too many open files) on Windows
+      maxParallelFileOps: 20,
+    },
   },
 });

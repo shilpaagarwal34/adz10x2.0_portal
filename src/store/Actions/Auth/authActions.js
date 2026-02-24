@@ -236,10 +236,11 @@ const getFreshLoginData = (email, user) => async (dispatch) => {
     }
   } catch (err) {
     console.log(err);
-    // const user = JSON.parse(localStorage.getItem("user_data"));
-    // console.log(user);
-    if (err?.response?.status === 403 && !err?.response?.data?.is_logged_in) {
-      // console.log("inside");
+    // Only logout when API explicitly says session invalid (403 + !is_logged_in).
+    // Do not logout on network errors or wrong URL to avoid blank page on refresh.
+    const status = err?.response?.status;
+    const isLoggedIn = err?.response?.data?.is_logged_in;
+    if (status === 403 && isLoggedIn === false) {
       dispatch(logoutUser({ user }));
     }
   }
