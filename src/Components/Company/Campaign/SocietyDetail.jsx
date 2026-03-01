@@ -31,6 +31,7 @@ const SocietyDeatil = ({
   mode,
   setFormData,
   loadingSocities,
+  setSubmitAttempted,
 }) => {
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
@@ -351,6 +352,7 @@ const SocietyDeatil = ({
               <Button
                 type="button"
                 onClick={() => {
+                  setSubmitAttempted?.(true);
                   setSubmit(true);
                   const amount = formatNumberWithCommas(
                     getCamapginAmount(formData, campaignType) * (selectedSocieties?.length || 0)
@@ -369,6 +371,7 @@ const SocietyDeatil = ({
                 <Button
                   type="button"
                   onClick={() => {
+                    setSubmitAttempted?.(true);
                     const requiredAmount = Number(campaignAmount) || 0;
                     const balance = Number(walletBalance) || 0;
                     if (balance < requiredAmount) {

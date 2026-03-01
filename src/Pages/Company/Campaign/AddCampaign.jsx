@@ -22,10 +22,11 @@ const AddCampaign = () => {
   const [missingSocietiesUploadErr, setMissingSocietiesUploadErr] = useState(
     []
   );
+  const [submitAttempted, setSubmitAttempted] = useState(false);
 
   const [formData, setFormData] = useState({
     campaignType: "brand_promotion", // fixed for platform-based campaigns
-    creativeType: "",
+    creativeType: "image", // default; creative type selection removed from form
     leadUrl: "",
     surveyUrl: "",
     campaignName: "",
@@ -445,6 +446,7 @@ const AddCampaign = () => {
           missingSocietiesUploadErr={missingSocietiesUploadErr}
           setMissingSocietiesUploadErr={setMissingSocietiesUploadErr}
           setLoadingSocities={setLoadingSocities}
+          submitAttempted={submitAttempted}
         />
         <SocietyDeatil
           societyIds={societyIds}
@@ -458,6 +460,7 @@ const AddCampaign = () => {
           mode={isEditMode ? "edit" : "create"}
           setFormData={setFormData}
           loadingSocities={loadingSocities}
+          setSubmitAttempted={setSubmitAttempted}
         />
       </div>
     </div>

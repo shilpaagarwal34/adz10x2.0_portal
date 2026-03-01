@@ -53,6 +53,7 @@ export default function CampaignForm({
   setSocietyIds,
   setSelectedSocieties,
   setLoadingSocities,
+  submitAttempted = false,
 }) {
   const [errors, setErrors] = useState({});
   const [showMap, setShowMap] = useState(false);
@@ -189,8 +190,6 @@ export default function CampaignForm({
 
     if (!formData?.media_type)
       newErrors.media_type = "Platform is required";
-    if (!formData?.creativeType)
-      newErrors.creativeType = "Creative type is required";
     if (!formData.campaignName)
       newErrors.campaignName = "Campaign name is required";
     if (!formData.campaignDate)
@@ -414,32 +413,8 @@ export default function CampaignForm({
                 </option>
               ))}
             </Form.Select>
-            {errors.media_type && (
+            {submitAttempted && errors.media_type && (
               <div className="formik-error text-danger">{errors.media_type}</div>
-            )}
-          </Form.Group>
-        </Col>
-
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>
-              Creative Type <span className="text-danger">*</span>{" "}
-            </Form.Label>
-            <Form.Select
-              name="creativeType"
-              value={formData?.creativeType}
-              className="form-select-sm"
-              onChange={handleChange}
-            >
-              <option value="">Select Creative Type</option>
-              <option value="image">Image</option>
-              <option value="video">Video</option>
-              <option value="text">Text</option>
-            </Form.Select>
-            {errors.creativeType && (
-              <div className="formik-error text-danger">
-                {errors.creativeType}
-              </div>
             )}
           </Form.Group>
         </Col>
@@ -460,7 +435,7 @@ export default function CampaignForm({
               onChange={handleChange}
               autoComplete="off"
             />
-            {errors.campaignName && (
+            {submitAttempted && errors.campaignName && (
               <div className="formik-error text-danger">
                 {errors.campaignName}
               </div>
@@ -553,7 +528,7 @@ export default function CampaignForm({
                     }}
                     onChange={handleCityChange}
                   />
-                  {errors.campaign_city_id && (
+                  {submitAttempted && errors.campaign_city_id && (
                     <div className="formik-error text-danger">
                       {errors.campaign_city_id}
                     </div>
@@ -608,7 +583,7 @@ export default function CampaignForm({
                     }}
                     onChange={handleAreaChange}
                   />
-                  {errors.campaign_area_id && (
+                  {submitAttempted && errors.campaign_area_id && (
                     <div className="formik-error text-danger">
                       {errors.campaign_area_id}
                     </div>

@@ -13,6 +13,7 @@ export default function Main({
   missingSocietiesUploadErr,
   setMissingSocietiesUploadErr,
   setLoadingSocities,
+  submitAttempted,
 }) {
   return (
     <div className="col-12 col-lg-7 p-2 p-sm-3">
@@ -27,6 +28,7 @@ export default function Main({
           setLoadingSocities={setLoadingSocities}
           setMissingSocietiesUploadErr={setMissingSocietiesUploadErr}
           selectedSocieties={selectedSocieties}
+          submitAttempted={submitAttempted}
         />
         <SelectedSociety
         societyIds={societyIds}
