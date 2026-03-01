@@ -42,7 +42,7 @@ const SocietyStatusUpdateForm = ({
   const [agreementFile, setAgreementFile] = useState(null); // or [] if multiple
   const navigate = useNavigate();
 
-  const { relationshipManagers } = useSelector(
+  const { relationshipManagers, relationshipManagerLoading } = useSelector(
     (state) => state.admin.relationship_manager
   );
 
@@ -191,14 +191,28 @@ const SocietyStatusUpdateForm = ({
                   <Select
                     value={relationshipManager}
                     onChange={(e) => setRelationshipManager(e.target.value)}
+                    displayEmpty
                   >
-                    {relationshipManagers?.map((manager) => (
-                      <MenuItem key={manager.id} value={manager?.id}>
-                        {manager?.user_name}
+                    {relationshipManagerLoading ? (
+                      <MenuItem value="" disabled>Loading...</MenuItem>
+                    ) : !relationshipManagers?.length ? (
+                      <MenuItem value="" disabled>
+                        No Relationship Managers — add one in System Users
                       </MenuItem>
-                    ))}
+                    ) : (
+                      relationshipManagers.map((manager) => (
+                        <MenuItem key={manager.id} value={manager?.id}>
+                          {manager?.user_name}
+                        </MenuItem>
+                      ))
+                    )}
                   </Select>
                 </FormControl>
+                {!relationshipManagerLoading && !relationshipManagers?.length && (
+                  <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: "block" }}>
+                    Go to System Users, add a user, and set role to &quot;Relationship Manager&quot;.
+                  </Typography>
+                )}
               </Grid>
 
               {!loadingCommission && (

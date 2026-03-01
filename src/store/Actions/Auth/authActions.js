@@ -138,8 +138,6 @@ export const logoutUser = createAsyncThunk(
   "auth/logoutUser",
   async ({ user, userType }, { rejectWithValue }) => {
     try {
-      // await axiosInstance.post(api_routes.society.post_logout_user);
-      // console.log(user);
       if (userType === "admin")
         await axiosInstance.post("/admin-logout", {
           user_id: user?.id,
@@ -149,16 +147,13 @@ export const logoutUser = createAsyncThunk(
           user_id: user?.id,
           user_type: user?.user_type,
         });
-
-      localStorage.clear();
-      return true;
     } catch (error) {
       console.error("Logout failed:", error);
-      // throw Error(error);
-      return rejectWithValue(
-        error?.response?.data?.message || "Logout failed. Please try again."
-      );
+      // Still log out locally when API fails (e.g. 403 expired token)
+    } finally {
+      localStorage.clear();
     }
+    return true; // Always succeed so UI clears auth state and redirects to login
   }
 );
 

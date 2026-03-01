@@ -110,11 +110,13 @@ export default function CampaignForm({
 
         const allowed = days
           .filter((day) => day.is_checked)
-          .map((day) => dayNameToNumber[day.day]);
+          .map((day) => dayNameToNumber[day.day])
+          .filter((n) => n !== undefined);
 
-        setAllowedWeekdays(allowed);
+        setAllowedWeekdays(allowed.length > 0 ? allowed : [0, 1, 2, 3, 4, 5, 6]);
       } catch (error) {
         console.error("Error fetching campaign days:", error);
+        setAllowedWeekdays([0, 1, 2, 3, 4, 5, 6]);
       }
     };
 
