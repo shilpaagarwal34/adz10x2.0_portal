@@ -360,6 +360,7 @@ table tbody tr td {
 
 .campaign-btn {
   background-color: #019F88 !important;
+  color: #fff !important;
   border: 0 !important;
   font-size: 12px !important;
   padding: 5px 10px !important;
@@ -367,6 +368,10 @@ table tbody tr td {
   font-weight: 600 !important;
   height: 30px !important;
   width: 150px;
+}
+
+.modal-footer .campaign-btn {
+  width: auto;
 }
 
 .FilterbuttonStyle {

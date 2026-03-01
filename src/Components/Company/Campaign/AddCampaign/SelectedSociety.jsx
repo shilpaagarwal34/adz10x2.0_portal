@@ -113,7 +113,7 @@ export default function SelectedSociety({
       updatedFormData.society_ids = societyIds;
     }
 
-    setFormData((prev) => ({ ...prev, updatedFormData }));
+    setFormData((prev) => ({ ...prev, ...updatedFormData }));
   }, [isChecked]);
 
   // useEffect(() => {
@@ -283,15 +283,21 @@ export default function SelectedSociety({
   }, [formData, selectedSocieties]);
 
   const handleButtonClick = () => {
-    fileInputRef.current.click();
+    if (fileInputRef.current) fileInputRef.current.click();
   };
 
   const handleCommonFileChange = (e) => {
-    const file = e.target.files[0];
+    const file = e.target.files?.[0];
     if (!file) return;
 
     const isImage = file.type.startsWith("image/");
     const isVideo = file.type.startsWith("video/");
+
+    if (!isImage && !isVideo) {
+      alert("Please select an image or video file.");
+      e.target.value = "";
+      return;
+    }
 
     // Revoke old common preview URL if exists
     if (commonImage?.preview && commonImage.file) {
@@ -316,6 +322,20 @@ export default function SelectedSociety({
       }
     });
 
+    const applyFileToForm = () => {
+      setCommonImage({ file, preview });
+      setImages(updatedImages);
+      setFormData((prev) => ({
+        ...prev,
+        society_ids: updatedSocietyIds,
+        ...(isImage && { upload_creative_image_path: file }),
+        ...(isVideo && { upload_creative_video_path: file }),
+      }));
+      setMissingSocietiesUploadErr((prevErrs) =>
+        prevErrs?.filter((id) => !updatedSocietyIds.includes(id))
+      );
+    };
+
     if (isVideo) {
       const video = document.createElement("video");
       video.preload = "metadata";
@@ -326,43 +346,20 @@ export default function SelectedSociety({
 
         if (duration > 90) {
           alert("Video cannot be longer than 90 seconds.");
-          e.target.value = null;
+          e.target.value = "";
           return;
         }
-
-        setCommonImage({ file, preview });
-        setImages(updatedImages);
-        setFormData((prev) => ({
-          ...prev,
-          society_ids: updatedSocietyIds,
-          creativeType: isImage ? "image" : isVideo ? "video" : "",
-          ...(isImage && { upload_creative_image_path: file }),
-          ...(isVideo && { upload_creative_video_path: file }),
-        }));
-
-        // Clear errors for affected societies
-        setMissingSocietiesUploadErr((prevErrs) =>
-          prevErrs?.filter((id) => !updatedSocietyIds.includes(id))
-        );
+        applyFileToForm();
+      };
+      video.onerror = () => {
+        applyFileToForm(); // still apply if metadata fails
       };
       video.src = preview;
       return;
     }
 
-    setCommonImage({ file, preview });
-    setImages(updatedImages);
-    setFormData((prev) => ({
-      ...prev,
-      society_ids: updatedSocietyIds,
-      creativeType: isImage ? "image" : isVideo ? "video" : "",
-      ...(isImage && { upload_creative_image_path: file }),
-      ...(isVideo && { upload_creative_video_path: file }),
-    }));
-
-    // Clear errors for affected societies
-    setMissingSocietiesUploadErr((prevErrs) =>
-      prevErrs?.filter((id) => !updatedSocietyIds.includes(id))
-    );
+    applyFileToForm();
+    e.target.value = ""; // allow re-selecting the same file
   };
 
   // const handleCheckboxChange = (e) => {
@@ -621,6 +618,7 @@ const handleCheckboxChange = (e) => {
                   className="upload-btn mt-3"
                   disabled={!isChecked}
                   onClick={handleButtonClick}
+                  title={!isChecked ? "Check the box above to upload one creative for all societies" : undefined}
                 >
                   <svg
                     width="20"
@@ -653,6 +651,11 @@ const handleCheckboxChange = (e) => {
                   </svg>
                   &nbsp;Upload Creative File
                 </Button>
+                {!isChecked && (
+                  <small className="d-block mt-1 text-muted">
+                    Check &quot;Creative same for all societies&quot; above to enable.
+                  </small>
+                )}
                 <br />
                 {formData?.creativeType === "video" && (
                   <small className="text-danger formik-error">
