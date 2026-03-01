@@ -8,6 +8,16 @@ import { toast } from "react-toastify";
 import { getCamapginAmount } from "../../../utils/getCamapginAmount.js";
 import Skeleton from "react-loading-skeleton";
 
+const MEDIA_TYPE_LABELS = {
+  lift_branding_panels: "Lift branding",
+  notice_board_sponsorship: "Notice board",
+  gate_entry_exit_branding: "Gate branding",
+  society_kiosk: "Society kiosk",
+  society_newsletter_sponsor_slots: "Newsletter",
+  whatsapp_promotional_day: "WhatsApp",
+  event_sponsorship: "Event sponsorship",
+};
+
 const SocietyDeatil = ({
   societyIds,
   societies,
@@ -81,15 +91,14 @@ const SocietyDeatil = ({
   // }, [formData?.society_ids]);
 
   useEffect(() => {
-    const isMediaPricingEnabled =
-      formData?.campaignType === "brand_promotion" && formData?.media_type;
 
-    const totalAmount = isMediaPricingEnabled
-      ? selectedSocieties.reduce(
-          (sum, item) => sum + Number(item?.media_rate?.company_rate || 0),
-          0
-        )
-      : getCamapginAmount(formData, campaignType) * formData?.society_ids?.length;
+    const totalAmount =
+      formData?.media_type && selectedSocieties.length > 0
+        ? selectedSocieties.reduce(
+            (sum, item) => sum + Number(item?.media_rate?.company_rate || 0),
+            0
+          )
+        : getCamapginAmount(formData, campaignType) * (formData?.society_ids?.length || 0);
 
     setCampaignAmount(totalAmount); // still number
     setFormData((prev) => ({
@@ -250,15 +259,26 @@ const SocietyDeatil = ({
                     <p className="fw-medium " style={{ fontSize: "12px" }}>
                       {society?.society?.address}
                     </p>
-                    {formData?.campaignType === "brand_promotion" &&
-                      formData?.media_type && (
-                        <p className="mb-0 text-success" style={{ fontSize: "12px" }}>
-                          Company Rate: ₹{" "}
-                          {formatNumberWithCommas(
-                            Number(society?.media_rate?.company_rate || 0)
-                          )}
-                        </p>
-                      )}
+                    {formData?.media_type && (
+                      <p className="mb-0 text-success" style={{ fontSize: "12px" }}>
+                        Company Rate: ₹{" "}
+                        {formatNumberWithCommas(
+                          Number(society?.media_rate?.company_rate || 0)
+                        )}
+                      </p>
+                    )}
+                    {Array.isArray(society?.offered_media_types) &&
+                      society.offered_media_types.filter(
+                        (m) => m && m !== formData?.media_type
+                      ).length > 0 && (
+                      <p className="mb-0 mt-1" style={{ fontSize: "11px", color: "#666" }}>
+                        Also offers:{" "}
+                        {society.offered_media_types
+                          .filter((m) => m && m !== formData?.media_type)
+                          .map((m) => MEDIA_TYPE_LABELS[m] || m)
+                          .join(", ")}
+                      </p>
+                    )}
                   </div>
                   <div>
                     <span className="flats-badge">
@@ -286,21 +306,19 @@ const SocietyDeatil = ({
                   : "NA"
               }`}</p>
               <p className="fw-bold mb-1">Total {`${totalFlats}`} Flats</p>
-              <p className="fw-bold mb-0">
+                <p className="fw-bold mb-0">
                 Per Society INR{" "}
-                {formData?.campaignType === "brand_promotion" && formData?.media_type
+                {formData?.media_type && selectedSocieties.length > 0
                   ? formatNumberWithCommas(
-                      selectedSocieties.length
-                        ? Number(
-                            (
-                              selectedSocieties.reduce(
-                                (sum, item) =>
-                                  sum + Number(item?.media_rate?.company_rate || 0),
-                                0
-                              ) / selectedSocieties.length
-                            ).toFixed(2)
-                          )
-                        : 0
+                      Number(
+                        (
+                          selectedSocieties.reduce(
+                            (sum, item) =>
+                              sum + Number(item?.media_rate?.company_rate || 0),
+                            0
+                          ) / selectedSocieties.length
+                        ).toFixed(2)
+                      )
                     )
                   : getCamapginAmount(formData, campaignType)}
               </p>

@@ -180,33 +180,19 @@ export default function CampaignForm({
     setSocietyIds([]);
   };
 
-  // field validation
+  // field validation (platform-first: media_type required, no campaign type)
   const validateFields = () => {
     const newErrors = {};
     const isGoogle = formData?.search_by_google_location;
 
-    if (!formData?.campaignType)
-      newErrors.campaignType = "Campaign type is required";
-    if (
-      formData?.campaignType === "brand_promotion" &&
-      !formData?.media_type
-    ) {
-      newErrors.media_type = "Media slot is required";
-    }
+    if (!formData?.media_type)
+      newErrors.media_type = "Platform is required";
     if (!formData?.creativeType)
       newErrors.creativeType = "Creative type is required";
     if (!formData.campaignName)
       newErrors.campaignName = "Campaign name is required";
     if (!formData.campaignDate)
       newErrors.campaignDate = "Campaign Date is required";
-
-    if (formData?.campaignType === "lead_generation" && !formData.leadUrl) {
-      newErrors.leadUrl = "Lead URL is required";
-    }
-
-    if (formData?.campaignType === "survey" && !formData.surveyUrl) {
-      newErrors.surveyUrl = "Survey URL is required";
-    }
 
     if (isGoogle) {
       if (!formData.campaign_address)
@@ -272,64 +258,43 @@ export default function CampaignForm({
   useEffect(() => {
     const errors = validateFields();
 
-    const requiredFields = [
-      "campaignType",
-      "creativeType",
-      "campaignName",
-      "campaignDate",
-      ...(formData.campaignType === "lead_generation"
-        ? ["leadUrl"]
-        : formData.campaignType === "survey"
-        ? ["surveyUrl"]
-        : []),
-      ...(formData.campaignType === "brand_promotion" ? ["media_type"] : []),
-      ...(formData.search_by_google_location
-        ? ["campaign_address", "radius_km"]
-        : ["campaign_city_id", "campaign_area_id"]),
-    ];
+    const fetchRequired =
+      formData.search_by_google_location
+        ? ["media_type", "campaignDate", "campaign_address", "radius_km"]
+        : ["media_type", "campaignDate", "campaign_city_id", "campaign_area_id"];
 
-    const filledFields = requiredFields.filter((key) => formData?.[key]);
+    const hasFetchFields = fetchRequired.every((key) => formData?.[key]);
 
-    // console.log("Filled Fields:", filledFields);
-    // console.log("Validation Errors:", errors);
+    setErrors(errors);
 
-    if (filledFields.length >= requiredFields.length - 1) {
-      setErrors(errors);
-      if (Object.keys(errors).length === 0) {
-        const payload = {
-          ...formData,
-          day: formData?.campaignDate
-            ? dayNames[new Date(formData.campaignDate).getDay()].toLowerCase()
-            : "",
-        };
+    if (hasFetchFields && Object.keys(errors).length === 0) {
+      const payload = {
+        ...formData,
+        day: formData?.campaignDate
+          ? dayNames[new Date(formData.campaignDate).getDay()].toLowerCase()
+          : "",
+      };
 
-        if (formData.search_by_google_location) {
-          delete payload.campaign_city_id;
-          delete payload.campaign_area_id;
-        } else {
-          delete payload.my_ads_location_latitude;
-          delete payload.my_ads_location_longitude;
-          delete payload.radius_km;
-          delete payload.campaign_address;
-        }
-
-        // console.log("🔥 Calling debouncedFetch", payload);
-        debouncedFetch(payload);
+      if (formData.search_by_google_location) {
+        delete payload.campaign_city_id;
+        delete payload.campaign_area_id;
+      } else {
+        delete payload.my_ads_location_latitude;
+        delete payload.my_ads_location_longitude;
+        delete payload.radius_km;
+        delete payload.campaign_address;
       }
+
+      debouncedFetch(payload);
     }
   }, [
-    formData.campaignType,
-    formData.creativeType,
     formData.campaignDate,
-    formData.campaignName,
     formData.media_type,
-    formData.leadUrl,
-    formData.surveyUrl,
     formData.radius_km,
     formData.campaign_address,
     formData.campaign_city_id,
     formData.campaign_area_id,
-    formData.search_by_google_location, // ✅ key dependency!
+    formData.search_by_google_location,
   ]);
 
   // setting location
@@ -428,23 +393,27 @@ export default function CampaignForm({
         <Col md={4}>
           <Form.Group>
             <Form.Label>
-              Campaign Type <span className="text-danger">*</span>{" "}
+              Platform <span className="text-danger">*</span>
             </Form.Label>
             <Form.Select
-              name="campaignType"
+              name="media_type"
               className="form-select-sm"
-              onChange={handleChange}
-              value={formData?.campaignType}
+              onChange={(e) => {
+                handleChange(e);
+                setSelectedSocieties([]);
+                setSocietyIds([]);
+              }}
+              value={formData?.media_type || ""}
             >
-              <option value="">Select Campaign Type</option>
-              <option value="brand_promotion">Brand Promotions</option>
-              <option value="lead_generation">Lead Generation</option>
-              <option value="survey">Survey</option>
+              <option value="">Select platform</option>
+              {MEDIA_SLOT_OPTIONS.map((slot) => (
+                <option key={slot.value} value={slot.value}>
+                  {slot.label}
+                </option>
+              ))}
             </Form.Select>
-            {errors.campaignType && (
-              <div className="formik-error text-danger">
-                {errors.campaignType}
-              </div>
+            {errors.media_type && (
+              <div className="formik-error text-danger">{errors.media_type}</div>
             )}
           </Form.Group>
         </Col>
@@ -461,7 +430,6 @@ export default function CampaignForm({
               onChange={handleChange}
             >
               <option value="">Select Creative Type</option>
-
               <option value="image">Image</option>
               <option value="video">Video</option>
               <option value="text">Text</option>
@@ -473,76 +441,7 @@ export default function CampaignForm({
             )}
           </Form.Group>
         </Col>
-
-        {formData?.campaignType === "lead_generation" ||
-        formData?.campaignType === "survey" ? (
-          <Col md={4}>
-            <Form.Group>
-              <Form.Label>
-                {formData?.campaignType === "lead_generation"
-                  ? "Lead Generation URL"
-                  : "Survey URL"}
-                <span className="text-danger">*</span>{" "}
-              </Form.Label>
-              <Form.Control
-                className="form-control-sm"
-                type="text"
-                placeholder="URL"
-                value={
-                  formData?.campaignType === "lead_generation"
-                    ? formData?.leadUrl
-                    : formData?.surveyUrl
-                }
-                onChange={(e) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    [formData.campaignType === "lead_generation"
-                      ? "leadUrl"
-                      : "surveyUrl"]: e.target.value,
-                  }))
-                }
-                autoComplete="off"
-              />
-              {errors.leadUrl && (
-                <div className="formik-error text-danger">{errors.leadUrl}</div>
-              )}
-              {errors.surveyUrl && (
-                <div className="formik-error text-danger">
-                  {errors.surveyUrl}
-                </div>
-              )}
-            </Form.Group>
-          </Col>
-        ) : null}
       </Row>
-
-      {formData?.campaignType === "brand_promotion" && (
-        <Row className="mb-3">
-          <Col md={4}>
-            <Form.Group>
-              <Form.Label>
-                Media Slot <span className="text-danger">*</span>
-              </Form.Label>
-              <Form.Select
-                name="media_type"
-                className="form-select-sm"
-                onChange={handleChange}
-                value={formData?.media_type || ""}
-              >
-                <option value="">Select Media Slot</option>
-                {MEDIA_SLOT_OPTIONS.map((slot) => (
-                  <option key={slot.value} value={slot.value}>
-                    {slot.label}
-                  </option>
-                ))}
-              </Form.Select>
-              {errors.media_type && (
-                <div className="formik-error text-danger">{errors.media_type}</div>
-              )}
-            </Form.Group>
-          </Col>
-        </Row>
-      )}
 
       <Row className="mb-3">
         <Col md={8}>

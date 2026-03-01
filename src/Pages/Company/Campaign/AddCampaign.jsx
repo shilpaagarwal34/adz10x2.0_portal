@@ -24,7 +24,7 @@ const AddCampaign = () => {
   );
 
   const [formData, setFormData] = useState({
-    campaignType: "",
+    campaignType: "brand_promotion", // fixed for platform-based campaigns
     creativeType: "",
     leadUrl: "",
     surveyUrl: "",
@@ -42,10 +42,10 @@ const AddCampaign = () => {
     radius_km: "1",
     media_type: "",
     brand_promotions_creative: "",
-    society_ids: [], // for when isChecked = true
-    upload_creative_image_path: null, // for common image
-    upload_creative_video_path: null, // for common image
-    societies_text: { common: "" }, // ✅ ensures it's defined
+    society_ids: [],
+    upload_creative_image_path: null,
+    upload_creative_video_path: null,
+    societies_text: { common: "" },
   });
 
   useEffect(() => {
@@ -176,7 +176,7 @@ const AddCampaign = () => {
 
       return updated;
     });
-  }, [formData?.campaignType]);
+  }, [formData?.media_type]);
 
   const buildFormData = (formData, status) => {
     const fd = new FormData();
