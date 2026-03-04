@@ -145,6 +145,26 @@ const SocietyDeatil = ({
       .filter(Boolean);
   };
 
+  const getAvailabilityHint = (society) => {
+    const preview = society?.availability_preview;
+    if (!preview) return null;
+
+    const fromText = preview?.effective_from || "Not set";
+    const toText = preview?.effective_to || "Open";
+    const weeklyText =
+      Array.isArray(preview?.availability_days_label) &&
+      preview.availability_days_label.length > 0
+        ? preview.availability_days_label.join(", ")
+        : "All weekdays";
+    const monthlyText =
+      Array.isArray(preview?.availability_month_days) &&
+      preview.availability_month_days.length > 0
+        ? preview.availability_month_days.join(", ")
+        : "All month dates";
+
+    return `Available From: ${fromText} | To: ${toText} | Weekly: ${weeklyText} | Monthly: ${monthlyText}`;
+  };
+
   return (
     <div className="col-12 col-lg-5 p-2 p-sm-3">
       <div className="card border-0 p-2 p-sm-3">
@@ -282,6 +302,11 @@ const SocietyDeatil = ({
                           </p>
                         ))}
                       </div>
+                    )}
+                    {society?.disable && getAvailabilityHint(society) && (
+                      <p className="mb-0 mt-1" style={{ fontSize: "11px", color: "#0f766e" }}>
+                        {getAvailabilityHint(society)}
+                      </p>
                     )}
                     <p className="fw-medium " style={{ fontSize: "12px" }}>
                       {society?.society?.address}
