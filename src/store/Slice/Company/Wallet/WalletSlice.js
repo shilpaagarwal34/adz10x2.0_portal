@@ -42,17 +42,22 @@ const walletSlice = createSlice({
     builder
       .addCase(fetchWalletData.pending, (state) => {
         state.loading = true;
+        state.error = null;
       })
       .addCase(fetchWalletData.fulfilled, (state, action) => {
         state.loading = false;
         state.walletData = action.payload.data;
         state.totalRecords = action.payload.total;
         state.table_name = action.payload.table_name;
+        state.error = null;
       })
       .addCase(fetchWalletData.rejected, (state, action) => {
         state.loading = false;
-        // console.log(action.error)
-        state.error = action.error.message;
+        state.error =
+          action.payload?.message ||
+          action.payload?.error ||
+          action.error?.message ||
+          "Failed to fetch wallet data";
       })
       // Update Wallet AMount
       .addCase(addFunds.pending, (state) => {
