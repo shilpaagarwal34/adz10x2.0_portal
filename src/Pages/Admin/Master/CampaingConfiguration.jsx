@@ -72,7 +72,12 @@ const CampaignConfiguration = () => {
   }, [data]);
 
   const handleRuleChange = (mediaType, field, value) => {
-    const numericValue = value === "" ? "" : Math.max(0, Number(value));
+    const numericValue =
+      value === ""
+        ? ""
+        : field === "min_active_days"
+        ? Math.max(1, Number(value)) // never allow below 1
+        : Math.max(0, Number(value));
 
     setFormData((prev) => ({
       ...prev,
@@ -89,7 +94,7 @@ const CampaignConfiguration = () => {
       const next = { ...prev };
       const key = `${mediaType}.${field}`;
       if (key in next) {
-        // Re-validate just this field on change so errors clear immediately
+        // Any change to a field re-validates that field
         if (field === "min_lead_days") {
           const leadDays =
             value === "" || value === null || value === undefined
@@ -100,10 +105,8 @@ const CampaignConfiguration = () => {
           }
         }
         if (field === "min_active_days") {
-          const activeDays = Number(value);
-          if (Number.isFinite(activeDays) && activeDays > 0) {
-            delete next[key];
-          }
+          // We always clamp to >=1 above, so clear error unconditionally
+          delete next[key];
         }
       }
       return next;
@@ -129,7 +132,9 @@ const CampaignConfiguration = () => {
       if (!Number.isFinite(leadDays) || leadDays < 0) {
         newErrors[`${mediaType}.min_lead_days`] = "Lead days must be 0 or more";
       }
-      if (!Number.isFinite(activeDays) || activeDays <= 0) {
+      // min_active_days is clamped to >=1 in handleRuleChange,
+      // so we only guard against completely missing/invalid values.
+      if (!Number.isFinite(activeDays)) {
         newErrors[`${mediaType}.min_active_days`] = "Active days must be greater than 0";
       }
     });
