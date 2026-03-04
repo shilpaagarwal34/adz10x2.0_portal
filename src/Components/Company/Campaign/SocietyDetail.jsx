@@ -134,6 +134,16 @@ const SocietyDeatil = ({
   const filteredSocieties = (societies || [])?.filter((society) =>
     society?.society?.society_name?.toLowerCase().includes(search.toLowerCase())
   );
+  const getDisableReasons = (society) => {
+    if (Array.isArray(society?.disable_reasons) && society.disable_reasons.length > 0) {
+      return society.disable_reasons;
+    }
+    if (!society?.disable_message) return [];
+    return society.disable_message
+      .split("|")
+      .map((item) => item.trim())
+      .filter(Boolean);
+  };
 
   return (
     <div className="col-12 col-lg-5 p-2 p-sm-3">
@@ -256,10 +266,23 @@ const SocietyDeatil = ({
                       {society?.society?.society_name}{" "}
                       {society?.disable && (
                         <span className="text-danger">
-                          ({society?.disable_message})
+                          ({getDisableReasons(society)[0] || society?.disable_message})
                         </span>
                       )}
                     </p>
+                    {society?.disable && getDisableReasons(society).length > 1 && (
+                      <div className="mt-1">
+                        {getDisableReasons(society).slice(1).map((reason, idx) => (
+                          <p
+                            key={`${society?.society?.id}-reason-${idx}`}
+                            className="mb-0 text-danger"
+                            style={{ fontSize: "11px" }}
+                          >
+                            - {reason}
+                          </p>
+                        ))}
+                      </div>
+                    )}
                     <p className="fw-medium " style={{ fontSize: "12px" }}>
                       {society?.society?.address}
                     </p>

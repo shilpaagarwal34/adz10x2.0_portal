@@ -55,6 +55,7 @@ const whatsappDayOptions = [
   { value: "sat", label: "Sat" },
   { value: "sun", label: "Sun" },
 ];
+const platformAvailabilityDayOptions = whatsappDayOptions;
 
 const AdvertisementSetting = ({
   onAdsSlotChange = () => {},
@@ -182,6 +183,12 @@ const AdvertisementSetting = ({
             : null,
         effective_from: existing?.effective_from || new Date().toISOString().slice(0, 10),
         effective_to: existing?.effective_to || null,
+        availability_days: Array.isArray(existing?.availability_days)
+          ? existing.availability_days
+          : [],
+        availability_month_days: Array.isArray(existing?.availability_month_days)
+          ? existing.availability_month_days
+          : [],
       };
     });
 
@@ -277,6 +284,12 @@ const AdvertisementSetting = ({
             effective_from:
               existing?.effective_from || new Date().toISOString().slice(0, 10),
             effective_to: existing?.effective_to || null,
+            availability_days: Array.isArray(existing?.availability_days)
+              ? existing.availability_days
+              : [],
+            availability_month_days: Array.isArray(existing?.availability_month_days)
+              ? existing.availability_month_days
+              : [],
           };
         });
         setMediaRates(rows);
@@ -450,6 +463,12 @@ const AdvertisementSetting = ({
               : null,
           effective_from: item.effective_from || new Date().toISOString().slice(0, 10),
           effective_to: item.effective_to || null,
+          availability_days: Array.isArray(item.availability_days)
+            ? item.availability_days
+            : [],
+          availability_month_days: Array.isArray(item.availability_month_days)
+            ? item.availability_month_days
+            : [],
         })),
       };
       const res = await axiosInstance.post("/society/media-rate-cards", payload);
@@ -526,6 +545,44 @@ const AdvertisementSetting = ({
           },
         };
       })
+    );
+  };
+
+  const toggleAvailabilityDay = (mediaType, day, checked) => {
+    setMediaRates((prev) =>
+      prev.map((item) => {
+        if (item.media_type !== mediaType) return item;
+        const currentDays = Array.isArray(item?.availability_days)
+          ? item.availability_days
+          : [];
+        const nextDays = checked
+          ? Array.from(new Set([...currentDays, day]))
+          : currentDays.filter((d) => d !== day);
+        return {
+          ...item,
+          availability_days: nextDays,
+        };
+      })
+    );
+  };
+
+  const updateAvailabilityMonthDays = (mediaType, rawValue) => {
+    const parsed = rawValue
+      .split(",")
+      .map((d) => Number(d.trim()))
+      .filter((d) => Number.isInteger(d) && d >= 1 && d <= 31);
+
+    setMediaRates((prev) =>
+      prev.map((item) =>
+        item.media_type === mediaType
+          ? {
+              ...item,
+              availability_month_days: Array.from(new Set(parsed)).sort(
+                (a, b) => a - b
+              ),
+            }
+          : item
+      )
     );
   };
 
@@ -769,6 +826,125 @@ const AdvertisementSetting = ({
                   </div>
 
                   <div className="row mt-2 g-2">
+                    <div className="col-12">
+                      <div
+                        style={{
+                          border: "1px solid rgba(148,163,184,0.4)",
+                          borderRadius: "10px",
+                          padding: "10px",
+                          backgroundColor: "#fff",
+                        }}
+                      >
+                        <div
+                          style={{
+                            fontSize: "13px",
+                            fontWeight: 700,
+                            color: "#334155",
+                            marginBottom: "8px",
+                          }}
+                        >
+                          Platform Availability
+                        </div>
+                        <div className="row g-2">
+                          <div className="col-12 col-md-6">
+                            <TextField
+                              fullWidth
+                              size="small"
+                              type="date"
+                              label="Available From"
+                              InputLabelProps={{ shrink: true }}
+                              value={item.effective_from || ""}
+                              onChange={(e) =>
+                                setMediaRates((prev) =>
+                                  prev.map((r) =>
+                                    r.media_type === item.media_type
+                                      ? { ...r, effective_from: e.target.value }
+                                      : r
+                                  )
+                                )
+                              }
+                              disabled={!item.is_offered}
+                            />
+                          </div>
+                          <div className="col-12 col-md-6">
+                            <TextField
+                              fullWidth
+                              size="small"
+                              type="date"
+                              label="Available To"
+                              InputLabelProps={{ shrink: true }}
+                              value={item.effective_to || ""}
+                              onChange={(e) =>
+                                setMediaRates((prev) =>
+                                  prev.map((r) =>
+                                    r.media_type === item.media_type
+                                      ? { ...r, effective_to: e.target.value || null }
+                                      : r
+                                  )
+                                )
+                              }
+                              disabled={!item.is_offered}
+                            />
+                          </div>
+                          <div className="col-12">
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: 600,
+                                color: "#64748b",
+                                marginBottom: "4px",
+                              }}
+                            >
+                              Weekly availability (optional)
+                            </div>
+                            <div className="d-flex flex-wrap gap-1">
+                              {platformAvailabilityDayOptions.map((day) => (
+                                <FormControlLabel
+                                  key={`${item.media_type}-avail-${day.value}`}
+                                  sx={{ margin: "0 10px 0 0" }}
+                                  control={
+                                    <Checkbox
+                                      size="small"
+                                      checked={Boolean(
+                                        item?.availability_days?.includes(day.value)
+                                      )}
+                                      onChange={(e) =>
+                                        toggleAvailabilityDay(
+                                          item.media_type,
+                                          day.value,
+                                          e.target.checked
+                                        )
+                                      }
+                                      disabled={!item.is_offered}
+                                    />
+                                  }
+                                  label={
+                                    <span style={{ fontSize: "12px" }}>{day.label}</span>
+                                  }
+                                />
+                              ))}
+                            </div>
+                          </div>
+                          <div className="col-12">
+                            <TextField
+                              fullWidth
+                              size="small"
+                              label="Monthly dates (comma separated, optional)"
+                              placeholder="1, 15, 30"
+                              value={(item.availability_month_days || []).join(", ")}
+                              onChange={(e) =>
+                                updateAvailabilityMonthDays(
+                                  item.media_type,
+                                  e.target.value
+                                )
+                              }
+                              disabled={!item.is_offered}
+                              helperText="Leave blank for all month dates."
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     {item.media_type === "whatsapp_promotional_day" && (
                       <div className="col-12">
                         <div
@@ -1050,6 +1226,10 @@ const AdvertisementSetting = ({
                   <tr>
                     <th>Offer</th>
                     <th>Media</th>
+                    <th>Available From</th>
+                    <th>Available To</th>
+                    <th>Weekly Days</th>
+                    <th>Month Dates</th>
                     <th>Lead Days</th>
                     <th>Active Days</th>
                     <th>Generic T&C</th>
@@ -1070,6 +1250,73 @@ const AdvertisementSetting = ({
                         />
                       </td>
                       <td style={{ fontSize: "12px" }}>{item.label}</td>
+                      <td style={{ minWidth: "140px" }}>
+                        <Form.Control
+                          type="date"
+                          className="form-control-sm"
+                          value={item.effective_from || ""}
+                          onChange={(e) =>
+                            setMediaRates((prev) =>
+                              prev.map((r) =>
+                                r.media_type === item.media_type
+                                  ? { ...r, effective_from: e.target.value }
+                                  : r
+                              )
+                            )
+                          }
+                          disabled={!item.is_offered}
+                        />
+                      </td>
+                      <td style={{ minWidth: "140px" }}>
+                        <Form.Control
+                          type="date"
+                          className="form-control-sm"
+                          value={item.effective_to || ""}
+                          onChange={(e) =>
+                            setMediaRates((prev) =>
+                              prev.map((r) =>
+                                r.media_type === item.media_type
+                                  ? { ...r, effective_to: e.target.value || null }
+                                  : r
+                              )
+                            )
+                          }
+                          disabled={!item.is_offered}
+                        />
+                      </td>
+                      <td style={{ minWidth: "220px", fontSize: "12px" }}>
+                        <div className="d-flex flex-wrap gap-1">
+                          {platformAvailabilityDayOptions.map((day) => (
+                            <Form.Check
+                              key={`${item.media_type}-tbl-${day.value}`}
+                              type="checkbox"
+                              label={<span style={{ fontSize: "11px" }}>{day.label}</span>}
+                              checked={Boolean(item?.availability_days?.includes(day.value))}
+                              onChange={(e) =>
+                                toggleAvailabilityDay(
+                                  item.media_type,
+                                  day.value,
+                                  e.target.checked
+                                )
+                              }
+                              disabled={!item.is_offered}
+                              className="m-0"
+                            />
+                          ))}
+                        </div>
+                      </td>
+                      <td style={{ minWidth: "170px" }}>
+                        <Form.Control
+                          type="text"
+                          className="form-control-sm"
+                          placeholder="1, 15, 30"
+                          value={(item.availability_month_days || []).join(", ")}
+                          onChange={(e) =>
+                            updateAvailabilityMonthDays(item.media_type, e.target.value)
+                          }
+                          disabled={!item.is_offered}
+                        />
+                      </td>
                       <td style={{ minWidth: "110px", fontSize: "12px" }}>
                         {item.min_lead_days ?? 0}
                       </td>
