@@ -62,16 +62,27 @@ const walletSlice = createSlice({
       // Update Wallet AMount
       .addCase(addFunds.pending, (state) => {
         state.submitLoading = true;
+        state.error = null;
       })
       .addCase(addFunds.fulfilled, (state, action) => {
         state.submitLoading = false;
-        state.walletData.unshift(action.payload.data);
+        if (!Array.isArray(state.walletData)) {
+          state.walletData = [];
+        }
+        if (action.payload?.data) {
+          state.walletData.unshift(action.payload.data);
+        }
         state.totalRecords += 1;
         state.refreshFlag += 1;
+        state.error = null;
       })
       .addCase(addFunds.rejected, (state, action) => {
         state.submitLoading = false;
-        state.error = action.payload;
+        state.error =
+          action.payload?.message ||
+          action.payload?.error ||
+          action.error?.message ||
+          "Failed to add funds";
       });
   },
 });
