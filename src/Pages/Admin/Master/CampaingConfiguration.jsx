@@ -1,120 +1,114 @@
-import { useEffect, useState } from "react";
-import { Box, Typography, Button, Grid, Card } from "@mui/material";
+import { useEffect, useMemo, useState } from "react";
+import {
+  Box,
+  Typography,
+  Button,
+  Grid,
+  Card,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  TextField,
+} from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import * as Yup from "yup";
 import {
   fetchCampaignConfig,
   updateCampaignConfig,
 } from "../../../store/Actions/Admin/Master/CampaingConfigActions.js";
-
-import CampaignAmount from "../../../Components/Admin/Master/CampaignConfiguration/CampaignAmount.jsx";
-import CampaignDays from "../../../Components/Admin/Master/CampaignConfiguration/CampaignDays.jsx";
-import SocietyComission from "../../../Components/Admin/Master/CampaignConfiguration/SocietyComission.jsx";
 import CampaignConfigurationSkeleton from "../../../Components/Skeletons/Admin/CampaignConfigurationSkeleton.jsx";
 import { adminHasPrivilege } from "../../../helper/helper.js";
-import { useNavigate } from "react-router-dom";
+
+const FALLBACK_PLATFORMS = [
+  { media_type: "lift_branding_panels", label: "Lift branding panels" },
+  { media_type: "notice_board_sponsorship", label: "Notice board sponsorship" },
+  { media_type: "gate_entry_exit_branding", label: "Gate entry/exit branding" },
+  { media_type: "society_kiosk", label: "Society kiosk" },
+  {
+    media_type: "society_newsletter_sponsor_slots",
+    label: "Society newsletter sponsor slots",
+  },
+  { media_type: "whatsapp_promotional_day", label: "WhatsApp promotional day" },
+  { media_type: "event_sponsorship", label: "Event sponsorship" },
+];
 
 const CampaignConfiguration = () => {
   const dispatch = useDispatch();
-  const navigate = useNavigate();
-
   const { data, loading } = useSelector((state) => state.admin.campaignConfig);
-
-  // State to manage the form data that will be updated
   const [errors, setErrors] = useState({});
-  const [formData, setFormData] = useState({
-    id: "",
-    brand_promotion: 0,
-    lead_generation: 0,
-    survey: 0,
-    mon: false,
-    tue: false,
-    wed: false,
-    thu: false,
-    fri: false,
-    sat: false,
-    sun: false,
-    from_time: null,
-    to_time: null,
-    society_commission: "INR",
-    society_brand_promotion: 0,
-    society_lead_generation: 0,
-    society_survey: 0,
-  });
+  const [formData, setFormData] = useState({ id: null, platform_rules: {} });
 
   useEffect(() => {
     dispatch(fetchCampaignConfig());
   }, [dispatch]);
 
-  // Update formData when data is fetched
   useEffect(() => {
     if (data) {
+      const apiPlatforms = Array.isArray(data?.media_platforms)
+        ? data.media_platforms
+        : [];
+      const sourcePlatforms = apiPlatforms.length ? apiPlatforms : FALLBACK_PLATFORMS;
+      const nextRules = {};
+      sourcePlatforms.forEach((platform) => {
+        nextRules[platform.media_type] = {
+          min_lead_days: Number(platform.min_lead_days ?? 0),
+          min_active_days: Number(platform.min_active_days ?? 1),
+        };
+      });
+
       setFormData({
-        id: data?.id || null, // Ensure ID is included
-        brand_promotion: data?.brand_promotion || 0,
-        lead_generation: data?.lead_generation || 0,
-        survey: data?.survey || 0,
-        mon: data?.mon || false,
-        tue: data?.tue || false,
-        wed: data?.wed || false,
-        thu: data?.thu || false,
-        fri: data?.fri || false,
-        sat: data?.sat || false,
-        sun: data?.sun || false,
-        from_time: data?.from_time || null,
-        to_time: data?.to_time || null,
-        society_commission: data?.society_commission || "INR",
-        society_brand_promotion: data?.society_brand_promotion || 0,
-        society_lead_generation: data?.society_lead_generation || 0,
-        society_survey: data?.society_survey || 0,
+        id: data?.id || null,
+        platform_rules: nextRules,
       });
     }
   }, [data]);
 
-  const CampaignConfigSchema = Yup.object().shape({
-    brand_promotion: Yup.number()
-      .typeError("Brand Promotion must be a number")
-      .required("Brand Promotion is required"),
+  const platforms = useMemo(() => {
+    const apiPlatforms = Array.isArray(data?.media_platforms)
+      ? data.media_platforms
+      : [];
+    return apiPlatforms.length ? apiPlatforms : FALLBACK_PLATFORMS;
+  }, [data]);
 
-    lead_generation: Yup.number()
-      .typeError("Lead Generation must be a number")
-      .required("Lead Generation is required"),
-
-    survey: Yup.number()
-      .typeError("Survey must be a number")
-      .required("Survey is required"),
-  });
-
-  // Handle form data change
-  const handleInputChange = (e) => {
-    const { name, value, type, checked } = e.target;
-
-    let newValue = value;
-    if (formData?.society_commission === "%" && name.startsWith("society_")) {
-      newValue = Math.min(Number(value), 100);
-    }
-
-    setFormData({
-      ...formData,
-      [name]: type === "checkbox" ? checked : newValue,
-    });
+  const handleRuleChange = (mediaType, field, value) => {
+    const numericValue = value === "" ? "" : Math.max(0, Number(value));
+    setFormData((prev) => ({
+      ...prev,
+      platform_rules: {
+        ...prev.platform_rules,
+        [mediaType]: {
+          ...(prev.platform_rules?.[mediaType] || {}),
+          [field]: numericValue,
+        },
+      },
+    }));
   };
 
   const handleSave = async () => {
-    try {
-      await CampaignConfigSchema.validate(formData, { abortEarly: false });
-      setErrors({});
+    const newErrors = {};
+    platforms.forEach((platform) => {
+      const mediaType = platform.media_type;
+      const leadDays = Number(formData?.platform_rules?.[mediaType]?.min_lead_days);
+      const activeDays = Number(formData?.platform_rules?.[mediaType]?.min_active_days);
 
-      // If valid → save
-      dispatch(updateCampaignConfig(formData));
-      navigate("/admin/master/campaign-configuration");
-    } catch (err) {
-      const newErrors = {};
-      err.inner.forEach((e) => {
-        newErrors[e.path] = e.message;
-      });
-      setErrors(newErrors);
-    }
+      if (!Number.isFinite(leadDays) || leadDays < 0) {
+        newErrors[`${mediaType}.min_lead_days`] = "Lead days must be 0 or more";
+      }
+      if (!Number.isFinite(activeDays) || activeDays <= 0) {
+        newErrors[`${mediaType}.min_active_days`] = "Active days must be greater than 0";
+      }
+    });
+
+    setErrors(newErrors);
+    if (Object.keys(newErrors).length) return;
+
+    dispatch(
+      updateCampaignConfig({
+        id: formData.id,
+        platform_rules: formData.platform_rules,
+      })
+    );
   };
 
   return loading ? (
@@ -132,27 +126,77 @@ const CampaignConfiguration = () => {
           justifyContent="space-between"
           style={{ height: "auto" }}
         >
-          {/* Campaign Amount Section */}
-          <CampaignAmount
-            formData={formData}
-            handleInputChange={handleInputChange}
-            errors={errors}
-          />
-
-          {/* Campaign Days Section */}
-
-          <CampaignDays
-            formData={formData}
-            handleInputChange={handleInputChange}
-          />
-
-          {/* Society Commission Section */}
-          <SocietyComission
-            formData={formData}
-            setFormData={setFormData}
-            handleInputChange={handleInputChange}
-            errors={errors}
-          />
+          <Typography variant="" sx={{ fontWeight: "bold", mb: 1 }}>
+            Platform-wise campaign rules
+          </Typography>
+          <Typography variant="body2" sx={{ color: "#64748b", mb: 2 }}>
+            Configure how many days in advance a campaign can start and the
+            minimum active duration for each media platform.
+          </Typography>
+          <Box sx={{ overflowX: "auto" }}>
+            <Table size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell sx={{ fontWeight: 700 }}>Media Platform</TableCell>
+                  <TableCell sx={{ fontWeight: 700, width: "220px" }}>
+                    Min lead days before start
+                  </TableCell>
+                  <TableCell sx={{ fontWeight: 700, width: "220px" }}>
+                    Min active days
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {platforms.map((platform) => {
+                  const mediaType = platform.media_type;
+                  const leadDays = formData?.platform_rules?.[mediaType]?.min_lead_days;
+                  const activeDays =
+                    formData?.platform_rules?.[mediaType]?.min_active_days;
+                  return (
+                    <TableRow key={mediaType}>
+                      <TableCell>{platform.label || mediaType}</TableCell>
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          type="number"
+                          inputProps={{ min: 0 }}
+                          value={leadDays ?? 0}
+                          onChange={(e) =>
+                            handleRuleChange(
+                              mediaType,
+                              "min_lead_days",
+                              e.target.value
+                            )
+                          }
+                          error={Boolean(errors[`${mediaType}.min_lead_days`])}
+                          helperText={errors[`${mediaType}.min_lead_days`] || ""}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <TextField
+                          fullWidth
+                          size="small"
+                          type="number"
+                          inputProps={{ min: 1 }}
+                          value={activeDays ?? 1}
+                          onChange={(e) =>
+                            handleRuleChange(
+                              mediaType,
+                              "min_active_days",
+                              e.target.value
+                            )
+                          }
+                          error={Boolean(errors[`${mediaType}.min_active_days`])}
+                          helperText={errors[`${mediaType}.min_active_days`] || ""}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </Box>
 
           {/* Save Button */}
           {adminHasPrivilege("campaign_configuration_add") && (

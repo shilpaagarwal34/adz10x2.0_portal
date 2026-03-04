@@ -152,7 +152,7 @@ const AdvertisementSetting = ({
     mediaSlots.map((slot) => {
       const existing = data.find((item) => item.media_type === slot.value);
       const societyRate = Number(existing?.society_rate || 0);
-      const commission = getCommissionPct(slot.media_type);
+      const commission = getCommissionPct(slot.value);
       const platformRate = Number(((societyRate * commission) / 100).toFixed(2));
       const defaultWhatsappDetails = {
         selected_days: [],
@@ -164,8 +164,10 @@ const AdvertisementSetting = ({
       };
       return {
         id: existing?.id || null,
-        media_type: slot.media_type,
+        media_type: slot.value,
         label: slot.label,
+        min_lead_days: 0,
+        min_active_days: 0,
         duration_days: 0,
         generic_terms: defaultGenericTerms,
         is_offered: Boolean(existing),
@@ -175,7 +177,7 @@ const AdvertisementSetting = ({
         company_rate: Number((societyRate + platformRate).toFixed(2)),
         society_terms: Array.isArray(existing?.society_terms) ? existing.society_terms : [],
         whatsapp_details:
-          slot.media_type === "whatsapp_promotional_day"
+          slot.value === "whatsapp_promotional_day"
             ? { ...defaultWhatsappDetails, ...(existing?.whatsapp_details || {}) }
             : null,
         effective_from: existing?.effective_from || new Date().toISOString().slice(0, 10),
@@ -207,6 +209,10 @@ const AdvertisementSetting = ({
               label:
                 mediaSlots.find((slot) => slot.value === platform.media_type)?.label ||
                 platform.media_type,
+              min_lead_days: Number(platform.min_lead_days || 0),
+              min_active_days: Number(
+                platform.min_active_days || platform.duration_days || 0
+              ),
               duration_days: Number(platform.duration_days || 0),
               generic_terms: platform.generic_terms || "",
               card: platform.card || null,
@@ -216,6 +222,8 @@ const AdvertisementSetting = ({
               return {
                 media_type: slot.value,
                 label: slot.label,
+                min_lead_days: 0,
+                min_active_days: 0,
                 duration_days: 0,
                 generic_terms: "",
                 card: existing || null,
@@ -247,7 +255,9 @@ const AdvertisementSetting = ({
             id: existing?.id || null,
             media_type: slot.media_type,
             label: slot.label,
-            duration_days: slot.duration_days,
+            min_lead_days: Number(slot.min_lead_days || 0),
+            min_active_days: Number(slot.min_active_days || slot.duration_days || 0),
+            duration_days: Number(slot.duration_days || slot.min_active_days || 0),
             generic_terms: slot.generic_terms || defaultGenericTerms,
             is_offered: Boolean(existing),
             society_rate: societyRate,
@@ -693,7 +703,19 @@ const AdvertisementSetting = ({
                       <div className="d-flex gap-2 flex-wrap">
                         <Chip
                           size="small"
-                          label={`${item.duration_days || "-"} Days`}
+                          label={`Lead: ${item.min_lead_days ?? 0} day(s)`}
+                          sx={{
+                            backgroundColor: "#e2e8f0",
+                            color: "#1e293b",
+                            fontWeight: 600,
+                            fontSize: "11px",
+                          }}
+                        />
+                        <Chip
+                          size="small"
+                          label={`Active: ${
+                            item.min_active_days || item.duration_days || "-"
+                          } day(s)`}
                           sx={{
                             backgroundColor: "#e2e8f0",
                             color: "#1e293b",
@@ -1028,7 +1050,8 @@ const AdvertisementSetting = ({
                   <tr>
                     <th>Offer</th>
                     <th>Media</th>
-                    <th>Duration (Days)</th>
+                    <th>Lead Days</th>
+                    <th>Active Days</th>
                     <th>Generic T&C</th>
                     <th>Society T&C</th>
                     <th>Society Rate</th>
@@ -1048,7 +1071,10 @@ const AdvertisementSetting = ({
                       </td>
                       <td style={{ fontSize: "12px" }}>{item.label}</td>
                       <td style={{ minWidth: "110px", fontSize: "12px" }}>
-                        {item.duration_days || "-"}
+                        {item.min_lead_days ?? 0}
+                      </td>
+                      <td style={{ minWidth: "110px", fontSize: "12px" }}>
+                        {item.min_active_days || item.duration_days || "-"}
                       </td>
                       <td style={{ minWidth: "220px", fontSize: "12px" }}>
                         {item.generic_terms || "-"}

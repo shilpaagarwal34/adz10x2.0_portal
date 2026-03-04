@@ -32,7 +32,7 @@ const dayNameToNumber = {
   Saturday: 6,
 };
 
-const MEDIA_SLOT_OPTIONS = [
+const DEFAULT_MEDIA_SLOT_OPTIONS = [
   { value: "lift_branding_panels", label: "Lift branding panels" },
   { value: "notice_board_sponsorship", label: "Notice board sponsorship" },
   { value: "gate_entry_exit_branding", label: "Gate entry/exit branding" },
@@ -66,6 +66,8 @@ export default function CampaignForm({
   const [loadingArea, setLoadingArea] = useState(false);
   const [campaignDays, setCampaignDays] = useState([]);
   const [allowedWeekdays, setAllowedWeekdays] = useState([]);
+  const [mediaPlatforms, setMediaPlatforms] = useState(DEFAULT_MEDIA_SLOT_OPTIONS);
+  const [platformRulesMap, setPlatformRulesMap] = useState({});
 
   // map backdrop issue
   useEffect(() => {
@@ -106,8 +108,28 @@ export default function CampaignForm({
           `${api_routes.company.get_campaign_days_for_calendar}`
         );
         const days = response.data.data || [];
+        const incomingPlatforms = Array.isArray(response?.data?.media_platforms)
+          ? response.data.media_platforms
+          : [];
 
         setCampaignDays(days);
+
+        if (incomingPlatforms.length) {
+          setMediaPlatforms(
+            incomingPlatforms.map((item) => ({
+              value: item.media_type,
+              label: item.label || item.media_type,
+            }))
+          );
+          const nextRules = {};
+          incomingPlatforms.forEach((item) => {
+            nextRules[item.media_type] = {
+              min_lead_days: Number(item.min_lead_days || 0),
+              min_active_days: Number(item.min_active_days || 0),
+            };
+          });
+          setPlatformRulesMap(nextRules);
+        }
 
         const allowed = days
           .filter((day) => day.is_checked)
@@ -123,6 +145,18 @@ export default function CampaignForm({
 
     fetchCampaignDays();
   }, []);
+
+  const selectedPlatformRule = formData?.media_type
+    ? platformRulesMap[formData.media_type] || null
+    : null;
+
+  const computedMinDate = (() => {
+    const leadDays = Number(selectedPlatformRule?.min_lead_days || 0);
+    const minDate = new Date();
+    minDate.setHours(0, 0, 0, 0);
+    minDate.setDate(minDate.getDate() + leadDays);
+    return minDate;
+  })();
 
   useEffect(() => {
     if (!formData || Object.keys(formData).length === 0) return;
@@ -407,7 +441,7 @@ export default function CampaignForm({
               value={formData?.media_type || ""}
             >
               <option value="">Select platform</option>
-              {MEDIA_SLOT_OPTIONS.map((slot) => (
+              {mediaPlatforms.map((slot) => (
                 <option key={slot.value} value={slot.value}>
                   {slot.label}
                 </option>
@@ -415,6 +449,14 @@ export default function CampaignForm({
             </Form.Select>
             {submitAttempted && errors.media_type && (
               <div className="formik-error text-danger">{errors.media_type}</div>
+            )}
+            {selectedPlatformRule && (
+              <div className="mt-1" style={{ fontSize: "12px", color: "#64748b" }}>
+                Start date requires at least{" "}
+                <strong>{selectedPlatformRule.min_lead_days}</strong> day(s) lead
+                time. Minimum active period:{" "}
+                <strong>{selectedPlatformRule.min_active_days}</strong> day(s).
+              </div>
             )}
           </Form.Group>
         </Col>
@@ -459,13 +501,18 @@ export default function CampaignForm({
             }
             onChange={handleDateChange}
             filterDate={isAllowedDay}
-            // minDate={new Date()}
-            minDate={new Date(Date.now() + 2 * 24 * 60 * 60 * 1000)}
+            minDate={computedMinDate}
             className="form-control form-control-sm"
             placeholderText="Select a valid campaign date"
             autoComplete="off"
             dateFormat="dd/MM/yyyy"
           />
+          {selectedPlatformRule && (
+            <small className="text-muted mt-1">
+              Earliest date based on platform rule:{" "}
+              {computedMinDate.toLocaleDateString("en-GB")}
+            </small>
+          )}
         </Col>
       </Row>
 
