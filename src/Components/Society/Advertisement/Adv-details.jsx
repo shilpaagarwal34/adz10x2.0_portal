@@ -3,7 +3,6 @@ import {
   formatCampaignType,
   formatNumberWithCommas,
   formatTimeWithAMPM,
-  formatToTitleCase,
 } from "../../../helper/helper.js";
 
 function Details({ campaignDetails, company, logDetails }) {
@@ -86,9 +85,11 @@ function Details({ campaignDetails, company, logDetails }) {
         </div>
         <div className="col-4 custom-label">
           <div className="mb-3">
-            <p className="m-0 fw-bold">Creative Type</p>
+            <p className="m-0 fw-bold">Media Platform</p>
             <p className="m-0">
-              {formatToTitleCase(logDetails?.creative_type)}
+              {formatCampaignType(
+                campaignDetails?.media_type || logDetails?.media_type || ""
+              ) || "NA"}
             </p>
           </div>
           <div className="mb-3">

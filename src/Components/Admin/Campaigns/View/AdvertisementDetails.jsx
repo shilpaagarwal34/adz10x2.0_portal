@@ -4,7 +4,6 @@ import { Card, Typography, Divider, Box, CardContent } from "@mui/material";
 import {
   formatCampaignType,
   formatNumberWithCommas,
-  formatToTitleCase,
 } from "../../../../helper/helper.js";
 
 export default function AdvertisementDetails({
@@ -73,8 +72,8 @@ export default function AdvertisementDetails({
             {formatCampaignType(campaign ? campaign?.campaign_type : "")}
           </Typography>
           <Typography variant="body2">
-            <strong>Creative Type:</strong> <br />{" "}
-            {formatToTitleCase(campaign?.creative_type)}
+            <strong>Media Platform:</strong> <br />{" "}
+            {formatCampaignType(campaign?.media_type || "") || "NA"}
           </Typography>
         </Box>
 

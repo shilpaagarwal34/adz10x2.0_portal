@@ -131,9 +131,20 @@ const SocietyDeatil = ({
     setSearch(e.target.value);
   };
 
-  const filteredSocieties = (societies || [])?.filter((society) =>
-    society?.society?.society_name?.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredSocieties = (societies || [])
+    ?.filter((society) => {
+      const reasonCodes = Array.isArray(society?.disable_reason_codes)
+        ? society.disable_reason_codes
+        : [];
+      // Do not render societies that do not offer the selected platform.
+      if (formData?.media_type && reasonCodes.includes("platform_not_offered")) {
+        return false;
+      }
+      return true;
+    })
+    ?.filter((society) =>
+      society?.society?.society_name?.toLowerCase().includes(search.toLowerCase())
+    );
   const getDisableReasons = (society) => {
     if (Array.isArray(society?.disable_reasons) && society.disable_reasons.length > 0) {
       return society.disable_reasons;

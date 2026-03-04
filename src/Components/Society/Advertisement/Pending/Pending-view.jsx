@@ -4,12 +4,6 @@ import Details from "../Adv-details.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchAdByID } from "../../../../store/Actions/Society/Campaign/CampaignActions.js";
 import axiosInstance from "../../../../utils/axiosInstance.js";
-import api_routes from "../../../../config/api.js";
-import {
-  convertTo24HourFormat,
-  formatTime,
-  getTimeSlotsForToday,
-} from "../../../../helper/helper.js";
 import { toast } from "react-toastify";
 import { useAdsModal } from "../../../../Context/AdsModalContext.jsx";
 import CreativeTypeRender from "../../../../utils/CreativeTypeRender.jsx";
@@ -24,7 +18,6 @@ const PendingView = () => {
   const { advertisementId } = useParams();
   const [loading, setLoading] = useState(false);
   const [advertisementData, setAdvertisementData] = useState(null);
-  const [timeSlots, setTimeSlots] = useState([]);
   const { openAdsModal } = useAdsModal();
   const [submit, setSubmit] = useState(false);
 
@@ -60,35 +53,6 @@ const PendingView = () => {
     fetchData();
   }, [advertisementId]);
 
-  // Fetch time slots when status is approved
-  useEffect(() => {
-    if (formData?.society_approved_status === "approved") {
-      async function fetchTimeSlots() {
-        try {
-          // Dummy API call to get time slots
-          const res = await axiosInstance.get(
-            `${api_routes.society.fetch_time_slots}/${advertisementData?.society?.id}`
-          );
-          const timeSlotData = res?.data?.data;
-
-          // console.log(timeSlotData);
-
-          // console.log(advertisementData?.campaign?.campaign_date);
-          const hoursToShow = getTimeSlotsForToday(
-            timeSlotData,
-            advertisementData?.campaign?.campaign_date
-          );
-          setTimeSlots(hoursToShow || []);
-          // console.log(hoursToShow);
-        } catch (error) {
-          console.error("Failed to fetch time slots", error);
-        }
-      }
-
-      fetchTimeSlots();
-    }
-  }, [formData?.society_approved_status]);
-
   // Submit handler
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -98,24 +62,10 @@ const PendingView = () => {
       return;
     }
 
-    if (
-      formData?.society_approved_status === "approved" &&
-      !formData?.timeSlot
-    ) {
-      toast.error("Please Select Timeslot.");
-      return;
-    }
-
-    const [startTime, endTime] = formData?.timeSlot
-      ?.split(" - ")
-      .map(convertTo24HourFormat);
-
-    // console.log(startTime, endTime);
     const updatedFormData = {
       ...formData,
-      // Set the 24-hour formatted start and end times
-      slot_start_time: startTime || null,
-      slot_end_time: endTime || null,
+      slot_start_time: null,
+      slot_end_time: null,
     };
 
     setSubmit(true);
@@ -234,7 +184,7 @@ const PendingView = () => {
                     </Form.Label>
                     <Form.Select
                       name="society_approved_status"
-                      value={formData.status}
+                      value={formData.society_approved_status}
                       onChange={handleChange}
                     >
                       <option value="">Select Status</option>
@@ -243,37 +193,13 @@ const PendingView = () => {
                     </Form.Select>
                   </Form.Group>
 
-                  {formData.society_approved_status === "approved" && (
-                    <Form.Group className="mb-2">
-                      <Form.Label>Time Slot</Form.Label>
-                      <Form.Select
-                        name="timeSlot"
-                        value={formData.timeSlot}
-                        onChange={handleChange}
-                      >
-                        <option value="">Select Status</option>
-                        {timeSlots.map((hour) => {
-                          const startTime = formatTime(hour);
-                          const endTime = formatTime(hour + 1);
-                          return (
-                            <option
-                              key={hour}
-                              value={`${startTime} - ${endTime}`}
-                            >
-                              {startTime} - {endTime}
-                            </option>
-                          );
-                        })}
-                      </Form.Select>
-                    </Form.Group>
-                  )}
-                  {formData.status === "reject" && (
+                  {formData.society_approved_status === "reject" && (
                     <Form.Group className="mb-2">
                       <Form.Label>Cancel Reason</Form.Label>
                       <Form.Select
                         name="society_cancel_reason"
                         onChange={handleChange}
-                        value={formData.cancelReason}
+                        value={formData.society_cancel_reason}
                       >
                         <option>Select Reason</option>
                         {/* Your reasons here */}
