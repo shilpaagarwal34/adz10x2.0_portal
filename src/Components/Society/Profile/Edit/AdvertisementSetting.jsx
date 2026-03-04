@@ -79,6 +79,9 @@ const AdvertisementSetting = ({
   const [showProfileIncompleteDialog, setShowProfileIncompleteDialog] =
     useState(false);
   const [rateErrorIndices, setRateErrorIndices] = useState([]);
+  const [availabilityOpenByType, setAvailabilityOpenByType] = useState({});
+  const [availabilityDatePickerByType, setAvailabilityDatePickerByType] =
+    useState({});
   const { days, loading: campaignLoading } = useSelector(
     (state) => state.society.campaignDays
   );
@@ -566,24 +569,59 @@ const AdvertisementSetting = ({
     );
   };
 
-  const updateAvailabilityMonthDays = (mediaType, rawValue) => {
-    const parsed = rawValue
-      .split(",")
-      .map((d) => Number(d.trim()))
-      .filter((d) => Number.isInteger(d) && d >= 1 && d <= 31);
+  const toggleAvailabilitySection = (mediaType) => {
+    setAvailabilityOpenByType((prev) => ({
+      ...prev,
+      [mediaType]: !prev?.[mediaType],
+    }));
+  };
 
+  const addAvailabilityMonthDate = (mediaType, selectedDate) => {
+    if (!selectedDate) return;
+    const monthDay = Number(selectedDate.split("-")[2] || 0);
+    if (!Number.isInteger(monthDay) || monthDay < 1 || monthDay > 31) return;
     setMediaRates((prev) =>
       prev.map((item) =>
         item.media_type === mediaType
           ? {
               ...item,
-              availability_month_days: Array.from(new Set(parsed)).sort(
+              availability_month_days: Array.from(
+                new Set([...(item.availability_month_days || []), monthDay])
+              ).sort(
                 (a, b) => a - b
               ),
             }
           : item
       )
     );
+    setAvailabilityDatePickerByType((prev) => ({ ...prev, [mediaType]: "" }));
+  };
+
+  const removeAvailabilityMonthDate = (mediaType, monthDay) => {
+    setMediaRates((prev) =>
+      prev.map((item) =>
+        item.media_type === mediaType
+          ? {
+              ...item,
+              availability_month_days: (item.availability_month_days || []).filter(
+                (d) => Number(d) !== Number(monthDay)
+              ),
+            }
+          : item
+      )
+    );
+  };
+
+  const getAvailabilitySummary = (item) => {
+    const from = item?.effective_from || "Not set";
+    const to = item?.effective_to || "Open";
+    const weeklyCount = Array.isArray(item?.availability_days)
+      ? item.availability_days.length
+      : 0;
+    const monthlyCount = Array.isArray(item?.availability_month_days)
+      ? item.availability_month_days.length
+      : 0;
+    return `From: ${from}, To: ${to}, Weekly: ${weeklyCount} selected, Monthly: ${monthlyCount} selected`;
   };
 
   const termsOptions = societyTermsOptions.length
@@ -835,17 +873,45 @@ const AdvertisementSetting = ({
                           backgroundColor: "#fff",
                         }}
                       >
+                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                          <div
+                            style={{
+                              fontSize: "13px",
+                              fontWeight: 700,
+                              color: "#334155",
+                            }}
+                          >
+                            Platform Availability
+                          </div>
+                          <Button
+                            variant="text"
+                            size="small"
+                            onClick={() => toggleAvailabilitySection(item.media_type)}
+                            disabled={!item.is_offered}
+                            sx={{
+                              textTransform: "none",
+                              fontWeight: 700,
+                              color: "#1d4ed8",
+                              minWidth: "auto",
+                              px: 1,
+                            }}
+                          >
+                            {availabilityOpenByType?.[item.media_type]
+                              ? "Hide availability"
+                              : "Add / Edit availability"}
+                          </Button>
+                        </div>
                         <div
                           style={{
-                            fontSize: "13px",
-                            fontWeight: 700,
-                            color: "#334155",
-                            marginBottom: "8px",
+                            fontSize: "11px",
+                            color: "#64748b",
+                            marginTop: "4px",
                           }}
                         >
-                          Platform Availability
+                          {getAvailabilitySummary(item)}
                         </div>
-                        <div className="row g-2">
+                        {availabilityOpenByType?.[item.media_type] && (
+                        <div className="row g-2 mt-1">
                           <div className="col-12 col-md-6">
                             <TextField
                               fullWidth
@@ -926,23 +992,82 @@ const AdvertisementSetting = ({
                             </div>
                           </div>
                           <div className="col-12">
-                            <TextField
-                              fullWidth
-                              size="small"
-                              label="Monthly dates (comma separated, optional)"
-                              placeholder="1, 15, 30"
-                              value={(item.availability_month_days || []).join(", ")}
-                              onChange={(e) =>
-                                updateAvailabilityMonthDays(
-                                  item.media_type,
-                                  e.target.value
-                                )
-                              }
-                              disabled={!item.is_offered}
-                              helperText="Leave blank for all month dates."
-                            />
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: 600,
+                                color: "#64748b",
+                                marginBottom: "4px",
+                              }}
+                            >
+                              Monthly dates (optional)
+                            </div>
+                            <div className="d-flex gap-2 align-items-center flex-wrap">
+                              <TextField
+                                size="small"
+                                type="date"
+                                label="Select date"
+                                InputLabelProps={{ shrink: true }}
+                                value={availabilityDatePickerByType?.[item.media_type] || ""}
+                                onChange={(e) =>
+                                  setAvailabilityDatePickerByType((prev) => ({
+                                    ...prev,
+                                    [item.media_type]: e.target.value,
+                                  }))
+                                }
+                                disabled={!item.is_offered}
+                                sx={{ minWidth: "200px" }}
+                              />
+                              <Button
+                                variant="outlined"
+                                size="small"
+                                onClick={() =>
+                                  addAvailabilityMonthDate(
+                                    item.media_type,
+                                    availabilityDatePickerByType?.[item.media_type]
+                                  )
+                                }
+                                disabled={
+                                  !item.is_offered ||
+                                  !availabilityDatePickerByType?.[item.media_type]
+                                }
+                                sx={{ textTransform: "none", fontWeight: 600 }}
+                              >
+                                Add date
+                              </Button>
+                            </div>
+                            <div className="d-flex flex-wrap gap-1 mt-2">
+                              {(item.availability_month_days || []).length ? (
+                                (item.availability_month_days || []).map((monthDay) => (
+                                  <Chip
+                                    key={`${item.media_type}-month-${monthDay}`}
+                                    size="small"
+                                    label={`Day ${monthDay}`}
+                                    onDelete={
+                                      item.is_offered
+                                        ? () =>
+                                            removeAvailabilityMonthDate(
+                                              item.media_type,
+                                              monthDay
+                                            )
+                                        : undefined
+                                    }
+                                    sx={{
+                                      backgroundColor: "#e2e8f0",
+                                      color: "#1e293b",
+                                      fontSize: "11px",
+                                    }}
+                                  />
+                                ))
+                              ) : (
+                                <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                                  No monthly dates selected
+                                </span>
+                              )}
+                            </div>
                           </div>
                         </div>
+                        )}
                       </div>
                     </div>
                     {item.media_type === "whatsapp_promotional_day" && (
@@ -1306,16 +1431,68 @@ const AdvertisementSetting = ({
                         </div>
                       </td>
                       <td style={{ minWidth: "170px" }}>
-                        <Form.Control
-                          type="text"
-                          className="form-control-sm"
-                          placeholder="1, 15, 30"
-                          value={(item.availability_month_days || []).join(", ")}
-                          onChange={(e) =>
-                            updateAvailabilityMonthDays(item.media_type, e.target.value)
-                          }
-                          disabled={!item.is_offered}
-                        />
+                        <div className="d-flex flex-column gap-1">
+                          <div className="d-flex gap-1 align-items-center">
+                            <Form.Control
+                              type="date"
+                              className="form-control-sm"
+                              value={availabilityDatePickerByType?.[item.media_type] || ""}
+                              onChange={(e) =>
+                                setAvailabilityDatePickerByType((prev) => ({
+                                  ...prev,
+                                  [item.media_type]: e.target.value,
+                                }))
+                              }
+                              disabled={!item.is_offered}
+                            />
+                            <Button
+                              variant="outlined"
+                              size="small"
+                              onClick={() =>
+                                addAvailabilityMonthDate(
+                                  item.media_type,
+                                  availabilityDatePickerByType?.[item.media_type]
+                                )
+                              }
+                              disabled={
+                                !item.is_offered ||
+                                !availabilityDatePickerByType?.[item.media_type]
+                              }
+                              sx={{
+                                minWidth: "56px",
+                                textTransform: "none",
+                                fontSize: "11px",
+                                py: "4px",
+                              }}
+                            >
+                              Add
+                            </Button>
+                          </div>
+                          <div className="d-flex flex-wrap gap-1">
+                            {(item.availability_month_days || []).map((monthDay) => (
+                              <Chip
+                                key={`${item.media_type}-table-month-${monthDay}`}
+                                size="small"
+                                label={`Day ${monthDay}`}
+                                onDelete={
+                                  item.is_offered
+                                    ? () =>
+                                        removeAvailabilityMonthDate(
+                                          item.media_type,
+                                          monthDay
+                                        )
+                                    : undefined
+                                }
+                                sx={{
+                                  backgroundColor: "#e2e8f0",
+                                  color: "#1e293b",
+                                  fontSize: "10px",
+                                  height: "22px",
+                                }}
+                              />
+                            ))}
+                          </div>
+                        </div>
                       </td>
                       <td style={{ minWidth: "110px", fontSize: "12px" }}>
                         {item.min_lead_days ?? 0}
