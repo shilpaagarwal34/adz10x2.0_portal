@@ -564,6 +564,8 @@ const AdvertisementSetting = ({
         return {
           ...item,
           availability_days: nextDays,
+          // Weekly and monthly availability are mutually exclusive.
+          availability_month_days: checked ? [] : item.availability_month_days,
         };
       })
     );
@@ -590,6 +592,8 @@ const AdvertisementSetting = ({
               ).sort(
                 (a, b) => a - b
               ),
+              // Weekly and monthly availability are mutually exclusive.
+              availability_days: [],
             }
           : item
       )
@@ -1016,7 +1020,10 @@ const AdvertisementSetting = ({
                                           e.target.checked
                                         )
                                       }
-                                      disabled={!item.is_offered}
+                                      disabled={
+                                        !item.is_offered ||
+                                        (item?.availability_month_days || []).length > 0
+                                      }
                                     />
                                   }
                                   label={
@@ -1025,6 +1032,11 @@ const AdvertisementSetting = ({
                                 />
                               ))}
                             </div>
+                            {(item?.availability_month_days || []).length > 0 && (
+                              <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                                Clear monthly dates to enable weekly selection.
+                              </span>
+                            )}
                           </div>
                           <div className="col-12">
                             <div
@@ -1050,7 +1062,10 @@ const AdvertisementSetting = ({
                                     [item.media_type]: e.target.value,
                                   }))
                                 }
-                                disabled={!item.is_offered}
+                                disabled={
+                                  !item.is_offered ||
+                                  (item?.availability_days || []).length > 0
+                                }
                                 sx={{ minWidth: "200px" }}
                               />
                               <Button
@@ -1064,13 +1079,19 @@ const AdvertisementSetting = ({
                                 }
                                 disabled={
                                   !item.is_offered ||
-                                  !availabilityDatePickerByType?.[item.media_type]
+                                  !availabilityDatePickerByType?.[item.media_type] ||
+                                  (item?.availability_days || []).length > 0
                                 }
                                 sx={{ textTransform: "none", fontWeight: 600 }}
                               >
                                 Add date
                               </Button>
                             </div>
+                            {(item?.availability_days || []).length > 0 && (
+                              <span style={{ fontSize: "11px", color: "#94a3b8" }}>
+                                Clear weekly days to enable monthly date selection.
+                              </span>
+                            )}
                             <div className="d-flex flex-wrap gap-1 mt-2">
                               {(item.availability_month_days || []).length ? (
                                 (item.availability_month_days || []).map((monthDay) => (
@@ -1457,7 +1478,10 @@ const AdvertisementSetting = ({
                                   e.target.checked
                                 )
                               }
-                              disabled={!item.is_offered}
+                              disabled={
+                                !item.is_offered ||
+                                (item?.availability_month_days || []).length > 0
+                              }
                               className="m-0"
                             />
                           ))}
@@ -1476,7 +1500,10 @@ const AdvertisementSetting = ({
                                   [item.media_type]: e.target.value,
                                 }))
                               }
-                              disabled={!item.is_offered}
+                              disabled={
+                                !item.is_offered ||
+                                (item?.availability_days || []).length > 0
+                              }
                             />
                             <Button
                               variant="outlined"
@@ -1489,7 +1516,8 @@ const AdvertisementSetting = ({
                               }
                               disabled={
                                 !item.is_offered ||
-                                !availabilityDatePickerByType?.[item.media_type]
+                                !availabilityDatePickerByType?.[item.media_type] ||
+                                (item?.availability_days || []).length > 0
                               }
                               sx={{
                                 minWidth: "56px",
