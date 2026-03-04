@@ -867,18 +867,25 @@ const AdvertisementSetting = ({
                     <div className="col-12">
                       <div
                         style={{
-                          border: "1px solid rgba(148,163,184,0.4)",
+                          border: "1px solid rgba(1,147,255,0.22)",
                           borderRadius: "10px",
                           padding: "10px",
-                          backgroundColor: "#fff",
+                          background:
+                            "linear-gradient(97.02deg, rgba(1,170,35,0.06) 0%, rgba(1,147,255,0.08) 100%)",
                         }}
                       >
                         <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
                           <div
                             style={{
-                              fontSize: "13px",
+                              display: "inline-block",
+                              fontSize: "14px",
                               fontWeight: 700,
-                              color: "#334155",
+                              color: "#0f172a",
+                              padding: "4px 10px",
+                              borderRadius: "999px",
+                              background:
+                                "linear-gradient(97.02deg, rgba(1,170,35,0.14) 0%, rgba(1,147,255,0.16) 100%)",
+                              border: "1px solid rgba(1,147,255,0.22)",
                             }}
                           >
                             Platform Availability
@@ -891,7 +898,7 @@ const AdvertisementSetting = ({
                             sx={{
                               textTransform: "none",
                               fontWeight: 700,
-                              color: "#1d4ed8",
+                              color: "#0f4fd6",
                               minWidth: "auto",
                               px: 1,
                             }}
