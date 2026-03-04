@@ -624,6 +624,36 @@ const AdvertisementSetting = ({
     return `From: ${from}, To: ${to}, Weekly: ${weeklyCount} selected, Monthly: ${monthlyCount} selected`;
   };
 
+  const updateEffectiveDateRange = (mediaType, key, value) => {
+    setMediaRates((prev) =>
+      prev.map((item) => {
+        if (item.media_type !== mediaType) return item;
+
+        const nextFrom = key === "effective_from" ? value : item.effective_from;
+        const nextTo = key === "effective_to" ? value || null : item.effective_to;
+
+        // Reject invalid "to" date that is before "from".
+        if (nextFrom && nextTo && nextTo < nextFrom && key === "effective_to") {
+          return item;
+        }
+
+        // If "from" moves after existing "to", auto-align "to" with "from".
+        if (nextFrom && nextTo && nextTo < nextFrom && key === "effective_from") {
+          return {
+            ...item,
+            effective_from: nextFrom,
+            effective_to: nextFrom,
+          };
+        }
+
+        return {
+          ...item,
+          [key]: key === "effective_to" ? value || null : value,
+        };
+      })
+    );
+  };
+
   const termsOptions = societyTermsOptions.length
     ? societyTermsOptions
     : defaultSocietyTerms;
@@ -928,15 +958,14 @@ const AdvertisementSetting = ({
                               InputLabelProps={{ shrink: true }}
                               value={item.effective_from || ""}
                               onChange={(e) =>
-                                setMediaRates((prev) =>
-                                  prev.map((r) =>
-                                    r.media_type === item.media_type
-                                      ? { ...r, effective_from: e.target.value }
-                                      : r
-                                  )
+                                updateEffectiveDateRange(
+                                  item.media_type,
+                                  "effective_from",
+                                  e.target.value
                                 )
                               }
                               disabled={!item.is_offered}
+                              inputProps={{ max: item.effective_to || undefined }}
                             />
                           </div>
                           <div className="col-12 col-md-6">
@@ -948,15 +977,14 @@ const AdvertisementSetting = ({
                               InputLabelProps={{ shrink: true }}
                               value={item.effective_to || ""}
                               onChange={(e) =>
-                                setMediaRates((prev) =>
-                                  prev.map((r) =>
-                                    r.media_type === item.media_type
-                                      ? { ...r, effective_to: e.target.value || null }
-                                      : r
-                                  )
+                                updateEffectiveDateRange(
+                                  item.media_type,
+                                  "effective_to",
+                                  e.target.value
                                 )
                               }
                               disabled={!item.is_offered}
+                              inputProps={{ min: item.effective_from || undefined }}
                             />
                           </div>
                           <div className="col-12">
@@ -1388,15 +1416,14 @@ const AdvertisementSetting = ({
                           className="form-control-sm"
                           value={item.effective_from || ""}
                           onChange={(e) =>
-                            setMediaRates((prev) =>
-                              prev.map((r) =>
-                                r.media_type === item.media_type
-                                  ? { ...r, effective_from: e.target.value }
-                                  : r
-                              )
+                            updateEffectiveDateRange(
+                              item.media_type,
+                              "effective_from",
+                              e.target.value
                             )
                           }
                           disabled={!item.is_offered}
+                          max={item.effective_to || undefined}
                         />
                       </td>
                       <td style={{ minWidth: "140px" }}>
@@ -1405,15 +1432,14 @@ const AdvertisementSetting = ({
                           className="form-control-sm"
                           value={item.effective_to || ""}
                           onChange={(e) =>
-                            setMediaRates((prev) =>
-                              prev.map((r) =>
-                                r.media_type === item.media_type
-                                  ? { ...r, effective_to: e.target.value || null }
-                                  : r
-                              )
+                            updateEffectiveDateRange(
+                              item.media_type,
+                              "effective_to",
+                              e.target.value
                             )
                           }
                           disabled={!item.is_offered}
+                          min={item.effective_from || undefined}
                         />
                       </td>
                       <td style={{ minWidth: "220px", fontSize: "12px" }}>
