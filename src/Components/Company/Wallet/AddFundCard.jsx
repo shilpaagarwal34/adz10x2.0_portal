@@ -38,9 +38,9 @@ function AddFundCard({ onSuccess }) {
             amount: amt,
           });
 
-          const { isAllowed } = res.data; // Expect { isAllowed: true/false }
-          setIsAllowedToAddFund(true);
-          setError("");
+          const isAllowed = res?.data?.isAllowed ?? true;
+          setIsAllowedToAddFund(Boolean(isAllowed));
+          setError(isAllowed ? "" : "Entered amount is not eligible for add fund.");
         } catch (error) {
           console.error("Amount check failed", error.response.data?.message);
           setError(error?.response?.data?.message);
@@ -198,15 +198,13 @@ function AddFundCard({ onSuccess }) {
             />
           </div>
 
-          {isAllowedToAddFund && (
-            <button
-              className="addFundBtn"
-              type="submit"
-              disabled={submitLoading || checkingAmount}
-            >
-              {submitLoading ? "Adding..." : "ADD FUND"}
-            </button>
-          )}
+          <button
+            className="addFundBtn"
+            type="submit"
+            disabled={submitLoading || checkingAmount || !isAllowedToAddFund}
+          >
+            {submitLoading ? "Adding..." : "ADD FUND"}
+          </button>
         </div>
         {checkingAmount && (
           <p className="text-success small">Checking eligibility...</p>
