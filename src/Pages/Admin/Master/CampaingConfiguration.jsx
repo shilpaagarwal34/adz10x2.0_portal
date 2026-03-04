@@ -73,6 +73,7 @@ const CampaignConfiguration = () => {
 
   const handleRuleChange = (mediaType, field, value) => {
     const numericValue = value === "" ? "" : Math.max(0, Number(value));
+
     setFormData((prev) => ({
       ...prev,
       platform_rules: {
@@ -83,6 +84,30 @@ const CampaignConfiguration = () => {
         },
       },
     }));
+
+    setErrors((prev) => {
+      const next = { ...prev };
+      const key = `${mediaType}.${field}`;
+      if (key in next) {
+        // Re-validate just this field on change so errors clear immediately
+        if (field === "min_lead_days") {
+          const leadDays =
+            value === "" || value === null || value === undefined
+              ? 0
+              : Number(value);
+          if (Number.isFinite(leadDays) && leadDays >= 0) {
+            delete next[key];
+          }
+        }
+        if (field === "min_active_days") {
+          const activeDays = Number(value);
+          if (Number.isFinite(activeDays) && activeDays > 0) {
+            delete next[key];
+          }
+        }
+      }
+      return next;
+    });
   };
 
   const handleSave = async () => {
