@@ -209,7 +209,6 @@ const PendingView = () => {
 
                   <Button
                     type="submit"
-                    onClick={handleSubmit}
                     disabled={
                       (!formData?.society_approved_status &&
                         !formData?.society_cancel_reason) ||
