@@ -89,8 +89,17 @@ const CampaignConfiguration = () => {
     const newErrors = {};
     platforms.forEach((platform) => {
       const mediaType = platform.media_type;
-      const leadDays = Number(formData?.platform_rules?.[mediaType]?.min_lead_days);
-      const activeDays = Number(formData?.platform_rules?.[mediaType]?.min_active_days);
+      const rawLead = formData?.platform_rules?.[mediaType]?.min_lead_days;
+      const rawActive = formData?.platform_rules?.[mediaType]?.min_active_days;
+
+      const leadDays =
+        rawLead === "" || rawLead === null || rawLead === undefined
+          ? 0
+          : Number(rawLead);
+      const activeDays =
+        rawActive === "" || rawActive === null || rawActive === undefined
+          ? NaN
+          : Number(rawActive);
 
       if (!Number.isFinite(leadDays) || leadDays < 0) {
         newErrors[`${mediaType}.min_lead_days`] = "Lead days must be 0 or more";
@@ -115,10 +124,33 @@ const CampaignConfiguration = () => {
     <CampaignConfigurationSkeleton />
   ) : (
     <Box p={2}>
-      <Typography className=" pb-2" fontWeight="bold">
-        Campaign Configuration
-      </Typography>
-      <Card sx={{ backgroundColor: "white", p: 2, marginTop: ".4rem" }}>
+      <Box
+        sx={{
+          mb: 2,
+          display: "flex",
+          flexDirection: "column",
+          gap: 0.5,
+        }}
+      >
+        <Typography fontWeight="bold" variant="h6">
+          Campaign Configuration
+        </Typography>
+        <Typography variant="body2" sx={{ color: "#64748b" }}>
+          Define how early campaigns must be scheduled and how long they should
+          run for each media platform. These rules are used in both company and
+          society portals.
+        </Typography>
+      </Box>
+      <Card
+        sx={{
+          backgroundColor: "white",
+          p: 2,
+          mt: 1,
+          borderRadius: 2,
+          boxShadow: "0 12px 30px rgba(15,23,42,0.06)",
+          border: "1px solid #e2e8f0",
+        }}
+      >
         <Grid
           container
           spacing={0}
@@ -126,15 +158,41 @@ const CampaignConfiguration = () => {
           justifyContent="space-between"
           style={{ height: "auto" }}
         >
-          <Typography variant="" sx={{ fontWeight: "bold", mb: 1 }}>
+          <Typography
+            variant="subtitle1"
+            sx={{ fontWeight: 700, mb: 1, color: "#0f172a" }}
+          >
             Platform-wise campaign rules
           </Typography>
           <Typography variant="body2" sx={{ color: "#64748b", mb: 2 }}>
             Configure how many days in advance a campaign can start and the
             minimum active duration for each media platform.
           </Typography>
-          <Box sx={{ overflowX: "auto" }}>
-            <Table size="small">
+          <Box
+            sx={{
+              overflowX: "auto",
+              borderRadius: 2,
+              border: "1px solid #e2e8f0",
+            }}
+          >
+            <Table
+              size="small"
+              sx={{
+                minWidth: 650,
+                "& thead th": {
+                  background:
+                    "linear-gradient(97.02deg, #f1f5f9 0%, #e2e8f0 100%)",
+                  borderBottom: "1px solid #cbd5f5",
+                  fontSize: 13,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.04em",
+                  color: "#475569",
+                },
+                "& tbody tr:nth-of-type(odd)": {
+                  backgroundColor: "#f9fafb",
+                },
+              }}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell sx={{ fontWeight: 700 }}>Media Platform</TableCell>
