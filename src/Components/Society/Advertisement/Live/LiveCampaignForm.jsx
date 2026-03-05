@@ -96,7 +96,8 @@ export default function LiveCampaignForm({
                 openAdsModal(
                   campaignData?.logs?.upload_societies_images_path,
                   creativeType,
-                  campaignData?.logs?.societies_text
+                  campaignData?.logs?.societies_text,
+                  campaignData?.campaign?.media_type
                 )
               }
             >

@@ -58,7 +58,8 @@ export default function ApprovedAdReport({
                   openAdsModal(
                     logData?.upload_societies_images_path,
                     creative_type,
-                    logData?.societies_text
+                    logData?.societies_text,
+                    logData?.media_type
                   );
                 }}
               >

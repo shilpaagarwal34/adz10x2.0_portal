@@ -135,7 +135,8 @@ const PendingView = () => {
                         advertisementData?.campaign_logs
                           ?.upload_societies_images_path,
                         advertisementData?.campaign?.creative_type,
-                        advertisementData?.campaign_logs?.societies_text
+                        advertisementData?.campaign_logs?.societies_text,
+                        advertisementData?.campaign?.media_type
                       )
                     }
                   >

@@ -94,7 +94,8 @@ const CancelAdvView = () => {
                             campaignData?.campaign_logs
                               ?.upload_societies_images_path,
                             campaignData?.campaign?.creative_type,
-                            campaignData?.societies_text
+                            campaignData?.societies_text,
+                            campaignData?.campaign?.media_type
                           )
                         }
                       >

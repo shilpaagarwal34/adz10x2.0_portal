@@ -44,7 +44,8 @@ const PendingAdModal = ({ show, onHide, logData, campaignData }) => {
                       openAdsModal(
                         logData?.upload_societies_images_path,
                         logData?.creative_type,
-                        logData?.societies_text
+                        logData?.societies_text,
+                        logData?.media_type
                       )
                     }
                   >

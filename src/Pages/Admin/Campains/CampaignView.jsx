@@ -270,7 +270,8 @@ const CampaignView = () => {
                         openAdsModal(
                           campaignData.logs?.upload_societies_images_path,
                           campaignData?.campaign?.creative_type,
-                          campaignData?.logs?.societies_text
+                          campaignData?.logs?.societies_text,
+                          campaignData?.campaign?.media_type
                         )
                       }
                     >

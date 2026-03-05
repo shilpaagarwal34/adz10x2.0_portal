@@ -2,9 +2,38 @@ import { Modal } from "react-bootstrap";
 import { useAdsModal } from "../../../Context/AdsModalContext.jsx";
 import { base_url } from "../../../config/api.js";
 
+const PLATFORM_MOCKUPS = {
+  whatsapp_promotional_day: {
+    background: "/mobile.svg",
+    top: "38%",
+    left: "51%",
+    width: "40%",
+  },
+  lift_branding_panels: {
+    background: "/login-slider/lift-screen.png",
+    top: "56%",
+    left: "50%",
+    width: "26%",
+  },
+  notice_board_sponsorship: {
+    background: "/login-slider/notice-board.png",
+    top: "56%",
+    left: "50%",
+    width: "64%",
+  },
+  society_kiosk: {
+    background: "/login-slider/lift-kiosk.png",
+    top: "56%",
+    left: "50%",
+    width: "30%",
+  },
+};
+
 const AdsModal = () => {
-  const { adsShow, closeAdsModal, adsImageSrc, adsCreativeType } =
+  const { adsShow, closeAdsModal, adsImageSrc, adsCreativeType, adsMediaType } =
     useAdsModal();
+  const template =
+    PLATFORM_MOCKUPS[adsMediaType] || PLATFORM_MOCKUPS.whatsapp_promotional_day;
 
   return (
     <Modal
@@ -31,25 +60,21 @@ const AdsModal = () => {
         >
           {/* 🖼️ Background Image */}
           <img
-            src={
-              adsCreativeType === "text"
-                ? "/text-bg.png" // 👈 Background image for text
-                : "/mobile.png" // 👈 Default background for image/video
-            }
+            src={template.background}
             alt="Background"
             style={{
               width: "100%",
               height: "100%",
-              // objectFit: "contain",
+              objectFit: "contain",
             }}
           />
           <div
             style={{
               position: "absolute",
-              top: adsCreativeType === "text" ? "47%" : "38%",
-              left: adsCreativeType === "text" ? "52%" : "51%",
+              top: template.top,
+              left: template.left,
               transform: "translate(-50%, -50%)",
-              width: adsCreativeType === "text" ? "40%" : "40%",
+              width: template.width,
               zIndex: 2,
             }}
           >
@@ -80,12 +105,14 @@ const AdsModal = () => {
                 className="text-bg p-2"
                 style={{
                   width: "100%",
-                  borderRadius: "5px 5px 0px 5px",
+                  borderRadius: "6px",
                   fontSize: "12px",
                   fontWeight: "500",
                   color: "#333",
                   maxHeight: "400px",
                   overflowY: "auto",
+                  backgroundColor: "rgba(255,255,255,0.95)",
+                  border: "1px solid #e2e8f0",
                   scrollbarWidth: "none", // Firefox
                   msOverflowStyle: "none",
                 }}
