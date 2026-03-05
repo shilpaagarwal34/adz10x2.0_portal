@@ -26,6 +26,10 @@ function Details({ campaignDetails, company, logDetails }) {
   const activeTo = formatDateTime(
     logDetails?.live_end_date || campaignDetails?.campaign_date
   );
+  const hasSocietySnapshot = Number(logDetails?.society_rate_snapshot) > 0;
+  const societyAmount = hasSocietySnapshot
+    ? Number(logDetails?.society_rate_snapshot)
+    : Number(logDetails?.campaign_ads_amount || 0);
 
   return (
     <div
@@ -134,7 +138,7 @@ function Details({ campaignDetails, company, logDetails }) {
             <h3 className="m-0" style={{ color: "#0369a1" }}>
               ₹{" "}
               <span className="fw-bold">
-                {formatNumberWithCommas(logDetails?.campaign_ads_amount)}
+                {formatNumberWithCommas(societyAmount)}
               </span>
             </h3>
           </div>

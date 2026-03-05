@@ -4,6 +4,7 @@ import Details from "../Adv-details.jsx";
 import { useNavigate, useParams } from "react-router-dom";
 import { fetchAdByID } from "../../../../store/Actions/Society/Campaign/CampaignActions.js";
 import axiosInstance from "../../../../utils/axiosInstance.js";
+import api_routes from "../../../../config/api.js";
 import { toast } from "react-toastify";
 import { useAdsModal } from "../../../../Context/AdsModalContext.jsx";
 import CreativeTypeRender from "../../../../utils/CreativeTypeRender.jsx";
