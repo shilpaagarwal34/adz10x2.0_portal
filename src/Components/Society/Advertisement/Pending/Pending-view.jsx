@@ -79,7 +79,10 @@ const PendingView = () => {
       // console.log("Submitted", response);
       navigate(-1);
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Error submitting");
+      const apiMessage = error?.response?.data?.message;
+      const apiError = error?.response?.data?.error;
+      const fallback = error?.message || "Error submitting";
+      toast.error(apiMessage ? `${apiMessage}${apiError ? `: ${apiError}` : ""}` : fallback);
       // console.error("Error submitting", error);
     } finally {
       setSubmit(false);
