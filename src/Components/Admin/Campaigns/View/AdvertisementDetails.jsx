@@ -4,6 +4,7 @@ import { Card, Typography, Divider, Box, CardContent } from "@mui/material";
 import {
   formatCampaignType,
   formatNumberWithCommas,
+  formatToTitleCase,
 } from "../../../../helper/helper.js";
 
 export default function AdvertisementDetails({
