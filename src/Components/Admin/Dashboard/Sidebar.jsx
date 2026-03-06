@@ -404,6 +404,20 @@ const Sidebar = ({ open }) => {
                       <ListItemText primary="Company Wallet" />
                     </ListItem>
                   )}
+
+                  {adminHasPrivilege("society_payments_view") && (
+                    <ListItem
+                      component={Link}
+                      to="/admin/payments/settlements"
+                      className={
+                        location.pathname === "/admin/payments/settlements"
+                          ? "active-dropdown"
+                          : "custom-hover-remove custom-margin"
+                      }
+                    >
+                      <ListItemText primary="Campaign Settlements" />
+                    </ListItem>
+                  )}
                 </List>
               </Collapse>
             </>
