@@ -305,8 +305,8 @@ export default function ApprovedCampaignForm({
             <li>Share total view count from the group</li>
             <li>Share total reaction count (likes, replies, etc.)</li>
             <li>
-              Campaign will be marked as completed only after report submission.
-              Society becomes eligible for payout post this.
+              Campaign is auto-marked completed after live date and duration end.
+              Society becomes eligible for payout as per settlement workflow.
             </li>
             <li>
               {" "}

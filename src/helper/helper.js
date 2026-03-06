@@ -187,8 +187,17 @@ export const getCombinedStatus = (data) => {
       const hasLiveRange =
         !Number.isNaN(liveStart.getTime()) && !Number.isNaN(liveEnd.getTime());
 
-      // Slot time is optional now for approvals; skip live-window calc when missing.
-      if (!hasSlotTime || !hasLiveRange) {
+      if (!hasLiveRange) {
+        return `${formatToTitleCase(status)}`;
+      }
+
+      // Without slot times, go live for the full live_start_date -> live_end_date range.
+      if (!hasSlotTime) {
+        if (now >= liveStart && now <= liveEnd) {
+          status = "live";
+        } else if (now > liveEnd) {
+          status = "completed";
+        }
         return `${formatToTitleCase(status)}`;
       }
 
@@ -218,6 +227,8 @@ export const getCombinedStatus = (data) => {
         now <= slotEndTime
       ) {
         status = "live";
+      } else if (now > liveEnd) {
+        status = "completed";
       }
     }
 

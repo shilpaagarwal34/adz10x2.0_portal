@@ -224,9 +224,7 @@ const LiveApprovedView = () => {
       formToSend.append("id", campaignData.advertisement.id);
     }
 
-    if (shareToCompany) {
-      formToSend.append("campaign_status", "completed");
-    }
+    // Completion is now time-driven from live_end_date; do not force it via report submit.
 
     for (let [key, val] of formToSend.entries()) {
       console.log(`${key}:`, val instanceof File ? val.name : val);
