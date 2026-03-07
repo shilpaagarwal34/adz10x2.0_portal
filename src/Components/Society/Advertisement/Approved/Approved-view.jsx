@@ -128,28 +128,13 @@ const ApprovedView = () => {
   const validateForm = () => {
     const newErrors = {};
 
-    if (!formData.no_view) {
-      newErrors.no_view = "No. of View is required.";
-    } else if (!/^\d+$/.test(formData.no_view)) {
+    if (formData.no_view && !/^\d+$/.test(formData.no_view)) {
       newErrors.no_view = "No. of View must be a valid number.";
     }
 
-    if (!formData.no_reactions) {
-      newErrors.no_reactions = "No. of Reaction is required.";
-    } else if (!/^\d+$/.test(formData.no_reactions)) {
+    if (formData.no_reactions && !/^\d+$/.test(formData.no_reactions)) {
       newErrors.no_reactions = "No. of Reaction must be a valid number.";
     }
-    // console.log(formData);
-    if (!formData?.viewPreviewUrl)
-      newErrors.viewScreenshot = "Screenshot required.";
-
-    if (!formData?.reactionPreviewUrl)
-      newErrors.reactionScreenshot = "Screenshot required.";
-
-    if (!formData?.after24PreviewUrl)
-      newErrors.after24Screenshot = "Screenshot required.";
-
-    // console.log(formData);
 
     return newErrors;
   };

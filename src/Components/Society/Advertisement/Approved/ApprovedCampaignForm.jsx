@@ -66,14 +66,14 @@ export default function ApprovedCampaignForm({
 
   return (
     <Row className="p-3">
-      <h6 className="mb-3 fw-bold">Upload Advertisement Report Details</h6>
+      <h6 className="mb-3 fw-bold">Upload Advertisement Report Details (Optional)</h6>
 
       {/* Row for No. of Views & No. of Reactions */}
       <Row className="mb-3">
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              No. of View
+              No. of View (Optional)
             </Form.Label>
             <Form.Control
               className="form-control-sm"
@@ -90,7 +90,7 @@ export default function ApprovedCampaignForm({
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              No. of Reactions
+              No. of Reactions (Optional)
             </Form.Label>
             <Form.Control
               className="form-control-sm"
@@ -113,7 +113,7 @@ export default function ApprovedCampaignForm({
         <Col md={4} className="pe-0">
           <Form.Group>
             <Form.Label className="fw-bold " style={{ fontSize: "12px" }}>
-              Upload View Screenshot
+              Upload View Screenshot (Optional)
             </Form.Label>
             <Card
               {...getRootProps()}
@@ -171,7 +171,7 @@ export default function ApprovedCampaignForm({
         <Col md={4} className="pe-0">
           <Form.Group>
             <Form.Label className="fw-bold" style={{ fontSize: "12px" }}>
-              Upload Reaction Screenshot
+              Upload Reaction Screenshot (Optional)
             </Form.Label>
             <Card
               {...getRootProps()}
@@ -226,7 +226,7 @@ export default function ApprovedCampaignForm({
         <Col md={4} className="pe-0">
           <Form.Group>
             <Form.Label className="fw-bold" style={{ fontSize: "12px" }}>
-              Upload After 24 hrs Ads Screenshot
+              Upload After 24 hrs Ads Screenshot (Optional)
             </Form.Label>
             <Card
               {...getRootProps()}
@@ -299,11 +299,10 @@ export default function ApprovedCampaignForm({
       <Card className="border-0 mt-3">
         <h6 className="fw-bold m-0 custom-label">Note:</h6>
         <p style={{ fontSize: "12px" }} className="mb-0">
-          Final Report Submission (After 24 Hours):
+          Final Report Submission (After 24 Hours) is optional:
           <ul>
-            <li>Confirm ad was visible for 24 hours in the group</li>
-            <li>Share total view count from the group</li>
-            <li>Share total reaction count (likes, replies, etc.)</li>
+            <li>You can submit without views, reactions, or screenshots.</li>
+            <li>If available, share counts and screenshots for better reporting.</li>
             <li>
               Campaign is auto-marked completed after live date and duration end.
               Society becomes eligible for payout as per settlement workflow.

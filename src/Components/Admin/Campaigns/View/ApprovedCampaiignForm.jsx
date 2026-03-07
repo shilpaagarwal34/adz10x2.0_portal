@@ -74,14 +74,14 @@ const ApprovedCampaiignForm = ({
     <Card sx={{ p: 2, borderRadius: "10px", height: "auto" }}>
       <Grid container spacing={3}>
         <Row className="ps-4 pt-3">
-          <h6 className="mb-3 fw-bold">Upload Advertisement Report Details</h6>
+          <h6 className="mb-3 fw-bold">Upload Advertisement Report Details (Optional)</h6>
 
           {/* Row for No. of Views & No. of Reactions */}
           <Row className="mb-3">
             <Col md={4}>
               <Form.Group>
                 <Form.Label className="fw-bold custom-label">
-                  No. of View
+                  No. of View (Optional)
                 </Form.Label>
                 <Form.Control
                   className="form-control-sm"
@@ -98,7 +98,7 @@ const ApprovedCampaiignForm = ({
             <Col md={4}>
               <Form.Group>
                 <Form.Label className="fw-bold custom-label">
-                  No. of Reactions
+                  No. of Reactions (Optional)
                 </Form.Label>
                 <Form.Control
                   className="form-control-sm"
@@ -121,7 +121,7 @@ const ApprovedCampaiignForm = ({
             <Col md={4} className="pe-0">
               <Form.Group>
                 <Form.Label className="fw-bold " style={{ fontSize: "12px" }}>
-                  Upload View Screenshot
+                  Upload View Screenshot (Optional)
                 </Form.Label>
                 <div
                   {...getRootProps()}
@@ -197,7 +197,7 @@ const ApprovedCampaiignForm = ({
             <Col md={4} className="pe-0">
               <Form.Group>
                 <Form.Label className="fw-bold" style={{ fontSize: "12px" }}>
-                  Upload Reaction Screenshot
+                  Upload Reaction Screenshot (Optional)
                 </Form.Label>
                 <div
                   {...getRootProps()}
@@ -277,7 +277,7 @@ const ApprovedCampaiignForm = ({
             <Col md={4} className="pe-0">
               <Form.Group>
                 <Form.Label className="fw-bold" style={{ fontSize: "12px" }}>
-                  Upload After 24 hrs Ads Screenshot
+                  Upload After 24 hrs Ads Screenshot (Optional)
                 </Form.Label>
                 <div
                   {...getRootProps()}
@@ -386,28 +386,19 @@ const ApprovedCampaiignForm = ({
           <div className="border-0 mt-2">
             <h6 className="fw-bold m-0 custom-label">Note:</h6>
             <p style={{ fontSize: "12px" }}>
-              Verify all screenshots: Ensure uploaded images are clear and show
-              proper ad placement.
+              Report fields are optional. You can save/share without entering
+              views, reactions, or screenshots.
               <ul>
                 <li>
-                  Cross-check view & reaction counts: Confirm the reported
-                  numbers match with what’s visible in the screenshot.
+                  If provided, cross-check view & reaction counts with uploaded
+                  screenshots.
                 </li>
                 <li>
-                  Review performance remarks: Check that the remarks are
-                  relevant, professional, and suitable to be shared with the
-                  company.
+                  Performance remarks are optional and can be updated later.
                 </li>
                 <li>
-                  {" "}
-                  Flag incomplete or incorrect entries: If anything is missing
-                  or unclear, mark it for re-verification or follow-up with the
-                  society.
-                </li>
-                <li>
-                  Approve only after full validation: Mark the campaign as
-                  “Approved” only if all screenshots, data, and remarks are
-                  accurate and complete.
+                  Settlement and completion are handled by the campaign life
+                  cycle and admin transfer workflow.
                 </li>
               </ul>
             </p>
