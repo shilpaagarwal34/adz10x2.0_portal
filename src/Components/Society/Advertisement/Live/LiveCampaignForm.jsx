@@ -15,7 +15,7 @@ export default function LiveCampaignForm({
 
   return (
     <Row className="p-3">
-      <Col md={6} className="p-0">
+      <Col className="p-0">
         <Card className="px-2 py-1 border-0 position-relative">
           <div className="position-relative">
             <CreativeTypeRender data={campaignData?.logs} type={creativeType} />
