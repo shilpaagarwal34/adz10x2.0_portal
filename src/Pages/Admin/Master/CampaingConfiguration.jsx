@@ -22,15 +22,11 @@ import { adminHasPrivilege } from "../../../helper/helper.js";
 
 const FALLBACK_PLATFORMS = [
   { media_type: "lift_branding_panels", label: "Lift branding panels" },
-  { media_type: "notice_board_sponsorship", label: "Notice board sponsorship" },
-  { media_type: "gate_entry_exit_branding", label: "Gate entry/exit branding" },
-  { media_type: "society_kiosk", label: "Society kiosk" },
-  {
-    media_type: "society_newsletter_sponsor_slots",
-    label: "Society newsletter sponsor slots",
-  },
-  { media_type: "whatsapp_promotional_day", label: "WhatsApp promotional day" },
-  { media_type: "event_sponsorship", label: "Event sponsorship" },
+  { media_type: "notice_board_sponsorship", label: "Notice Board Advertising" },
+  { media_type: "gate_entry_exit_branding", label: "Main Gate Branding" },
+  { media_type: "society_kiosk", label: "Society Kiosk Activities" },
+  { media_type: "whatsapp_promotional_day", label: "WhatsApp Group Promotion" },
+  { media_type: "event_sponsorship", label: "Society Event Sponsorship" },
 ];
 
 const CampaignConfiguration = () => {

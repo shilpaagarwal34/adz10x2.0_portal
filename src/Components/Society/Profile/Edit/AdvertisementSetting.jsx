@@ -25,15 +25,11 @@ import { useNavigate } from "react-router-dom";
 
 const mediaSlots = [
   { value: "lift_branding_panels", label: "Lift branding panels" },
-  { value: "notice_board_sponsorship", label: "Notice board sponsorship" },
-  { value: "gate_entry_exit_branding", label: "Gate entry/exit branding" },
-  { value: "society_kiosk", label: "Society kiosk" },
-  {
-    value: "society_newsletter_sponsor_slots",
-    label: "Society newsletter sponsor slots",
-  },
-  { value: "whatsapp_promotional_day", label: "WhatsApp promotional day" },
-  { value: "event_sponsorship", label: "Event sponsorship" },
+  { value: "notice_board_sponsorship", label: "Notice Board Advertising" },
+  { value: "gate_entry_exit_branding", label: "Main Gate Branding" },
+  { value: "society_kiosk", label: "Society Kiosk Activities" },
+  { value: "whatsapp_promotional_day", label: "WhatsApp Group Promotion" },
+  { value: "event_sponsorship", label: "Society Event Sponsorship" },
 ];
 
 const adTypes = [
@@ -244,7 +240,7 @@ const AdvertisementSetting = ({
                 card: existing || null,
               };
             })
-        );
+        ).filter((s) => s.media_type !== "society_newsletter_sponsor_slots");
         // Dedupe by media_type so toggling "Offered" only affects one row
         const seen = new Set();
         const slotsDeduped = slotsWithCards.filter((s) => {
@@ -451,7 +447,7 @@ const AdvertisementSetting = ({
         });
         if (invalidWhatsappCard) {
           toast.error(
-            "For WhatsApp promotional day, select days, time slot, group name, image and number of flats."
+            "For WhatsApp Group Promotion, select days, time slot, group name, image and number of flats."
           );
           setRateSaving(false);
           return;
@@ -884,12 +880,6 @@ const AdvertisementSetting = ({
                   </AccordionSummary>
                   <AccordionDetails sx={{ pt: 0, pb: 2, px: 2 }}>
                     <div className="row g-3">
-                      <div className="col-12">
-                        <label className="small fw-semibold text-secondary d-block mb-1">Generic T&C</label>
-                        <p className="small text-body mb-0" style={{ lineHeight: 1.5 }}>
-                          {item.generic_terms || "—"}
-                        </p>
-                      </div>
                       <div className="col-12 col-md-6">
                         <label className="small fw-semibold text-secondary d-block mb-2">Rate for 15 days</label>
                         <div
@@ -936,6 +926,12 @@ const AdvertisementSetting = ({
                         {rateErrorIndices.includes(idx) && (
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
                         )}
+                      </div>
+                      <div className="col-12">
+                        <label className="small fw-semibold text-secondary d-block mb-1">Generic T&C</label>
+                        <p className="small text-body mb-0" style={{ lineHeight: 1.5 }}>
+                          {item.generic_terms || "—"}
+                        </p>
                       </div>
                       {item.media_type === "whatsapp_promotional_day" && (
                       <div className="col-12">

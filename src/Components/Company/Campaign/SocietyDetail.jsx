@@ -12,12 +12,11 @@ import Skeleton from "react-loading-skeleton";
 
 const MEDIA_TYPE_LABELS = {
   lift_branding_panels: "Lift branding",
-  notice_board_sponsorship: "Notice board",
-  gate_entry_exit_branding: "Gate branding",
-  society_kiosk: "Society kiosk",
-  society_newsletter_sponsor_slots: "Newsletter",
-  whatsapp_promotional_day: "WhatsApp",
-  event_sponsorship: "Event sponsorship",
+  notice_board_sponsorship: "Notice Board Advertising",
+  gate_entry_exit_branding: "Main Gate Branding",
+  society_kiosk: "Society Kiosk Activities",
+  whatsapp_promotional_day: "WhatsApp Group Promotion",
+  event_sponsorship: "Society Event Sponsorship",
 };
 
 const SocietyDeatil = ({

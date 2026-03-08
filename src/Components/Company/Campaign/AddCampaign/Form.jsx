@@ -34,15 +34,11 @@ const dayNameToNumber = {
 
 const DEFAULT_MEDIA_SLOT_OPTIONS = [
   { value: "lift_branding_panels", label: "Lift branding panels" },
-  { value: "notice_board_sponsorship", label: "Notice board sponsorship" },
-  { value: "gate_entry_exit_branding", label: "Gate entry/exit branding" },
-  { value: "society_kiosk", label: "Society kiosk" },
-  {
-    value: "society_newsletter_sponsor_slots",
-    label: "Society newsletter sponsor slots",
-  },
-  { value: "whatsapp_promotional_day", label: "WhatsApp promotional day" },
-  { value: "event_sponsorship", label: "Event sponsorship" },
+  { value: "notice_board_sponsorship", label: "Notice Board Advertising" },
+  { value: "gate_entry_exit_branding", label: "Main Gate Branding" },
+  { value: "society_kiosk", label: "Society Kiosk Activities" },
+  { value: "whatsapp_promotional_day", label: "WhatsApp Group Promotion" },
+  { value: "event_sponsorship", label: "Society Event Sponsorship" },
 ];
 
 export default function CampaignForm({
