@@ -935,17 +935,19 @@ const AdvertisementSetting = ({
                           <input
                             type="number"
                             min="0"
-                            placeholder="0"
-                            value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
+                            value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : 0}
                             onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
                             style={{
                               flex: 1,
+                              minWidth: 0,
                               border: "none",
                               background: "transparent",
                               fontSize: "1.5rem",
                               fontWeight: 700,
                               color: "#0f172a",
                               outline: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "textfield",
                             }}
                           />
                         </div>
@@ -958,6 +960,40 @@ const AdvertisementSetting = ({
                         <p className="small text-body mb-0" style={{ lineHeight: 1.5 }}>
                           {item.generic_terms || "—"}
                         </p>
+                      </div>
+                      <div className="col-12">
+                        <label className="small fw-semibold text-secondary d-block mb-2">Society terms (added with Generic T&C)</label>
+                        <div className="row">
+                          {termsOptions.map((term) => (
+                            <div className="col-12 col-md-6" key={`${item.media_type}-${term}`}>
+                              <FormControlLabel
+                                sx={{ margin: 0, alignItems: "flex-start", display: "flex" }}
+                                control={
+                                  <Checkbox
+                                    size="small"
+                                    checked={
+                                      Array.isArray(item.society_terms) &&
+                                      item.society_terms.includes(term)
+                                    }
+                                    onChange={(e) =>
+                                      toggleSocietyTerm(
+                                        item.media_type,
+                                        term,
+                                        e.target.checked
+                                      )
+                                    }
+                                    disabled={!item.is_offered}
+                                  />
+                                }
+                                label={
+                                  <span className="small" style={{ color: "#334155", lineHeight: 1.4 }}>
+                                    {term}
+                                  </span>
+                                }
+                              />
+                            </div>
+                          ))}
+                        </div>
                       </div>
                       {item.media_type === "whatsapp_promotional_day" && (
                       <div className="col-12">
@@ -1044,25 +1080,12 @@ const AdvertisementSetting = ({
                                 <div
                                   style={{
                                     fontSize: "12px",
-                                    fontWeight: 600,
-                                    color: "#475569",
-                                    marginBottom: 6,
+                                    color: "#64748b",
+                                    lineHeight: 1.5,
                                   }}
                                 >
-                                  Time slot
-                                </div>
-                                <div
-                                  style={{
-                                    padding: "10px 14px",
-                                    background: "rgba(37,211,102,0.08)",
-                                    borderRadius: 8,
-                                    border: "1px solid rgba(37,211,102,0.25)",
-                                    fontSize: "14px",
-                                    fontWeight: 600,
-                                    color: "#059669",
-                                  }}
-                                >
-                                  9 AM – 9 PM (fixed)
+                                  <span style={{ fontWeight: 600, color: "#475569" }}>Time slot:</span>{" "}
+                                  9 AM – 9 PM (fixed for all promotions)
                                 </div>
                               </div>
                             </div>
@@ -1096,6 +1119,27 @@ const AdvertisementSetting = ({
                                     )
                                   }
                                   disabled={!item.is_offered}
+                                  sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: "12px",
+                                      backgroundColor: "rgba(255,255,255,0.9)",
+                                      "& fieldset": {
+                                        borderColor: "rgba(37,211,102,0.3)",
+                                        borderWidth: "1.5px",
+                                      },
+                                      "&:hover fieldset": {
+                                        borderColor: "rgba(37,211,102,0.5)",
+                                      },
+                                      "&.Mui-focused fieldset": {
+                                        borderColor: "#25D366",
+                                        borderWidth: "2px",
+                                        boxShadow: "0 0 0 3px rgba(37,211,102,0.15)",
+                                      },
+                                      "&.Mui-disabled": {
+                                        backgroundColor: "rgba(0,0,0,0.03)",
+                                      },
+                                    },
+                                  }}
                                 />
                               </div>
                               <div className="col-12 col-md-6">
@@ -1115,6 +1159,27 @@ const AdvertisementSetting = ({
                                     )
                                   }
                                   disabled={!item.is_offered}
+                                  sx={{
+                                    "& .MuiOutlinedInput-root": {
+                                      borderRadius: "12px",
+                                      backgroundColor: "rgba(255,255,255,0.9)",
+                                      "& fieldset": {
+                                        borderColor: "rgba(37,211,102,0.3)",
+                                        borderWidth: "1.5px",
+                                      },
+                                      "&:hover fieldset": {
+                                        borderColor: "rgba(37,211,102,0.5)",
+                                      },
+                                      "&.Mui-focused fieldset": {
+                                        borderColor: "#25D366",
+                                        borderWidth: "2px",
+                                        boxShadow: "0 0 0 3px rgba(37,211,102,0.15)",
+                                      },
+                                      "&.Mui-disabled": {
+                                        backgroundColor: "rgba(0,0,0,0.03)",
+                                      },
+                                    },
+                                  }}
                                 />
                               </div>
                               <div className="col-12">
@@ -1203,40 +1268,6 @@ const AdvertisementSetting = ({
                         </div>
                       </div>
                     )}
-                      <div className="col-12">
-                        <label className="small fw-semibold text-secondary d-block mb-2">Society terms (added with Generic T&C)</label>
-                        <div className="row">
-                          {termsOptions.map((term) => (
-                            <div className="col-12 col-md-6" key={`${item.media_type}-${term}`}>
-                              <FormControlLabel
-                                sx={{ margin: 0, alignItems: "flex-start", display: "flex" }}
-                                control={
-                                  <Checkbox
-                                    size="small"
-                                    checked={
-                                      Array.isArray(item.society_terms) &&
-                                      item.society_terms.includes(term)
-                                    }
-                                    onChange={(e) =>
-                                      toggleSocietyTerm(
-                                        item.media_type,
-                                        term,
-                                        e.target.checked
-                                      )
-                                    }
-                                    disabled={!item.is_offered}
-                                  />
-                                }
-                                label={
-                                  <span className="small" style={{ color: "#334155", lineHeight: 1.4 }}>
-                                    {term}
-                                  </span>
-                                }
-                              />
-                            </div>
-                          ))}
-                        </div>
-                      </div>
                     </div>
                   </AccordionDetails>
                 </Accordion>
@@ -1455,7 +1486,7 @@ const AdvertisementSetting = ({
                         <Form.Control
                           type="number"
                           min="0"
-                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
+                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : 0}
                           onChange={(e) =>
                             updateSocietyRate(item.media_type, e.target.value)
                           }
