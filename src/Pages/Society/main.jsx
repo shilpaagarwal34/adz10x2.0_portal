@@ -18,8 +18,6 @@ import CancelView from "../../Components/Society/Advertisement/Cancelled/Cancel-
 //Wallet
 import Wallet from "./Wallet/Wallet.jsx";
 
-// Payment
-import Payment from "./Payment.jsx";
 import Users from "./Users/Users.jsx";
 import Settings from "./Settings.jsx";
 import Footer from "./Footer.jsx";
@@ -140,15 +138,6 @@ function Society() {
             element={
               <PermissionRoute permission="wallet">
                 <Wallet />
-              </PermissionRoute>
-            }
-          />
-
-          <Route
-            path="/payment"
-            element={
-              <PermissionRoute permission="payments">
-                <Payment />
               </PermissionRoute>
             }
           />

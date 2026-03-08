@@ -17,7 +17,6 @@ import {
   Home as HomeIcon,
   Settings,
   Campaign,
-  Payment,
   Assessment,
   People,
   ViewList,
@@ -250,15 +249,6 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               "Wallet",
               <AccountBalanceWalletOutlinedIcon />,
               location.pathname.startsWith("/society/wallet"),
-              true
-            )}
-
-          {hasPrivilege("payments") &&
-            renderListItem(
-              "/society/payment",
-              "Payments",
-              <Payment />,
-              location.pathname === "/society/payment" || isActive,
               true
             )}
 

@@ -5,8 +5,7 @@ export default function WalletBalanceCard({ walletAmount }) {
   return (
     <div className="d-flex align-items-center justify-content-between wallet-card ">
       <div>
-        <h5 className="fw-bold">My Wallet</h5>
-        <p>Your current balance</p>
+        <h5 className="fw-bold">Revenue earned till date</h5>
         <p className="fw-bolder fs-2 text-white">
           ₹ {formatNumberWithCommas(walletAmount || 0)}
         </p>
