@@ -673,10 +673,11 @@ const AdvertisementSetting = ({
       style={
         showMediaManagementOnly
           ? {
-              border: "1px solid #e8edf4",
+              border: "1px solid #e2e8f0",
               borderRadius: "16px",
-              boxShadow: "0 10px 30px rgba(15, 23, 42, 0.06)",
+              boxShadow: "0 4px 20px rgba(1, 170, 35, 0.08)",
               fontFamily: "Inter, Segoe UI, sans-serif",
+              background: "linear-gradient(180deg, #ffffff 0%, #f8fffe 100%)",
             }
           : {}
       }
@@ -802,8 +803,8 @@ const AdvertisementSetting = ({
           {!showMediaManagementOnly && <h6 className="fw-bold">Media Rate Card</h6>}
           {showMediaManagementOnly ? (
             <div className="mt-3">
-              <p className="text-muted small mb-3">
-                Set your rates per 15-day slot and which platforms you offer. Lead time is 3 days; active duration is in multiples of 15 days.
+              <p className="small mb-3" style={{ color: "#64748b" }}>
+                Set your rates per 15-day slot and select which platforms to include in your rate card.
               </p>
               {mediaRates.map((item, idx) => (
                 <Accordion
@@ -816,17 +817,18 @@ const AdvertisementSetting = ({
                   }
                   disableGutters
                   sx={{
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "10px !important",
-                    "&:not(:last-child)": { mb: 1 },
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "12px !important",
+                    "&:not(:last-child)": { mb: 1.5 },
                     "&:before": { display: "none" },
                     overflow: "hidden",
+                    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
                   }}
                 >
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     sx={{
-                      backgroundColor: "#f8fafc",
+                      background: "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)",
                       "& .MuiAccordionSummary-content": {
                         alignItems: "center",
                         gap: 2,
@@ -845,36 +847,31 @@ const AdvertisementSetting = ({
                     >
                       {item.label}
                     </span>
-                    <FormControlLabel
-                      control={
-                        <Switch
-                          size="small"
-                          checked={item.is_offered}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            toggleOffered(idx, e.target.checked);
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                        />
-                      }
-                      label={
-                        <span
-                          style={{
-                            fontSize: "0.875rem",
-                            fontWeight: 600,
-                            color: item.is_offered ? "#059669" : "#64748b",
-                          }}
-                        >
-                          {item.is_offered ? "Offered" : "Not offered"}
-                        </span>
-                      }
-                      onClick={(e) => e.stopPropagation()}
+                    <Chip
+                      size="small"
+                      label={item.is_offered ? "In rate card" : "Excluded"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        toggleOffered(idx, !item.is_offered);
+                      }}
+                      sx={{
+                        cursor: "pointer",
+                        fontWeight: 600,
+                        fontSize: "0.75rem",
+                        background: item.is_offered
+                          ? "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)"
+                          : "#e2e8f0",
+                        color: item.is_offered ? "#fff" : "#64748b",
+                        border: "none",
+                      }}
                     />
                     {item.is_offered && (
                       <span
                         style={{
                           fontWeight: 700,
-                          color: "#0f172a",
+                          background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
+                          WebkitBackgroundClip: "text",
+                          WebkitTextFillColor: "transparent",
                           fontSize: "0.95rem",
                         }}
                         onClick={(e) => e.stopPropagation()}
@@ -894,19 +891,51 @@ const AdvertisementSetting = ({
                         </p>
                       </div>
                       <div className="col-12 col-md-6">
-                        <TextField
-                          fullWidth
-                          size="small"
-                          type="number"
-                          label="Society rate (₹) for 15 days"
-                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
-                          onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
-                          disabled={!item.is_offered}
-                          inputProps={{ min: 0 }}
-                          error={rateErrorIndices.includes(idx)}
-                          helperText={rateErrorIndices.includes(idx) ? "Enter rate for this platform" : ""}
-                          sx={{ maxWidth: 220 }}
-                        />
+                        <label className="small fw-semibold text-secondary d-block mb-2">Rate for 15 days</label>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "8px",
+                            padding: "12px 16px",
+                            borderRadius: "12px",
+                            background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                            border: rateErrorIndices.includes(idx)
+                              ? "2px solid #ef4444"
+                              : "2px solid #cbd5e1",
+                            maxWidth: 240,
+                          }}
+                        >
+                          <span
+                            style={{
+                              fontSize: "1.5rem",
+                              fontWeight: 700,
+                              color: "#0f172a",
+                            }}
+                          >
+                            ₹
+                          </span>
+                          <input
+                            type="number"
+                            min="0"
+                            placeholder="0"
+                            value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
+                            onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
+                            disabled={!item.is_offered}
+                            style={{
+                              flex: 1,
+                              border: "none",
+                              background: "transparent",
+                              fontSize: "1.5rem",
+                              fontWeight: 700,
+                              color: "#0f172a",
+                              outline: "none",
+                            }}
+                          />
+                        </div>
+                        {rateErrorIndices.includes(idx) && (
+                          <small className="text-danger d-block mt-1">Enter rate for this platform</small>
+                        )}
                       </div>
                       {item.media_type === "whatsapp_promotional_day" && (
                       <div className="col-12">
@@ -1112,19 +1141,32 @@ const AdvertisementSetting = ({
               <div className="d-flex gap-2 flex-wrap mt-4">
                 <Button
                   variant="outlined"
-                  color="primary"
                   onClick={() => saveMediaRates("draft")}
                   disabled={rateSaving}
-                  sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 600, minWidth: "140px" }}
+                  sx={{
+                    borderRadius: "12px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    minWidth: "140px",
+                    borderColor: "#01AA23",
+                    color: "#01AA23",
+                    "&:hover": { borderColor: "#0193FF", color: "#0193FF", backgroundColor: "rgba(1,147,255,0.06)" },
+                  }}
                 >
                   {rateSaving && rateAction === "draft" ? "Saving..." : "Save as draft"}
                 </Button>
                 <Button
                   variant="contained"
-                  color="primary"
                   onClick={() => saveMediaRates("submit")}
                   disabled={rateSaving}
-                  sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 600, minWidth: "140px" }}
+                  sx={{
+                    borderRadius: "12px",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    minWidth: "140px",
+                    background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
+                    "&:hover": { background: "linear-gradient(97.02deg, #019a20 0%, #0077d4 100%)" },
+                  }}
                 >
                   {rateSaving && rateAction === "submit" ? "Submitting..." : "Submit rates"}
                 </Button>
@@ -1329,6 +1371,7 @@ const AdvertisementSetting = ({
               </table>
             </div>
           )}
+          {!showMediaManagementOnly && (
           <div className="d-flex gap-2 flex-wrap" style={{ marginTop: "12px" }}>
             <Button
               variant="outlined"
@@ -1359,6 +1402,7 @@ const AdvertisementSetting = ({
               {rateSaving && rateAction === "submit" ? "Submitting..." : "Submit Rates"}
             </Button>
           </div>
+          )}
         </div>
       )}
 
