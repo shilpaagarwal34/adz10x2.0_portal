@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import DateFilter from "../../../Components/Common/DateFilter";
 import "../../../Pages/Styles/Society-Dashboard.css";
-import WalletBalanceCard from "../../../Components/Company/Wallet/WalletBalanceCard.jsx";
+import WalletBalanceCard from "../../../Components/Society/Wallet/WalletBalanceCard.jsx";
 import WalletTable from "../../../Components/Company/Wallet/WalletTable.jsx";
 
 import { fetchSocietyDataTable } from "../../../store/Actions/Company/Wallet/WalletActions.js";
