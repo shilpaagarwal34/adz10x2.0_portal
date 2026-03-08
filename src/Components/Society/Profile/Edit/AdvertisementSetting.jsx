@@ -440,8 +440,6 @@ const AdvertisementSetting = ({
             : [];
           return (
             selectedDays.length === 0 ||
-            !details.from_time ||
-            !details.to_time ||
             !details.whatsapp_group_name?.toString().trim() ||
             !details.whatsapp_image?.toString().trim() ||
             Number(details.number_of_flats || 0) <= 0
@@ -449,7 +447,7 @@ const AdvertisementSetting = ({
         });
         if (invalidWhatsappCard) {
           toast.error(
-            "For WhatsApp Group Promotion, select days, time slot, group name, image and number of flats."
+            "For WhatsApp Group Promotion, select days, group name, image and number of flats."
           );
           setRateSaving(false);
           return;
@@ -465,7 +463,11 @@ const AdvertisementSetting = ({
           society_terms: Array.isArray(item.society_terms) ? item.society_terms : [],
           whatsapp_details:
             item.media_type === "whatsapp_promotional_day"
-              ? item.whatsapp_details || null
+              ? {
+                  ...(item.whatsapp_details || {}),
+                  from_time: "09:00",
+                  to_time: "21:00",
+                }
               : null,
           effective_from: item.effective_from || new Date().toISOString().slice(0, 10),
           effective_to: item.effective_to || null,
@@ -1038,33 +1040,30 @@ const AdvertisementSetting = ({
                                   ))}
                                 </div>
                               </div>
-                              <div className="col-6 col-md-3">
-                                <TextField
-                                  fullWidth
-                                  size="small"
-                                  type="time"
-                                  label="From"
-                                  InputLabelProps={{ shrink: true }}
-                                  value={item?.whatsapp_details?.from_time || ""}
-                                  onChange={(e) =>
-                                    updateWhatsappDetails(item.media_type, "from_time", e.target.value)
-                                  }
-                                  disabled={!item.is_offered}
-                                />
-                              </div>
-                              <div className="col-6 col-md-3">
-                                <TextField
-                                  fullWidth
-                                  size="small"
-                                  type="time"
-                                  label="To"
-                                  InputLabelProps={{ shrink: true }}
-                                  value={item?.whatsapp_details?.to_time || ""}
-                                  onChange={(e) =>
-                                    updateWhatsappDetails(item.media_type, "to_time", e.target.value)
-                                  }
-                                  disabled={!item.is_offered}
-                                />
+                              <div className="col-12">
+                                <div
+                                  style={{
+                                    fontSize: "12px",
+                                    fontWeight: 600,
+                                    color: "#475569",
+                                    marginBottom: 6,
+                                  }}
+                                >
+                                  Time slot
+                                </div>
+                                <div
+                                  style={{
+                                    padding: "10px 14px",
+                                    background: "rgba(37,211,102,0.08)",
+                                    borderRadius: 8,
+                                    border: "1px solid rgba(37,211,102,0.25)",
+                                    fontSize: "14px",
+                                    fontWeight: 600,
+                                    color: "#059669",
+                                  }}
+                                >
+                                  9 AM – 9 PM (fixed)
+                                </div>
                               </div>
                             </div>
 
