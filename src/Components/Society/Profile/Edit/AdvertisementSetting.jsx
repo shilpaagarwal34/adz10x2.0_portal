@@ -14,7 +14,11 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
 } from "@mui/material";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { toast } from "react-toastify";
 import { adminHasPrivilege } from "../../../../helper/helper.js";
 import { useNavigate } from "react-router-dom";
@@ -82,6 +86,7 @@ const AdvertisementSetting = ({
   const [availabilityOpenByType, setAvailabilityOpenByType] = useState({});
   const [availabilityDatePickerByType, setAvailabilityDatePickerByType] =
     useState({});
+  const [expandedMediaType, setExpandedMediaType] = useState(null);
   const { days, loading: campaignLoading } = useSelector(
     (state) => state.society.campaignDays
   );
@@ -796,337 +801,114 @@ const AdvertisementSetting = ({
         <div className={showMediaManagementOnly ? "" : "mt-4"}>
           {!showMediaManagementOnly && <h6 className="fw-bold">Media Rate Card</h6>}
           {showMediaManagementOnly ? (
-            <div className="d-flex flex-column gap-3 mt-2">
+            <div className="mt-3">
+              <p className="text-muted small mb-3">
+                Set your rates per 15-day slot and which platforms you offer. Lead time is 3 days; active duration is in multiples of 15 days.
+              </p>
               {mediaRates.map((item, idx) => (
-                <div
+                <Accordion
                   key={`${item.media_type}-${idx}`}
-                  style={{
+                  expanded={expandedMediaType === item.media_type}
+                  onChange={() =>
+                    setExpandedMediaType((prev) =>
+                      prev === item.media_type ? null : item.media_type
+                    )
+                  }
+                  disableGutters
+                  sx={{
                     border: "1px solid #e2e8f0",
-                    borderRadius: "14px",
-                    padding: "14px",
-                    background:
-                      "linear-gradient(180deg, rgba(248,250,252,0.9) 0%, rgba(255,255,255,1) 100%)",
+                    borderRadius: "10px !important",
+                    "&:not(:last-child)": { mb: 1 },
+                    "&:before": { display: "none" },
+                    overflow: "hidden",
                   }}
                 >
-                  <div className="d-flex flex-wrap justify-content-between align-items-start gap-2 mb-2">
-                    <div>
-                      <div
-                        style={{
-                          display: "inline-block",
-                          fontSize: "28px",
-                          fontWeight: 700,
-                          lineHeight: 1.2,
-                          letterSpacing: "0.25px",
-                          color: "#ffffff",
-                          background:
-                            "linear-gradient(97.02deg, rgba(1,170,35,0.78) 0%, rgba(1,147,255,0.74) 100%)",
-                          padding: "8px 18px",
-                          borderRadius: "9px",
-                          border: "1px solid rgba(255,255,255,0.36)",
-                          boxShadow: "0 4px 12px rgba(1,147,255,0.25)",
-                          marginBottom: "6px",
-                        }}
-                      >
-                        {item.label}
-                      </div>
-                      <div className="d-flex gap-2 flex-wrap">
-                        <Chip
-                          size="small"
-                          label={`Lead: ${item.min_lead_days ?? 0} day(s)`}
-                          sx={{
-                            backgroundColor: "#e2e8f0",
-                            color: "#1e293b",
-                            fontWeight: 600,
-                            fontSize: "11px",
-                          }}
-                        />
-                        <Chip
-                          size="small"
-                          label={`Active: ${
-                            item.min_active_days || item.duration_days || "-"
-                          } day(s)`}
-                          sx={{
-                            backgroundColor: "#e2e8f0",
-                            color: "#1e293b",
-                            fontWeight: 600,
-                            fontSize: "11px",
-                          }}
-                        />
-                      </div>
-                    </div>
-
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    sx={{
+                      backgroundColor: "#f8fafc",
+                      "& .MuiAccordionSummary-content": {
+                        alignItems: "center",
+                        gap: 2,
+                        flexWrap: "wrap",
+                      },
+                    }}
+                  >
+                    <span
+                      style={{
+                        fontWeight: 600,
+                        fontSize: "1rem",
+                        color: "#0f172a",
+                        flex: 1,
+                        minWidth: "140px",
+                      }}
+                    >
+                      {item.label}
+                    </span>
                     <FormControlLabel
                       control={
                         <Switch
-                          id={`offered-${item.media_type}-${idx}`}
-                          checked={item.is_offered}
-                          onChange={(e) =>
-                            toggleOffered(idx, e.target.checked)
-                          }
                           size="small"
+                          checked={item.is_offered}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            toggleOffered(idx, e.target.checked);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
                         />
                       }
                       label={
                         <span
                           style={{
-                            fontSize: "16px",
-                            fontWeight: 700,
+                            fontSize: "0.875rem",
+                            fontWeight: 600,
                             color: item.is_offered ? "#059669" : "#64748b",
                           }}
                         >
-                          {item.is_offered ? "Offered" : "Not Offered"}
+                          {item.is_offered ? "Offered" : "Not offered"}
                         </span>
                       }
+                      onClick={(e) => e.stopPropagation()}
                     />
-                  </div>
-
-                  <div
-                    style={{
-                      fontSize: "14px",
-                      color: "#475569",
-                      background:
-                        "linear-gradient(97.02deg, rgba(1,170,35,0.08) 0%, rgba(1,147,255,0.08) 100%)",
-                      border: "1px solid rgba(1,147,255,0.22)",
-                      borderRadius: "10px",
-                      padding: "10px 12px",
-                    }}
-                  >
-                    <span style={{ fontWeight: 700, color: "#334155" }}>
-                      Generic T&C:
-                    </span>{" "}
-                    {item.generic_terms || "-"}
-                  </div>
-
-                  <div className="row mt-2 g-2">
-                    <div className="col-12">
-                      <div
+                    {item.is_offered && (
+                      <span
                         style={{
-                          border: "1px solid rgba(1,147,255,0.22)",
-                          borderRadius: "10px",
-                          padding: "10px",
-                          background:
-                            "linear-gradient(97.02deg, rgba(1,170,35,0.06) 0%, rgba(1,147,255,0.08) 100%)",
+                          fontWeight: 700,
+                          color: "#0f172a",
+                          fontSize: "0.95rem",
                         }}
+                        onClick={(e) => e.stopPropagation()}
                       >
-                        <div className="d-flex justify-content-between align-items-center flex-wrap gap-2">
-                          <div
-                            style={{
-                              display: "inline-block",
-                              fontSize: "14px",
-                              fontWeight: 700,
-                              color: "#0f172a",
-                              padding: "4px 10px",
-                              borderRadius: "999px",
-                              background:
-                                "linear-gradient(97.02deg, rgba(1,170,35,0.14) 0%, rgba(1,147,255,0.16) 100%)",
-                              border: "1px solid rgba(1,147,255,0.22)",
-                            }}
-                          >
-                            Platform Availability
-                          </div>
-                          <Button
-                            variant="text"
-                            size="small"
-                            onClick={() => toggleAvailabilitySection(item.media_type)}
-                            disabled={!item.is_offered}
-                            sx={{
-                              textTransform: "none",
-                              fontWeight: 700,
-                              color: "#0f4fd6",
-                              minWidth: "auto",
-                              px: 1,
-                            }}
-                          >
-                            {availabilityOpenByType?.[item.media_type]
-                              ? "Hide availability"
-                              : "Add / Edit availability"}
-                          </Button>
-                        </div>
-                        <div
-                          style={{
-                            fontSize: "11px",
-                            color: "#64748b",
-                            marginTop: "4px",
-                          }}
-                        >
-                          {getAvailabilitySummary(item)}
-                        </div>
-                        {availabilityOpenByType?.[item.media_type] && (
-                        <div className="row g-2 mt-1">
-                          <div className="col-12 col-md-6">
-                            <TextField
-                              fullWidth
-                              size="small"
-                              type="date"
-                              label="Available From"
-                              InputLabelProps={{ shrink: true }}
-                              value={item.effective_from || ""}
-                              onChange={(e) =>
-                                updateEffectiveDateRange(
-                                  item.media_type,
-                                  "effective_from",
-                                  e.target.value
-                                )
-                              }
-                              disabled={!item.is_offered}
-                              inputProps={{ max: item.effective_to || undefined }}
-                            />
-                          </div>
-                          <div className="col-12 col-md-6">
-                            <TextField
-                              fullWidth
-                              size="small"
-                              type="date"
-                              label="Available To"
-                              InputLabelProps={{ shrink: true }}
-                              value={item.effective_to || ""}
-                              onChange={(e) =>
-                                updateEffectiveDateRange(
-                                  item.media_type,
-                                  "effective_to",
-                                  e.target.value
-                                )
-                              }
-                              disabled={!item.is_offered}
-                              inputProps={{ min: item.effective_from || undefined }}
-                            />
-                          </div>
-                          <div className="col-12">
-                            <div
-                              style={{
-                                fontSize: "12px",
-                                fontWeight: 600,
-                                color: "#64748b",
-                                marginBottom: "4px",
-                              }}
-                            >
-                              Weekly availability (optional)
-                            </div>
-                            <div className="d-flex flex-wrap gap-1">
-                              {platformAvailabilityDayOptions.map((day) => (
-                                <FormControlLabel
-                                  key={`${item.media_type}-avail-${day.value}`}
-                                  sx={{ margin: "0 10px 0 0" }}
-                                  control={
-                                    <Checkbox
-                                      size="small"
-                                      checked={Boolean(
-                                        item?.availability_days?.includes(day.value)
-                                      )}
-                                      onChange={(e) =>
-                                        toggleAvailabilityDay(
-                                          item.media_type,
-                                          day.value,
-                                          e.target.checked
-                                        )
-                                      }
-                                      disabled={
-                                        !item.is_offered ||
-                                        (item?.availability_month_days || []).length > 0
-                                      }
-                                    />
-                                  }
-                                  label={
-                                    <span style={{ fontSize: "12px" }}>{day.label}</span>
-                                  }
-                                />
-                              ))}
-                            </div>
-                            {(item?.availability_month_days || []).length > 0 && (
-                              <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-                                Clear monthly dates to enable weekly selection.
-                              </span>
-                            )}
-                          </div>
-                          <div className="col-12">
-                            <div
-                              style={{
-                                fontSize: "12px",
-                                fontWeight: 600,
-                                color: "#64748b",
-                                marginBottom: "4px",
-                              }}
-                            >
-                              Monthly dates (optional)
-                            </div>
-                            <div className="d-flex gap-2 align-items-center flex-wrap">
-                              <TextField
-                                size="small"
-                                type="date"
-                                label="Select date"
-                                InputLabelProps={{ shrink: true }}
-                                value={availabilityDatePickerByType?.[item.media_type] || ""}
-                                onChange={(e) =>
-                                  setAvailabilityDatePickerByType((prev) => ({
-                                    ...prev,
-                                    [item.media_type]: e.target.value,
-                                  }))
-                                }
-                                disabled={
-                                  !item.is_offered ||
-                                  (item?.availability_days || []).length > 0
-                                }
-                                sx={{ minWidth: "200px" }}
-                              />
-                              <Button
-                                variant="outlined"
-                                size="small"
-                                onClick={() =>
-                                  addAvailabilityMonthDate(
-                                    item.media_type,
-                                    availabilityDatePickerByType?.[item.media_type]
-                                  )
-                                }
-                                disabled={
-                                  !item.is_offered ||
-                                  !availabilityDatePickerByType?.[item.media_type] ||
-                                  (item?.availability_days || []).length > 0
-                                }
-                                sx={{ textTransform: "none", fontWeight: 600 }}
-                              >
-                                Add date
-                              </Button>
-                            </div>
-                            {(item?.availability_days || []).length > 0 && (
-                              <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-                                Clear weekly days to enable monthly date selection.
-                              </span>
-                            )}
-                            <div className="d-flex flex-wrap gap-1 mt-2">
-                              {(item.availability_month_days || []).length ? (
-                                (item.availability_month_days || []).map((monthDay) => (
-                                  <Chip
-                                    key={`${item.media_type}-month-${monthDay}`}
-                                    size="small"
-                                    label={`Day ${monthDay}`}
-                                    onDelete={
-                                      item.is_offered
-                                        ? () =>
-                                            removeAvailabilityMonthDate(
-                                              item.media_type,
-                                              monthDay
-                                            )
-                                        : undefined
-                                    }
-                                    sx={{
-                                      backgroundColor: "#e2e8f0",
-                                      color: "#1e293b",
-                                      fontSize: "11px",
-                                    }}
-                                  />
-                                ))
-                              ) : (
-                                <span style={{ fontSize: "11px", color: "#94a3b8" }}>
-                                  No monthly dates selected
-                                </span>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-                        )}
+                        {item.society_rate !== "" && item.society_rate != null && Number(item.society_rate) > 0
+                          ? `₹ ${Number(item.society_rate)} / 15 days`
+                          : "—"}
+                      </span>
+                    )}
+                  </AccordionSummary>
+                  <AccordionDetails sx={{ pt: 0, pb: 2, px: 2 }}>
+                    <div className="row g-3">
+                      <div className="col-12">
+                        <label className="small fw-semibold text-secondary d-block mb-1">Generic T&C</label>
+                        <p className="small text-body mb-0" style={{ lineHeight: 1.5 }}>
+                          {item.generic_terms || "—"}
+                        </p>
                       </div>
-                    </div>
-                    {item.media_type === "whatsapp_promotional_day" && (
+                      <div className="col-12 col-md-6">
+                        <TextField
+                          fullWidth
+                          size="small"
+                          type="number"
+                          label="Society rate (₹) for 15 days"
+                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
+                          onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
+                          disabled={!item.is_offered}
+                          inputProps={{ min: 0 }}
+                          error={rateErrorIndices.includes(idx)}
+                          helperText={rateErrorIndices.includes(idx) ? "Enter rate for this platform" : ""}
+                          sx={{ maxWidth: 220 }}
+                        />
+                      </div>
+                      {item.media_type === "whatsapp_promotional_day" && (
                       <div className="col-12">
                         <div
                           style={{
@@ -1289,51 +1071,16 @@ const AdvertisementSetting = ({
                         </div>
                       </div>
                     )}
-                    <div className="col-12 col-lg-8">
-                      <div
-                        style={{
-                          border: "1px solid rgba(1,147,255,0.22)",
-                          borderRadius: "10px",
-                          padding: "10px",
-                          background:
-                            "linear-gradient(97.02deg, rgba(1,170,35,0.06) 0%, rgba(1,147,255,0.08) 100%)",
-                        }}
-                      >
-                        <div
-                          style={{
-                            display: "inline-block",
-                            fontSize: "14px",
-                            fontWeight: 700,
-                            color: "#0f172a",
-                            marginBottom: "8px",
-                            padding: "4px 10px",
-                            borderRadius: "999px",
-                            background:
-                              "linear-gradient(97.02deg, rgba(1,170,35,0.14) 0%, rgba(1,147,255,0.16) 100%)",
-                            border: "1px solid rgba(1,147,255,0.22)",
-                          }}
-                        >
-                          Society Terms (Will be added with Generic T&C)
-                        </div>
+                      <div className="col-12">
+                        <label className="small fw-semibold text-secondary d-block mb-2">Society terms (added with Generic T&C)</label>
                         <div className="row">
                           {termsOptions.map((term) => (
                             <div className="col-12 col-md-6" key={`${item.media_type}-${term}`}>
                               <FormControlLabel
-                                sx={{
-                                  margin: "0",
-                                  alignItems: "center",
-                                  "& .MuiFormControlLabel-label": {
-                                    marginTop: "0",
-                                  },
-                                }}
+                                sx={{ margin: 0, alignItems: "flex-start", display: "flex" }}
                                 control={
                                   <Checkbox
                                     size="small"
-                                    sx={{
-                                      paddingTop: "6px",
-                                      paddingBottom: "6px",
-                                      marginTop: "-1px",
-                                    }}
                                     checked={
                                       Array.isArray(item.society_terms) &&
                                       item.society_terms.includes(term)
@@ -1349,13 +1096,7 @@ const AdvertisementSetting = ({
                                   />
                                 }
                                 label={
-                                  <span
-                                    style={{
-                                      fontSize: "13px",
-                                      lineHeight: 1.3,
-                                      color: "#334155",
-                                    }}
-                                  >
+                                  <span className="small" style={{ color: "#334155", lineHeight: 1.4 }}>
                                     {term}
                                   </span>
                                 }
@@ -1365,40 +1106,29 @@ const AdvertisementSetting = ({
                         </div>
                       </div>
                     </div>
-
-                    <div className="col-12 col-lg-4">
-                      <div
-                        style={{
-                          border: "1px solid #e2e8f0",
-                          borderRadius: "10px",
-                          padding: "10px",
-                          backgroundColor: "#ffffff",
-                          height: "100%",
-                        }}
-                      >
-                        <TextField
-                          fullWidth
-                          size="small"
-                          type="number"
-                          label="Society Rate"
-                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
-                          onChange={(e) =>
-                            updateSocietyRate(item.media_type, e.target.value)
-                          }
-                          disabled={!item.is_offered}
-                          inputProps={{ min: 0 }}
-                          error={rateErrorIndices.includes(idx)}
-                          helperText={
-                            rateErrorIndices.includes(idx)
-                              ? "Please enter a rate for this offered item"
-                              : ""
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                  </AccordionDetails>
+                </Accordion>
               ))}
+              <div className="d-flex gap-2 flex-wrap mt-4">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={() => saveMediaRates("draft")}
+                  disabled={rateSaving}
+                  sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 600, minWidth: "140px" }}
+                >
+                  {rateSaving && rateAction === "draft" ? "Saving..." : "Save as draft"}
+                </Button>
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={() => saveMediaRates("submit")}
+                  disabled={rateSaving}
+                  sx={{ borderRadius: "10px", textTransform: "none", fontWeight: 600, minWidth: "140px" }}
+                >
+                  {rateSaving && rateAction === "submit" ? "Submitting..." : "Submit rates"}
+                </Button>
+              </div>
             </div>
           ) : (
             <div className="table-responsive">
@@ -1411,11 +1141,9 @@ const AdvertisementSetting = ({
                     <th>Available To</th>
                     <th>Weekly Days</th>
                     <th>Month Dates</th>
-                    <th>Lead Days</th>
-                    <th>Active Days</th>
                     <th>Generic T&C</th>
                     <th>Society T&C</th>
-                    <th>Society Rate</th>
+                    <th>Society Rate (15 days)</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -1554,12 +1282,6 @@ const AdvertisementSetting = ({
                             ))}
                           </div>
                         </div>
-                      </td>
-                      <td style={{ minWidth: "110px", fontSize: "12px" }}>
-                        {item.min_lead_days ?? 0}
-                      </td>
-                      <td style={{ minWidth: "110px", fontSize: "12px" }}>
-                        {item.min_active_days || item.duration_days || "-"}
                       </td>
                       <td style={{ minWidth: "220px", fontSize: "12px" }}>
                         {item.generic_terms || "-"}
