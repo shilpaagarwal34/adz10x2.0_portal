@@ -344,6 +344,7 @@ const AdvertisementSetting = ({
     const isEmpty = value === "" || value == null;
     const numericValue = isEmpty ? 0 : Number(value);
     const displayValue = isEmpty ? "" : numericValue;
+    const autoOffer = numericValue > 0;
     setMediaRates((prev) =>
       prev.map((item) => {
         if (item.media_type !== mediaType) return item;
@@ -355,6 +356,7 @@ const AdvertisementSetting = ({
           platform_commission_pct: commission,
           platform_rate: platformRate,
           company_rate: Number((numericValue + platformRate).toFixed(2)),
+          ...(autoOffer ? { is_offered: true } : {}),
         };
       })
     );
@@ -506,6 +508,18 @@ const AdvertisementSetting = ({
         };
       })
     );
+  };
+
+  const handleWhatsappImageFile = (mediaType, file) => {
+    if (!file || !file.type.startsWith("image/")) {
+      toast.error("Please select an image file (JPG, PNG, etc.).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      updateWhatsappDetails(mediaType, "whatsapp_image", reader.result);
+    };
+    reader.readAsDataURL(file);
   };
 
   const updateWhatsappDetails = (mediaType, key, value) => {
@@ -873,7 +887,7 @@ const AdvertisementSetting = ({
                         onClick={(e) => e.stopPropagation()}
                       >
                         {item.society_rate !== "" && item.society_rate != null && Number(item.society_rate) > 0
-                          ? `₹ ${Number(item.society_rate)} / 15 days`
+                          ? `₹ ${Number(item.society_rate)}${item.media_type === "whatsapp_promotional_day" ? " / ad" : " / 15 days"}`
                           : "—"}
                       </span>
                     )}
@@ -881,19 +895,30 @@ const AdvertisementSetting = ({
                   <AccordionDetails sx={{ pt: 0, pb: 2, px: 2 }}>
                     <div className="row g-3">
                       <div className="col-12 col-md-6">
-                        <label className="small fw-semibold text-secondary d-block mb-2">Rate for 15 days</label>
+                        <label
+                          className="d-block mb-2"
+                          style={{
+                            fontSize: "1rem",
+                            fontWeight: 700,
+                            color: "#0f172a",
+                            letterSpacing: "0.02em",
+                          }}
+                        >
+                          {item.media_type === "whatsapp_promotional_day" ? "Rate per Ad" : "Rate for 15 days"}
+                        </label>
                         <div
                           style={{
                             display: "flex",
                             alignItems: "center",
-                            gap: "8px",
-                            padding: "12px 16px",
+                            gap: "10px",
+                            padding: "14px 18px",
                             borderRadius: "12px",
-                            background: "linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%)",
+                            background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)",
                             border: rateErrorIndices.includes(idx)
                               ? "2px solid #ef4444"
-                              : "2px solid #cbd5e1",
-                            maxWidth: 240,
+                              : "2px solid #01AA23",
+                            boxShadow: "0 2px 8px rgba(1, 170, 35, 0.15)",
+                            maxWidth: 260,
                           }}
                         >
                           <span
@@ -911,7 +936,6 @@ const AdvertisementSetting = ({
                             placeholder="0"
                             value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
                             onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
-                            disabled={!item.is_offered}
                             style={{
                               flex: 1,
                               border: "none",
@@ -937,160 +961,244 @@ const AdvertisementSetting = ({
                       <div className="col-12">
                         <div
                           style={{
-                            border: "1px solid rgba(1,147,255,0.22)",
-                            borderRadius: "10px",
-                            padding: "10px",
-                            background:
-                              "linear-gradient(97.02deg, rgba(1,170,35,0.06) 0%, rgba(1,147,255,0.08) 100%)",
+                            border: "2px solid rgba(37, 211, 102, 0.35)",
+                            borderRadius: "16px",
+                            overflow: "hidden",
+                            background: "linear-gradient(180deg, rgba(37,211,102,0.04) 0%, rgba(255,255,255,1) 40%)",
+                            boxShadow: "0 4px 20px rgba(37,211,102,0.08)",
                           }}
                         >
                           <div
                             style={{
-                              display: "inline-block",
-                              fontSize: "14px",
-                              fontWeight: 700,
-                              color: "#0f172a",
-                              marginBottom: "8px",
-                              padding: "4px 10px",
-                              borderRadius: "999px",
-                              background:
-                                "linear-gradient(97.02deg, rgba(1,170,35,0.14) 0%, rgba(1,147,255,0.16) 100%)",
-                              border: "1px solid rgba(1,147,255,0.22)",
+                              padding: "14px 18px",
+                              background: "linear-gradient(90deg, rgba(37,211,102,0.15) 0%, rgba(37,211,102,0.06) 100%)",
+                              borderBottom: "1px solid rgba(37,211,102,0.2)",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 10,
                             }}
                           >
-                            WhatsApp Promotion Details
+                            <span style={{ fontSize: "1.25rem" }}>💬</span>
+                            <span
+                              style={{
+                                fontSize: "15px",
+                                fontWeight: 700,
+                                color: "#0f172a",
+                              }}
+                            >
+                              WhatsApp Promotion Details
+                            </span>
                           </div>
 
-                          <div className="row g-2 mb-2">
-                            <div className="col-12">
-                              <div
-                                style={{
-                                  fontSize: "13px",
-                                  fontWeight: 700,
-                                  color: "#334155",
-                                  marginBottom: "6px",
-                                }}
-                              >
-                                Select Days
+                          <div style={{ padding: "18px" }}>
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: 700,
+                                color: "#059669",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.5px",
+                                marginBottom: 10,
+                              }}
+                            >
+                              Schedule
+                            </div>
+                            <div className="row g-2 mb-3">
+                              <div className="col-12">
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
+                                  Select days
+                                </div>
+                                <div className="d-flex flex-wrap gap-2">
+                                  {whatsappDayOptions.map((day) => (
+                                    <FormControlLabel
+                                      key={`${item.media_type}-${day.value}`}
+                                      sx={{ margin: 0 }}
+                                      control={
+                                        <Checkbox
+                                          size="small"
+                                          checked={Boolean(
+                                            item?.whatsapp_details?.selected_days?.includes(day.value)
+                                          )}
+                                          onChange={(e) =>
+                                            toggleWhatsappDay(
+                                              item.media_type,
+                                              day.value,
+                                              e.target.checked
+                                            )
+                                          }
+                                          disabled={!item.is_offered}
+                                          sx={{
+                                            color: "rgba(37,211,102,0.6)",
+                                            "&.Mui-checked": { color: "#25D366" },
+                                          }}
+                                        />
+                                      }
+                                      label={<span style={{ fontSize: "12px", color: "#334155" }}>{day.label}</span>}
+                                    />
+                                  ))}
+                                </div>
                               </div>
-                              <div className="d-flex flex-wrap gap-1">
-                                {whatsappDayOptions.map((day) => (
-                                  <FormControlLabel
-                                    key={`${item.media_type}-${day.value}`}
-                                    sx={{ margin: "0 10px 0 0" }}
-                                    control={
-                                      <Checkbox
+                              <div className="col-6 col-md-3">
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  type="time"
+                                  label="From"
+                                  InputLabelProps={{ shrink: true }}
+                                  value={item?.whatsapp_details?.from_time || ""}
+                                  onChange={(e) =>
+                                    updateWhatsappDetails(item.media_type, "from_time", e.target.value)
+                                  }
+                                  disabled={!item.is_offered}
+                                />
+                              </div>
+                              <div className="col-6 col-md-3">
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  type="time"
+                                  label="To"
+                                  InputLabelProps={{ shrink: true }}
+                                  value={item?.whatsapp_details?.to_time || ""}
+                                  onChange={(e) =>
+                                    updateWhatsappDetails(item.media_type, "to_time", e.target.value)
+                                  }
+                                  disabled={!item.is_offered}
+                                />
+                              </div>
+                            </div>
+
+                            <div
+                              style={{
+                                fontSize: "12px",
+                                fontWeight: 700,
+                                color: "#059669",
+                                textTransform: "uppercase",
+                                letterSpacing: "0.5px",
+                                marginBottom: 10,
+                                marginTop: 18,
+                              }}
+                            >
+                              Promotion content
+                            </div>
+                            <div className="row g-3">
+                              <div className="col-12 col-md-6">
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  label="WhatsApp Group Name"
+                                  placeholder="Enter group name"
+                                  value={item?.whatsapp_details?.whatsapp_group_name || ""}
+                                  onChange={(e) =>
+                                    updateWhatsappDetails(
+                                      item.media_type,
+                                      "whatsapp_group_name",
+                                      e.target.value
+                                    )
+                                  }
+                                  disabled={!item.is_offered}
+                                />
+                              </div>
+                              <div className="col-12 col-md-6">
+                                <TextField
+                                  fullWidth
+                                  size="small"
+                                  type="number"
+                                  label="Number of Flats"
+                                  placeholder="0"
+                                  inputProps={{ min: 0 }}
+                                  value={item?.whatsapp_details?.number_of_flats || ""}
+                                  onChange={(e) =>
+                                    updateWhatsappDetails(
+                                      item.media_type,
+                                      "number_of_flats",
+                                      Number(e.target.value || 0)
+                                    )
+                                  }
+                                  disabled={!item.is_offered}
+                                />
+                              </div>
+                              <div className="col-12">
+                                <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
+                                  WhatsApp Image
+                                </div>
+                                <div
+                                  style={{
+                                    border: "2px dashed rgba(37,211,102,0.4)",
+                                    borderRadius: 12,
+                                    padding: 16,
+                                    background: "rgba(37,211,102,0.04)",
+                                    textAlign: "center",
+                                  }}
+                                >
+                                  {item?.whatsapp_details?.whatsapp_image ? (
+                                    <div style={{ position: "relative", display: "inline-block" }}>
+                                      <img
+                                        src={
+                                          item.whatsapp_details.whatsapp_image.startsWith("data:")
+                                            ? item.whatsapp_details.whatsapp_image
+                                            : item.whatsapp_details.whatsapp_image
+                                        }
+                                        alt="WhatsApp preview"
+                                        style={{
+                                          maxWidth: 160,
+                                          maxHeight: 100,
+                                          objectFit: "contain",
+                                          borderRadius: 8,
+                                          border: "1px solid rgba(0,0,0,0.1)",
+                                        }}
+                                      />
+                                      <Button
                                         size="small"
-                                        checked={Boolean(
-                                          item?.whatsapp_details?.selected_days?.includes(
-                                            day.value
-                                          )
-                                        )}
-                                        onChange={(e) =>
-                                          toggleWhatsappDay(
-                                            item.media_type,
-                                            day.value,
-                                            e.target.checked
-                                          )
+                                        variant="outlined"
+                                        color="error"
+                                        onClick={() =>
+                                          updateWhatsappDetails(item.media_type, "whatsapp_image", "")
                                         }
                                         disabled={!item.is_offered}
+                                        sx={{
+                                          position: "absolute",
+                                          top: -8,
+                                          right: -8,
+                                          minWidth: 28,
+                                          height: 28,
+                                          borderRadius: "50%",
+                                          padding: 0,
+                                        }}
+                                      >
+                                        ×
+                                      </Button>
+                                    </div>
+                                  ) : (
+                                    <label
+                                      style={{
+                                        display: "flex",
+                                        flexDirection: "column",
+                                        alignItems: "center",
+                                        gap: 8,
+                                        cursor: item.is_offered ? "pointer" : "not-allowed",
+                                        opacity: item.is_offered ? 1 : 0.6,
+                                      }}
+                                    >
+                                      <input
+                                        type="file"
+                                        accept="image/*"
+                                        style={{ display: "none" }}
+                                        disabled={!item.is_offered}
+                                        onChange={(e) => {
+                                          const f = e.target.files?.[0];
+                                          if (f) handleWhatsappImageFile(item.media_type, f);
+                                          e.target.value = "";
+                                        }}
                                       />
-                                    }
-                                    label={
-                                      <span style={{ fontSize: "12px" }}>{day.label}</span>
-                                    }
-                                  />
-                                ))}
+                                      <span style={{ fontSize: "2rem" }}>📷</span>
+                                      <span style={{ fontSize: "13px", color: "#475569" }}>
+                                        Click to upload image (JPG, PNG)
+                                      </span>
+                                    </label>
+                                  )}
+                                </div>
                               </div>
-                            </div>
-                          </div>
-
-                          <div className="row g-2">
-                            <div className="col-12 col-md-6">
-                              <TextField
-                                fullWidth
-                                size="small"
-                                type="time"
-                                label="From Time"
-                                InputLabelProps={{ shrink: true }}
-                                value={item?.whatsapp_details?.from_time || ""}
-                                onChange={(e) =>
-                                  updateWhatsappDetails(
-                                    item.media_type,
-                                    "from_time",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={!item.is_offered}
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <TextField
-                                fullWidth
-                                size="small"
-                                type="time"
-                                label="To Time"
-                                InputLabelProps={{ shrink: true }}
-                                value={item?.whatsapp_details?.to_time || ""}
-                                onChange={(e) =>
-                                  updateWhatsappDetails(
-                                    item.media_type,
-                                    "to_time",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={!item.is_offered}
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <TextField
-                                fullWidth
-                                size="small"
-                                label="WhatsApp Group Name"
-                                value={item?.whatsapp_details?.whatsapp_group_name || ""}
-                                onChange={(e) =>
-                                  updateWhatsappDetails(
-                                    item.media_type,
-                                    "whatsapp_group_name",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={!item.is_offered}
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <TextField
-                                fullWidth
-                                size="small"
-                                label="WhatsApp Image (URL/Path)"
-                                value={item?.whatsapp_details?.whatsapp_image || ""}
-                                onChange={(e) =>
-                                  updateWhatsappDetails(
-                                    item.media_type,
-                                    "whatsapp_image",
-                                    e.target.value
-                                  )
-                                }
-                                disabled={!item.is_offered}
-                              />
-                            </div>
-                            <div className="col-12 col-md-6">
-                              <TextField
-                                fullWidth
-                                size="small"
-                                type="number"
-                                label="Number of Flats"
-                                inputProps={{ min: 0 }}
-                                value={item?.whatsapp_details?.number_of_flats || ""}
-                                onChange={(e) =>
-                                  updateWhatsappDetails(
-                                    item.media_type,
-                                    "number_of_flats",
-                                    Number(e.target.value || 0)
-                                  )
-                                }
-                                disabled={!item.is_offered}
-                              />
                             </div>
                           </div>
                         </div>

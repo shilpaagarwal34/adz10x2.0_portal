@@ -55,6 +55,23 @@ const CampaignTable = ({ data, status }) => {
     }
   };
 
+  const formatDateTime = (value) => {
+    if (!value) return "NA";
+    const parsed = new Date(value);
+    if (Number.isNaN(parsed.getTime())) return "NA";
+    return parsed.toLocaleString("en-GB", {
+      day: "2-digit",
+      month: "short",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+      hour12: true,
+    });
+  };
+
+  const getActiveFrom = (ad) => formatDateTime(ad?.live_start_date || ad?.campaign_date);
+  const getActiveTo = (ad) => formatDateTime(ad?.live_end_date || ad?.campaign_date);
+
   return (
     <>
     <Table bordered className="custom-label" style={{ minWidth: "1000px" }}>
@@ -68,7 +85,8 @@ const CampaignTable = ({ data, status }) => {
           {(status === "approved" ||
             status === "completed" ||
             status === "reject") && <th>Campaign Heading</th>}
-          <th>Ads Type</th>
+          <th>Advertisement From</th>
+          <th>Advertisement To</th>
           <th>Creative Type</th>
           {/* {(status === "live" || status === "approved") && (
             <th>Report Status</th>
@@ -99,7 +117,8 @@ const CampaignTable = ({ data, status }) => {
             {(status === "approved" ||
               status === "completed" ||
               status === "reject") && <td>{ad?.campaign_name}</td>}
-            <td>{formatCampaignType(ad?.campaign_type || "")}</td>
+            <td>{getActiveFrom(ad)}</td>
+            <td>{getActiveTo(ad)}</td>
             <td>{formatToTitleCase(ad?.creative_type)}</td>
             {/* {(status === "live" || status === "approved") && (
               <td>{formatToTitleCase(ad?.report_status || "")}</td>

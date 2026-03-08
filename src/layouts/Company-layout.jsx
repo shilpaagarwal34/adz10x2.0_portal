@@ -71,6 +71,7 @@ const CompanyLayout = ({ children }) => {
       <Sidebar
         menu={user?.menu}
         open={isSidebarOpen}
+        toggleDrawer={toggleSidebar}
         handleLogout={handleLogout}
       />
       <div className="main-content" style={{ backgroundColor: "#f7f7fe" }}>
