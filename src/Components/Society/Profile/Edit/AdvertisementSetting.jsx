@@ -356,7 +356,7 @@ const AdvertisementSetting = ({
           platform_commission_pct: commission,
           platform_rate: platformRate,
           company_rate: Number((numericValue + platformRate).toFixed(2)),
-          ...(autoOffer ? { is_offered: true } : {}),
+          is_offered: autoOffer,
         };
       })
     );
