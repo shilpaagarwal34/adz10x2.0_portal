@@ -44,12 +44,12 @@ const mediaHeadings = {
 // Default illustrative media images for each platform.
 // Place the final image files in your public/assets folder with matching paths.
 const defaultMediaImages = {
-  lift_branding_panels: "/assets/media/lift-branding-default.jpg",
-  notice_board_sponsorship: "/assets/media/notice-board-default.jpg",
-  gate_entry_exit_branding: "/assets/media/main-gate-default.jpg",
-  society_kiosk: "/assets/media/society-kiosk-default.jpg",
-  whatsapp_promotional_day: "/assets/media/whatsapp-default.jpg",
-  event_sponsorship: "/assets/media/event-sponsorship-default.jpg",
+  lift_branding_panels: "/assets/media/InLift%20Media.png",
+  notice_board_sponsorship: "/assets/media/Notice%20Board%20Media.png",
+  gate_entry_exit_branding: "/assets/media/Notice%20Board%20Media.png",
+  society_kiosk: "/assets/media/Kiosk%20Media.png",
+  whatsapp_promotional_day: "/assets/media/Notice%20Board%20Media.png",
+  event_sponsorship: "/assets/media/Kiosk%20Media.png",
 };
 
 const getMediaImageSrc = (mediaType, mediaImage) =>
