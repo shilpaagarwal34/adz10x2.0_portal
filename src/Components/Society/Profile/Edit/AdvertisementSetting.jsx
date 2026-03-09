@@ -949,7 +949,7 @@ const AdvertisementSetting = ({
                     >
                       {mediaHeadings[item.media_type] || item.label}
                     </div>
-                    <div className="row g-3 align-items-start">
+                    <div className="row g-3 align-items-stretch">
                       <div className="col-12 col-md-6 col-lg-5">
                         <label
                           className="d-block mb-2"
@@ -1014,7 +1014,7 @@ const AdvertisementSetting = ({
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
                         )}
                       </div>
-                      <div className="col-12 col-md-6 col-lg-7">
+                      <div className="col-12 col-md-6 col-lg-7 d-flex flex-column">
                         <div
                           className="small fw-bold text-uppercase mb-2"
                           style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
@@ -1025,12 +1025,13 @@ const AdvertisementSetting = ({
                           style={{
                             border: "2px dashed rgba(1, 170, 35, 0.4)",
                             borderRadius: 12,
-                            padding: 16,
-                            background: "rgba(1, 170, 35, 0.04)",
+                            padding: 12,
+                            background: "rgba(1, 170, 35, 0.06)",
+                            flex: 1,
+                            minHeight: 260,
                             display: "flex",
                             justifyContent: "flex-end",
                             alignItems: "center",
-                            minHeight: 200,
                           }}
                         >
                           {getMediaImageSrc(item.media_type, item.media_image) ? (
@@ -1038,12 +1039,13 @@ const AdvertisementSetting = ({
                               src={getMediaImageSrc(item.media_type, item.media_image)}
                               alt="Media"
                               style={{
-                                maxWidth: "100%",
-                                width: 320,
-                                maxHeight: 220,
+                                width: "100%",
+                                maxWidth: 420,
+                                height: "auto",
+                                maxHeight: 280,
                                 objectFit: "contain",
                                 borderRadius: 8,
-                                border: "1px solid rgba(0,0,0,0.1)",
+                                border: "1px solid rgba(0,0,0,0.08)",
                                 display: "block",
                               }}
                             />
