@@ -943,64 +943,60 @@ const AdvertisementSetting = ({
                         >
                           Advertising Media Rate
                         </div>
-                      </div>
-                      <div className="col-12 col-md-6">
-                        <label
-                          className="d-block mb-2"
-                          style={{
-                            fontSize: "0.95rem",
-                            fontWeight: 600,
-                            color: "#475569",
-                          }}
-                        >
-                          {item.media_type === "whatsapp_promotional_day" ? "Rate per Ad" : "Rate for 15 days"}
-                        </label>
-                        <div
-                          style={{
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "10px",
-                            padding: "14px 18px",
-                            borderRadius: "12px",
-                            background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)",
-                            border: rateErrorIndices.includes(idx)
-                              ? "2px solid #ef4444"
-                              : "2px solid #01AA23",
-                            boxShadow: "0 2px 8px rgba(1, 170, 35, 0.15)",
-                            maxWidth: 260,
-                          }}
-                        >
-                          <span
+                        <div className="d-flex flex-wrap align-items-center gap-3">
+                          <div
                             style={{
-                              fontSize: "1.5rem",
-                              fontWeight: 700,
-                              color: "#0f172a",
+                              display: "flex",
+                              alignItems: "center",
+                              gap: "10px",
+                              padding: "14px 18px",
+                              borderRadius: "12px",
+                              background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)",
+                              border: rateErrorIndices.includes(idx)
+                                ? "2px solid #ef4444"
+                                : "2px solid #01AA23",
+                              boxShadow: "0 2px 8px rgba(1, 170, 35, 0.15)",
+                              minWidth: 140,
                             }}
                           >
-                            ₹
+                            <span
+                              style={{
+                                fontSize: "1.5rem",
+                                fontWeight: 700,
+                                color: "#0f172a",
+                              }}
+                            >
+                              ₹
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={
+                                item.society_rate !== "" && item.society_rate != null
+                                  ? Number(item.society_rate)
+                                  : ""
+                              }
+                              onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
+                              style={{
+                                flex: 1,
+                                minWidth: 60,
+                                border: "none",
+                                background: "transparent",
+                                fontSize: "1.5rem",
+                                fontWeight: 700,
+                                color: "#0f172a",
+                                outline: "none",
+                                WebkitAppearance: "none",
+                                MozAppearance: "textfield",
+                              }}
+                            />
+                          </div>
+                          <span
+                            className="small fw-semibold text-secondary"
+                            style={{ fontSize: "13px" }}
+                          >
+                            Tenure of the rate — {item.media_type === "whatsapp_promotional_day" ? "per ad" : "15 days"}
                           </span>
-                          <input
-                            type="number"
-                            min="0"
-                            value={
-                              item.society_rate !== "" && item.society_rate != null
-                                ? Number(item.society_rate)
-                                : ""
-                            }
-                            onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
-                            style={{
-                              flex: 1,
-                              minWidth: 0,
-                              border: "none",
-                              background: "transparent",
-                              fontSize: "1.5rem",
-                              fontWeight: 700,
-                              color: "#0f172a",
-                              outline: "none",
-                              WebkitAppearance: "none",
-                              MozAppearance: "textfield",
-                            }}
-                          />
                         </div>
                         {rateErrorIndices.includes(idx) && (
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
