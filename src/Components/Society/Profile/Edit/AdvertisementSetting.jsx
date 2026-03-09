@@ -937,68 +937,64 @@ const AdvertisementSetting = ({
                     </div>
                     <div className="row g-3">
                       <div className="col-12">
-                        <div
-                          className="small fw-bold text-uppercase mb-2"
-                          style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
+                        <label
+                          className="d-block mb-2"
+                          style={{
+                            fontSize: "0.95rem",
+                            fontWeight: 600,
+                            color: "#475569",
+                          }}
                         >
-                          Advertising Media Rate
-                        </div>
-                        <div className="d-flex flex-wrap align-items-center gap-3">
-                          <div
+                          {item.media_type === "whatsapp_promotional_day"
+                            ? "Advertising Media Rate per ad"
+                            : "Advertising Media Rate for 15 days"}
+                        </label>
+                        <div
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "10px",
+                            padding: "14px 18px",
+                            borderRadius: "12px",
+                            background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)",
+                            border: rateErrorIndices.includes(idx)
+                              ? "2px solid #ef4444"
+                              : "2px solid #01AA23",
+                            boxShadow: "0 2px 8px rgba(1, 170, 35, 0.15)",
+                            minWidth: 140,
+                          }}
+                        >
+                          <span
                             style={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: "10px",
-                              padding: "14px 18px",
-                              borderRadius: "12px",
-                              background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)",
-                              border: rateErrorIndices.includes(idx)
-                                ? "2px solid #ef4444"
-                                : "2px solid #01AA23",
-                              boxShadow: "0 2px 8px rgba(1, 170, 35, 0.15)",
-                              minWidth: 140,
+                              fontSize: "1.5rem",
+                              fontWeight: 700,
+                              color: "#0f172a",
                             }}
                           >
-                            <span
-                              style={{
-                                fontSize: "1.5rem",
-                                fontWeight: 700,
-                                color: "#0f172a",
-                              }}
-                            >
-                              ₹
-                            </span>
-                            <input
-                              type="number"
-                              min="0"
-                              value={
-                                item.society_rate !== "" && item.society_rate != null
-                                  ? Number(item.society_rate)
-                                  : ""
-                              }
-                              onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
-                              style={{
-                                flex: 1,
-                                minWidth: 60,
-                                border: "none",
-                                background: "transparent",
-                                fontSize: "1.5rem",
-                                fontWeight: 700,
-                                color: "#0f172a",
-                                outline: "none",
-                                WebkitAppearance: "none",
-                                MozAppearance: "textfield",
-                              }}
-                            />
-                          </div>
-                          <span
-                            className="small fw-semibold text-secondary"
-                            style={{ fontSize: "13px" }}
-                          >
-                            {item.media_type === "whatsapp_promotional_day"
-                              ? "Advertising Media Rate per ad"
-                              : "Advertising Media Rate for 15 days"}
+                            ₹
                           </span>
+                          <input
+                            type="number"
+                            min="0"
+                            value={
+                              item.society_rate !== "" && item.society_rate != null
+                                ? Number(item.society_rate)
+                                : ""
+                            }
+                            onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
+                            style={{
+                              flex: 1,
+                              minWidth: 60,
+                              border: "none",
+                              background: "transparent",
+                              fontSize: "1.5rem",
+                              fontWeight: 700,
+                              color: "#0f172a",
+                              outline: "none",
+                              WebkitAppearance: "none",
+                              MozAppearance: "textfield",
+                            }}
+                          />
                         </div>
                         {rateErrorIndices.includes(idx) && (
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
@@ -1021,103 +1017,22 @@ const AdvertisementSetting = ({
                           }}
                         >
                           {item.media_image ? (
-                            <div style={{ position: "relative", display: "inline-block" }}>
-                              <img
-                                src={
-                                  item.media_image.startsWith("data:")
-                                    ? item.media_image
-                                    : item.media_image
-                                }
-                                alt="Media"
-                                style={{
-                                  maxWidth: 200,
-                                  maxHeight: 120,
-                                  objectFit: "contain",
-                                  borderRadius: 8,
-                                  border: "1px solid rgba(0,0,0,0.1)",
-                                }}
-                              />
-                              <Button
-                                size="small"
-                                variant="outlined"
-                                color="error"
-                                onClick={() => updateMediaImage(item.media_type, "")}
-                                disabled={!item.is_offered}
-                                sx={{
-                                  position: "absolute",
-                                  top: -8,
-                                  right: -8,
-                                  minWidth: 28,
-                                  height: 28,
-                                  borderRadius: "50%",
-                                  padding: 0,
-                                }}
-                              >
-                                ×
-                              </Button>
-                            </div>
-                          ) : (
-                            <label
+                            <img
+                              src={item.media_image}
+                              alt="Media"
                               style={{
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                gap: 8,
-                                cursor: item.is_offered ? "pointer" : "not-allowed",
-                                opacity: item.is_offered ? 1 : 0.6,
+                                maxWidth: 220,
+                                maxHeight: 140,
+                                objectFit: "contain",
+                                borderRadius: 8,
+                                border: "1px solid rgba(0,0,0,0.1)",
                               }}
-                            >
-                              <input
-                                type="file"
-                                accept="image/*"
-                                style={{ display: "none" }}
-                                disabled={!item.is_offered}
-                                onChange={(e) => {
-                                  const f = e.target.files?.[0];
-                                  if (f) handleMediaImageFile(item.media_type, f);
-                                  e.target.value = "";
-                                }}
-                              />
-                              <span style={{ fontSize: "1.5rem" }}>📷</span>
-                              <span style={{ fontSize: "13px", color: "#475569" }}>
-                                Click to upload media image (JPG, PNG)
-                              </span>
-                            </label>
+                            />
+                          ) : (
+                            <span style={{ fontSize: "13px", color: "#94a3b8" }}>
+                              No media image configured
+                            </span>
                           )}
-                        </div>
-                      </div>
-                      <div className="col-12">
-                        <label className="small fw-semibold text-secondary d-block mb-2">Society terms</label>
-                        <div className="row">
-                          {termsOptions.map((term) => (
-                            <div className="col-12 col-md-6" key={`${item.media_type}-${term}`}>
-                              <FormControlLabel
-                                sx={{ margin: 0, alignItems: "flex-start", display: "flex" }}
-                                control={
-                                  <Checkbox
-                                    size="small"
-                                    checked={
-                                      Array.isArray(item.society_terms) &&
-                                      item.society_terms.includes(term)
-                                    }
-                                    onChange={(e) =>
-                                      toggleSocietyTerm(
-                                        item.media_type,
-                                        term,
-                                        e.target.checked
-                                      )
-                                    }
-                                    disabled={!item.is_offered}
-                                  />
-                                }
-                                label={
-                                  <span className="small" style={{ color: "#334155", lineHeight: 1.4 }}>
-                                    {term}
-                                  </span>
-                                }
-                              />
-                            </div>
-                          ))}
                         </div>
                       </div>
                       {item.media_type === "whatsapp_promotional_day" && (
@@ -1456,7 +1371,6 @@ const AdvertisementSetting = ({
                     <th>Available To</th>
                     <th>Weekly Days</th>
                     <th>Month Dates</th>
-                    <th>Society T&C</th>
                     <th>Society Rate (15 days)</th>
                   </tr>
                 </thead>
@@ -1595,26 +1509,6 @@ const AdvertisementSetting = ({
                               />
                             ))}
                           </div>
-                        </div>
-                      </td>
-                      <td style={{ minWidth: "260px" }}>
-                        <div className="d-flex flex-column gap-1">
-                          {termsOptions.map((term) => (
-                            <Form.Check
-                              key={`${item.media_type}-${term}`}
-                              type="checkbox"
-                              label={<span style={{ fontSize: "11px" }}>{term}</span>}
-                              checked={
-                                Array.isArray(item.society_terms) &&
-                                item.society_terms.includes(term)
-                              }
-                              onChange={(e) =>
-                                toggleSocietyTerm(item.media_type, term, e.target.checked)
-                              }
-                              disabled={!item.is_offered}
-                              className="m-0"
-                            />
-                          ))}
                         </div>
                       </td>
                       <td>
