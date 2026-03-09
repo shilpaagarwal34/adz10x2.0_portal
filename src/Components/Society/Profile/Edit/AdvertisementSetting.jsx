@@ -968,47 +968,49 @@ const AdvertisementSetting = ({
                             display: "flex",
                             alignItems: "center",
                             gap: "10px",
-                            padding: "14px 18px",
+                            padding: "10px 14px",
                             borderRadius: "12px",
                             background: "linear-gradient(135deg, #ecfdf5 0%, #dbeafe 100%)",
                             border: rateErrorIndices.includes(idx)
                               ? "2px solid #ef4444"
                               : "2px solid #01AA23",
                             boxShadow: "0 2px 8px rgba(1, 170, 35, 0.15)",
-                            minWidth: 140,
+                            minWidth: 100,
+                            maxWidth: 200,
                           }}
                         >
-                          <span
-                            style={{
-                              fontSize: "1.5rem",
-                              fontWeight: 700,
-                              color: "#0f172a",
-                            }}
-                          >
-                            ₹
-                          </span>
-                          <input
-                            type="number"
-                            min="0"
-                            value={
-                              item.society_rate !== "" && item.society_rate != null
-                                ? Number(item.society_rate)
-                                : ""
-                            }
-                            onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
-                            style={{
-                              flex: 1,
-                              minWidth: 60,
-                              border: "none",
-                              background: "transparent",
-                              fontSize: "1.5rem",
-                              fontWeight: 700,
-                              color: "#0f172a",
-                              outline: "none",
-                              WebkitAppearance: "none",
-                              MozAppearance: "textfield",
-                            }}
-                          />
+<span
+                              style={{
+                                fontSize: "1.25rem",
+                                fontWeight: 700,
+                                color: "#0f172a",
+                              }}
+                            >
+                              ₹
+                            </span>
+                            <input
+                              type="number"
+                              min="0"
+                              value={
+                                item.society_rate !== "" && item.society_rate != null
+                                  ? Number(item.society_rate)
+                                  : ""
+                              }
+                              onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
+                              style={{
+                                flex: 1,
+                                minWidth: 40,
+                                maxWidth: 100,
+                                border: "none",
+                                background: "transparent",
+                                fontSize: "1.25rem",
+                                fontWeight: 700,
+                                color: "#0f172a",
+                                outline: "none",
+                                WebkitAppearance: "none",
+                                MozAppearance: "textfield",
+                              }}
+                            />
                         </div>
                         {rateErrorIndices.includes(idx) && (
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
@@ -1016,22 +1018,32 @@ const AdvertisementSetting = ({
                       </div>
                       <div className="col-12 col-md-6 col-lg-7 d-flex flex-column">
                         <div
-                          className="small fw-bold text-uppercase mb-2"
-                          style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
-                        >
-                          Media Pic
-                        </div>
-                        <div
                           style={{
                             flex: 1,
                             minHeight: 260,
                             display: "flex",
                             justifyContent: "flex-end",
                             alignItems: "center",
+                            position: "relative",
                           }}
                         >
                           {getMediaImageSrc(item.media_type, item.media_image) ? (
-                            <img
+                            <>
+                              <span
+                                className="fw-bold text-uppercase"
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  color: "#059669",
+                                  letterSpacing: "0.5px",
+                                  fontSize: "12px",
+                                  zIndex: 1,
+                                }}
+                              >
+                                Media Pic
+                              </span>
+                              <img
                               src={getMediaImageSrc(item.media_type, item.media_image)}
                               alt="Media"
                               style={{
@@ -1045,10 +1057,26 @@ const AdvertisementSetting = ({
                                 display: "block",
                               }}
                             />
+                            </>
                           ) : (
-                            <span style={{ fontSize: "13px", color: "#94a3b8", marginLeft: "auto" }}>
-                              No media image configured
-                            </span>
+                            <>
+                              <span
+                                className="fw-bold text-uppercase"
+                                style={{
+                                  position: "absolute",
+                                  top: 0,
+                                  left: 0,
+                                  color: "#059669",
+                                  letterSpacing: "0.5px",
+                                  fontSize: "12px",
+                                }}
+                              >
+                                Media Pic
+                              </span>
+                              <span style={{ fontSize: "13px", color: "#94a3b8", marginLeft: "auto" }}>
+                                No media image configured
+                              </span>
+                            </>
                           )}
                         </div>
                       </div>
