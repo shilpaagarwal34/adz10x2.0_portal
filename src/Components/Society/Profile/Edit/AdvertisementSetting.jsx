@@ -41,6 +41,20 @@ const mediaHeadings = {
   event_sponsorship: "Society Event Sponsorship",
 };
 
+// Default illustrative media images for each platform.
+// Place the final image files in your public/assets folder with matching paths.
+const defaultMediaImages = {
+  lift_branding_panels: "/assets/media/lift-branding-default.jpg",
+  notice_board_sponsorship: "/assets/media/notice-board-default.jpg",
+  gate_entry_exit_branding: "/assets/media/main-gate-default.jpg",
+  society_kiosk: "/assets/media/society-kiosk-default.jpg",
+  whatsapp_promotional_day: "/assets/media/whatsapp-default.jpg",
+  event_sponsorship: "/assets/media/event-sponsorship-default.jpg",
+};
+
+const getMediaImageSrc = (mediaType, mediaImage) =>
+  mediaImage || defaultMediaImages[mediaType] || "";
+
 const adTypes = [
   { id: "brandPromotion", label: "Brand Promotion" },
   { id: "leadGeneration", label: "Lead Generation" },
@@ -1016,9 +1030,9 @@ const AdvertisementSetting = ({
                             textAlign: "center",
                           }}
                         >
-                          {item.media_image ? (
+                          {getMediaImageSrc(item.media_type, item.media_image) ? (
                             <img
-                              src={item.media_image}
+                              src={getMediaImageSrc(item.media_type, item.media_image)}
                               alt="Media"
                               style={{
                                 maxWidth: 220,
