@@ -273,7 +273,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
           {hasPrivilege("profile") &&
             renderListItem(
               "/society/terms-and-conditions",
-              "Terms and Conditions",
+              "Rules and Regulations",
               <ViewList />,
               location.pathname === "/society/terms-and-conditions",
               true

@@ -995,52 +995,14 @@ const AdvertisementSetting = ({
                             className="small fw-semibold text-secondary"
                             style={{ fontSize: "13px" }}
                           >
-                            Tenure of the rate — {item.media_type === "whatsapp_promotional_day" ? "per ad" : "15 days"}
+                            {item.media_type === "whatsapp_promotional_day"
+                              ? "Advertising Media Rate per ad"
+                              : "Advertising Media Rate for 15 days"}
                           </span>
                         </div>
                         {rateErrorIndices.includes(idx) && (
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
                         )}
-                      </div>
-                      <div className="col-12">
-                        <div
-                          className="small fw-bold text-uppercase mb-2"
-                          style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
-                        >
-                          Media Tenure
-                        </div>
-                        <div className="row g-2">
-                          <div className="col-12 col-md-6">
-                            <TextField
-                              fullWidth
-                              size="small"
-                              type="date"
-                              label="Effective From"
-                              InputLabelProps={{ shrink: true }}
-                              value={item.effective_from || ""}
-                              onChange={(e) =>
-                                updateEffectiveDateRange(item.media_type, "effective_from", e.target.value)
-                              }
-                              disabled={!item.is_offered}
-                              inputProps={{ max: item.effective_to || undefined }}
-                            />
-                          </div>
-                          <div className="col-12 col-md-6">
-                            <TextField
-                              fullWidth
-                              size="small"
-                              type="date"
-                              label="Effective To"
-                              InputLabelProps={{ shrink: true }}
-                              value={item.effective_to || ""}
-                              onChange={(e) =>
-                                updateEffectiveDateRange(item.media_type, "effective_to", e.target.value)
-                              }
-                              disabled={!item.is_offered}
-                              inputProps={{ min: item.effective_from || undefined }}
-                            />
-                          </div>
-                        </div>
                       </div>
                       <div className="col-12">
                         <div

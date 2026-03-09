@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { Button, FormControlLabel, Checkbox } from "@mui/material";
-import { toast } from "react-toastify";
-import { fetchProfileData, updateProfile } from "../../store/Actions/Society/Profile/ProfileActions.js";
+import { useDispatch } from "react-redux";
+import { Button } from "@mui/material";
+import { fetchProfileData } from "../../store/Actions/Society/Profile/ProfileActions.js";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
 
 const T_C_SECTIONS = [
@@ -69,54 +68,30 @@ const T_C_SECTIONS = [
 function TermsAndConditions() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const [accepted, setAccepted] = useState(false);
-  const [saving, setSaving] = useState(false);
-
-  const { profileData } = useSelector((state) => state.society?.profile || {});
-  const termsAccepted = Boolean(
-    profileData?.terms_accepted ||
-    profileData?.society_profile?.terms_accepted
-  );
 
   useEffect(() => {
     dispatch(fetchProfileData());
   }, [dispatch]);
 
-  useEffect(() => {
-    setAccepted(termsAccepted);
-  }, [termsAccepted]);
-
-  const handleAccept = async () => {
-    if (!accepted) {
-      toast.info("Please check the box to accept the Terms and Conditions.");
-      return;
-    }
-    setSaving(true);
-    try {
-      const formData = new FormData();
-      formData.append("terms_accepted", "1");
-      const result = await dispatch(updateProfile(formData));
-      if (updateProfile.fulfilled.match(result)) {
-        toast.success("Terms and Conditions accepted.");
-        await dispatch(fetchProfileData());
-      } else {
-        toast.error("Failed to save. You can accept from Profile edit as well.");
-      }
-    } catch (e) {
-      toast.error("Something went wrong.");
-    } finally {
-      setSaving(false);
-    }
-  };
-
   return (
     <PermissionRoute permission="profile">
-      <div className="p-3 p-sm-4 bg-white rounded shadow-sm" style={{ maxWidth: 720, margin: "0 auto" }}>
-        <h4 className="fw-bold mb-3">Generic Rules for Society Media (Adz10x Platform)</h4>
-        <p className="text-secondary small mb-4">
-          Please read and accept the following terms and conditions for using the society portal and advertising services.
+      <div
+        className="p-3 p-sm-4 bg-white rounded shadow-sm d-flex flex-column"
+        style={{
+          maxWidth: 720,
+          margin: "0 auto",
+          minHeight: "calc(100vh - 140px)",
+          boxSizing: "border-box",
+        }}
+      >
+        <h4 className="fw-bold mb-2">Generic Rules for Society Media (Adz10x Platform)</h4>
+        <p className="text-secondary small mb-3">
+          The following rules and regulations are for reference. No acceptance is required.
         </p>
-        <div className="mb-4" style={{ maxHeight: "60vh", overflowY: "auto" }}>
+        <div
+          className="overflow-auto mb-3"
+          style={{ flex: "1 1 0", minHeight: 0 }}
+        >
           {T_C_SECTIONS.map((section, sIdx) => (
             <div key={sIdx} className="mb-4">
               <h6 className="fw-bold text-dark mb-2">{section.title}</h6>
@@ -132,32 +107,7 @@ function TermsAndConditions() {
             </div>
           ))}
         </div>
-        <div className="border rounded p-3 bg-light mb-4">
-          <FormControlLabel
-            control={
-              <Checkbox
-                checked={accepted}
-                onChange={(e) => setAccepted(e.target.checked)}
-                color="primary"
-              />
-            }
-            label={
-              <span className="small fw-semibold">
-                I have read and accept the Terms and Conditions
-              </span>
-            }
-          />
-        </div>
-        <div className="d-flex gap-2 flex-wrap">
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={handleAccept}
-            disabled={saving}
-            sx={{ textTransform: "none", fontWeight: 600 }}
-          >
-            {saving ? "Saving..." : "Accept"}
-          </Button>
+        <div className="d-flex gap-2 flex-wrap flex-shrink-0">
           <Button
             variant="outlined"
             onClick={() => navigate("/society/profile")}
