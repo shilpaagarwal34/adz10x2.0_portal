@@ -32,6 +32,15 @@ const mediaSlots = [
   { value: "event_sponsorship", label: "Society Event Sponsorship" },
 ];
 
+const mediaHeadings = {
+  lift_branding_panels: "Branding Panel - In Lift",
+  notice_board_sponsorship: "Notice Board Advertising",
+  gate_entry_exit_branding: "Main Gate Branding",
+  society_kiosk: "Society Kiosk Activities",
+  whatsapp_promotional_day: "WhatsApp Group Promotion",
+  event_sponsorship: "Society Event Sponsorship",
+};
+
 const adTypes = [
   { id: "brandPromotion", label: "Brand Promotion" },
   { id: "leadGeneration", label: "Lead Generation" },
@@ -193,6 +202,7 @@ const AdvertisementSetting = ({
         availability_month_days: Array.isArray(existing?.availability_month_days)
           ? existing.availability_month_days
           : [],
+        media_image: existing?.media_image || "",
       };
     });
 
@@ -294,6 +304,7 @@ const AdvertisementSetting = ({
             availability_month_days: Array.isArray(existing?.availability_month_days)
               ? existing.availability_month_days
               : [],
+            media_image: existing?.media_image || "",
           };
         });
         setMediaRates(rows);
@@ -477,6 +488,7 @@ const AdvertisementSetting = ({
           availability_month_days: Array.isArray(item.availability_month_days)
             ? item.availability_month_days
             : [],
+          media_image: item.media_image || null,
         })),
       };
       const res = await axiosInstance.post("/society/media-rate-cards", payload);
@@ -521,6 +533,24 @@ const AdvertisementSetting = ({
     reader.onload = () => {
       updateWhatsappDetails(mediaType, "whatsapp_image", reader.result);
     };
+    reader.readAsDataURL(file);
+  };
+
+  const updateMediaImage = (mediaType, value) => {
+    setMediaRates((prev) =>
+      prev.map((item) =>
+        item.media_type === mediaType ? { ...item, media_image: value } : item
+      )
+    );
+  };
+
+  const handleMediaImageFile = (mediaType, file) => {
+    if (!file || !file.type.startsWith("image/")) {
+      toast.error("Please select an image file (JPG, PNG, etc.).");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => updateMediaImage(mediaType, reader.result);
     reader.readAsDataURL(file);
   };
 
@@ -895,15 +925,32 @@ const AdvertisementSetting = ({
                     )}
                   </AccordionSummary>
                   <AccordionDetails sx={{ pt: 0, pb: 2, px: 2 }}>
+                    <div
+                      className="mb-3 pb-2 border-bottom"
+                      style={{
+                        fontSize: "1.1rem",
+                        fontWeight: 700,
+                        color: "#0f172a",
+                      }}
+                    >
+                      {mediaHeadings[item.media_type] || item.label}
+                    </div>
                     <div className="row g-3">
+                      <div className="col-12">
+                        <div
+                          className="small fw-bold text-uppercase mb-2"
+                          style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
+                        >
+                          Advertising Media Rate
+                        </div>
+                      </div>
                       <div className="col-12 col-md-6">
                         <label
                           className="d-block mb-2"
                           style={{
-                            fontSize: "1rem",
-                            fontWeight: 700,
-                            color: "#0f172a",
-                            letterSpacing: "0.02em",
+                            fontSize: "0.95rem",
+                            fontWeight: 600,
+                            color: "#475569",
                           }}
                         >
                           {item.media_type === "whatsapp_promotional_day" ? "Rate per Ad" : "Rate for 15 days"}
@@ -935,7 +982,11 @@ const AdvertisementSetting = ({
                           <input
                             type="number"
                             min="0"
-                            value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : 0}
+                            value={
+                              item.society_rate !== "" && item.society_rate != null
+                                ? Number(item.society_rate)
+                                : ""
+                            }
                             onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
                             style={{
                               flex: 1,
@@ -956,13 +1007,129 @@ const AdvertisementSetting = ({
                         )}
                       </div>
                       <div className="col-12">
-                        <label className="small fw-semibold text-secondary d-block mb-1">Generic T&C</label>
-                        <p className="small text-body mb-0" style={{ lineHeight: 1.5 }}>
-                          {item.generic_terms || "—"}
-                        </p>
+                        <div
+                          className="small fw-bold text-uppercase mb-2"
+                          style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
+                        >
+                          Media Tenure
+                        </div>
+                        <div className="row g-2">
+                          <div className="col-12 col-md-6">
+                            <TextField
+                              fullWidth
+                              size="small"
+                              type="date"
+                              label="Effective From"
+                              InputLabelProps={{ shrink: true }}
+                              value={item.effective_from || ""}
+                              onChange={(e) =>
+                                updateEffectiveDateRange(item.media_type, "effective_from", e.target.value)
+                              }
+                              disabled={!item.is_offered}
+                              inputProps={{ max: item.effective_to || undefined }}
+                            />
+                          </div>
+                          <div className="col-12 col-md-6">
+                            <TextField
+                              fullWidth
+                              size="small"
+                              type="date"
+                              label="Effective To"
+                              InputLabelProps={{ shrink: true }}
+                              value={item.effective_to || ""}
+                              onChange={(e) =>
+                                updateEffectiveDateRange(item.media_type, "effective_to", e.target.value)
+                              }
+                              disabled={!item.is_offered}
+                              inputProps={{ min: item.effective_from || undefined }}
+                            />
+                          </div>
+                        </div>
                       </div>
                       <div className="col-12">
-                        <label className="small fw-semibold text-secondary d-block mb-2">Society terms (added with Generic T&C)</label>
+                        <div
+                          className="small fw-bold text-uppercase mb-2"
+                          style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
+                        >
+                          Media Pic
+                        </div>
+                        <div
+                          style={{
+                            border: "2px dashed rgba(1, 170, 35, 0.4)",
+                            borderRadius: 12,
+                            padding: 16,
+                            background: "rgba(1, 170, 35, 0.04)",
+                            textAlign: "center",
+                          }}
+                        >
+                          {item.media_image ? (
+                            <div style={{ position: "relative", display: "inline-block" }}>
+                              <img
+                                src={
+                                  item.media_image.startsWith("data:")
+                                    ? item.media_image
+                                    : item.media_image
+                                }
+                                alt="Media"
+                                style={{
+                                  maxWidth: 200,
+                                  maxHeight: 120,
+                                  objectFit: "contain",
+                                  borderRadius: 8,
+                                  border: "1px solid rgba(0,0,0,0.1)",
+                                }}
+                              />
+                              <Button
+                                size="small"
+                                variant="outlined"
+                                color="error"
+                                onClick={() => updateMediaImage(item.media_type, "")}
+                                disabled={!item.is_offered}
+                                sx={{
+                                  position: "absolute",
+                                  top: -8,
+                                  right: -8,
+                                  minWidth: 28,
+                                  height: 28,
+                                  borderRadius: "50%",
+                                  padding: 0,
+                                }}
+                              >
+                                ×
+                              </Button>
+                            </div>
+                          ) : (
+                            <label
+                              style={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "center",
+                                gap: 8,
+                                cursor: item.is_offered ? "pointer" : "not-allowed",
+                                opacity: item.is_offered ? 1 : 0.6,
+                              }}
+                            >
+                              <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: "none" }}
+                                disabled={!item.is_offered}
+                                onChange={(e) => {
+                                  const f = e.target.files?.[0];
+                                  if (f) handleMediaImageFile(item.media_type, f);
+                                  e.target.value = "";
+                                }}
+                              />
+                              <span style={{ fontSize: "1.5rem" }}>📷</span>
+                              <span style={{ fontSize: "13px", color: "#475569" }}>
+                                Click to upload media image (JPG, PNG)
+                              </span>
+                            </label>
+                          )}
+                        </div>
+                      </div>
+                      <div className="col-12">
+                        <label className="small fw-semibold text-secondary d-block mb-2">Society terms</label>
                         <div className="row">
                           {termsOptions.map((term) => (
                             <div className="col-12 col-md-6" key={`${item.media_type}-${term}`}>
@@ -1104,83 +1271,97 @@ const AdvertisementSetting = ({
                               Promotion content
                             </div>
                             <div className="row g-3">
-                              <div className="col-12 col-md-6">
-                                <TextField
-                                  fullWidth
-                                  size="small"
-                                  label="WhatsApp Group Name"
-                                  placeholder="Enter group name"
-                                  value={item?.whatsapp_details?.whatsapp_group_name || ""}
-                                  onChange={(e) =>
-                                    updateWhatsappDetails(
-                                      item.media_type,
-                                      "whatsapp_group_name",
-                                      e.target.value
-                                    )
-                                  }
-                                  disabled={!item.is_offered}
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      borderRadius: "12px",
-                                      backgroundColor: "rgba(255,255,255,0.9)",
-                                      "& fieldset": {
-                                        borderColor: "rgba(37,211,102,0.3)",
-                                        borderWidth: "1.5px",
+                              <div className="col-12 col-md-6 d-flex">
+                                <div style={{ maxWidth: 260, width: "100%" }}>
+                                  <TextField
+                                    fullWidth
+                                    size="small"
+                                    label="WhatsApp Group Name"
+                                    placeholder="Enter group name"
+                                    value={item?.whatsapp_details?.whatsapp_group_name || ""}
+                                    onChange={(e) =>
+                                      updateWhatsappDetails(
+                                        item.media_type,
+                                        "whatsapp_group_name",
+                                        e.target.value
+                                      )
+                                    }
+                                    disabled={!item.is_offered}
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        borderRadius: "12px",
+                                        backgroundColor: "rgba(255,255,255,0.9)",
+                                        "& fieldset": {
+                                          borderColor: "rgba(37,211,102,0.3)",
+                                          borderWidth: "1.5px",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "rgba(37,211,102,0.5)",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#25D366",
+                                          borderWidth: "2px",
+                                          boxShadow: "0 0 0 3px rgba(37,211,102,0.15)",
+                                        },
+                                        "&.Mui-disabled": {
+                                          backgroundColor: "rgba(0,0,0,0.03)",
+                                        },
                                       },
-                                      "&:hover fieldset": {
-                                        borderColor: "rgba(37,211,102,0.5)",
+                                      "& .MuiOutlinedInput-input": {
+                                        paddingTop: "8px",
+                                        paddingBottom: "8px",
+                                        fontSize: "13px",
                                       },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#25D366",
-                                        borderWidth: "2px",
-                                        boxShadow: "0 0 0 3px rgba(37,211,102,0.15)",
-                                      },
-                                      "&.Mui-disabled": {
-                                        backgroundColor: "rgba(0,0,0,0.03)",
-                                      },
-                                    },
-                                  }}
-                                />
+                                    }}
+                                  />
+                                </div>
                               </div>
-                              <div className="col-12 col-md-6">
-                                <TextField
-                                  fullWidth
-                                  size="small"
-                                  type="number"
-                                  label="Number of Flats"
-                                  placeholder="0"
-                                  inputProps={{ min: 0 }}
-                                  value={item?.whatsapp_details?.number_of_flats || ""}
-                                  onChange={(e) =>
-                                    updateWhatsappDetails(
-                                      item.media_type,
-                                      "number_of_flats",
-                                      Number(e.target.value || 0)
-                                    )
-                                  }
-                                  disabled={!item.is_offered}
-                                  sx={{
-                                    "& .MuiOutlinedInput-root": {
-                                      borderRadius: "12px",
-                                      backgroundColor: "rgba(255,255,255,0.9)",
-                                      "& fieldset": {
-                                        borderColor: "rgba(37,211,102,0.3)",
-                                        borderWidth: "1.5px",
+                              <div className="col-12 col-md-6 d-flex">
+                                <div style={{ maxWidth: 260, width: "100%" }}>
+                                  <TextField
+                                    fullWidth
+                                    size="small"
+                                    type="number"
+                                    label="Number of Flats"
+                                    placeholder="0"
+                                    inputProps={{ min: 0 }}
+                                    value={item?.whatsapp_details?.number_of_flats || ""}
+                                    onChange={(e) =>
+                                      updateWhatsappDetails(
+                                        item.media_type,
+                                        "number_of_flats",
+                                        Number(e.target.value || 0)
+                                      )
+                                    }
+                                    disabled={!item.is_offered}
+                                    sx={{
+                                      "& .MuiOutlinedInput-root": {
+                                        borderRadius: "12px",
+                                        backgroundColor: "rgba(255,255,255,0.9)",
+                                        "& fieldset": {
+                                          borderColor: "rgba(37,211,102,0.3)",
+                                          borderWidth: "1.5px",
+                                        },
+                                        "&:hover fieldset": {
+                                          borderColor: "rgba(37,211,102,0.5)",
+                                        },
+                                        "&.Mui-focused fieldset": {
+                                          borderColor: "#25D366",
+                                          borderWidth: "2px",
+                                          boxShadow: "0 0 0 3px rgba(37,211,102,0.15)",
+                                        },
+                                        "&.Mui-disabled": {
+                                          backgroundColor: "rgba(0,0,0,0.03)",
+                                        },
                                       },
-                                      "&:hover fieldset": {
-                                        borderColor: "rgba(37,211,102,0.5)",
+                                      "& .MuiOutlinedInput-input": {
+                                        paddingTop: "8px",
+                                        paddingBottom: "8px",
+                                        fontSize: "13px",
                                       },
-                                      "&.Mui-focused fieldset": {
-                                        borderColor: "#25D366",
-                                        borderWidth: "2px",
-                                        boxShadow: "0 0 0 3px rgba(37,211,102,0.15)",
-                                      },
-                                      "&.Mui-disabled": {
-                                        backgroundColor: "rgba(0,0,0,0.03)",
-                                      },
-                                    },
-                                  }}
-                                />
+                                    }}
+                                  />
+                                </div>
                               </div>
                               <div className="col-12">
                                 <div style={{ fontSize: "12px", fontWeight: 600, color: "#475569", marginBottom: 6 }}>
@@ -1317,7 +1498,6 @@ const AdvertisementSetting = ({
                     <th>Available To</th>
                     <th>Weekly Days</th>
                     <th>Month Dates</th>
-                    <th>Generic T&C</th>
                     <th>Society T&C</th>
                     <th>Society Rate (15 days)</th>
                   </tr>
@@ -1459,9 +1639,6 @@ const AdvertisementSetting = ({
                           </div>
                         </div>
                       </td>
-                      <td style={{ minWidth: "220px", fontSize: "12px" }}>
-                        {item.generic_terms || "-"}
-                      </td>
                       <td style={{ minWidth: "260px" }}>
                         <div className="d-flex flex-column gap-1">
                           {termsOptions.map((term) => (
@@ -1486,7 +1663,11 @@ const AdvertisementSetting = ({
                         <Form.Control
                           type="number"
                           min="0"
-                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : 0}
+                          value={
+                            item.society_rate !== "" && item.society_rate != null
+                              ? Number(item.society_rate)
+                              : ""
+                          }
                           onChange={(e) =>
                             updateSocietyRate(item.media_type, e.target.value)
                           }

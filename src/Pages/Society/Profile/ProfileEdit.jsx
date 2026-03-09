@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { Formik, Form } from "formik";
+import { useNavigate, Link } from "react-router-dom";
+import { Formik, Form, Field } from "formik";
 import * as Yup from "yup";
 import {
   fetchProfileData,
@@ -124,6 +124,9 @@ const ProfileEdit = () => {
     area_name: profileData?.area_name || "",
     pincode: profileData?.pincode || "",
     society_profile_img_1_5_path: [],
+    terms_accepted: Boolean(
+      profileData?.terms_accepted ?? profileData?.society_profile?.terms_accepted
+    ),
   };
 
   const validationSchema = Yup.object().shape({
@@ -319,7 +322,8 @@ const ProfileEdit = () => {
           key !== "other_document_path" &&
           key !== "gst_certificate_path" &&
           key !== "pan_card_path" &&
-          key !== "billing_qr_code_path"
+          key !== "billing_qr_code_path" &&
+          key !== "terms_accepted"
         ) {
           formData.append(key, values[key]);
         }
@@ -365,6 +369,8 @@ const ProfileEdit = () => {
       ) {
         formData.append("billing_qr_code_path", values.billing_qr_code_path);
       }
+
+      formData.append("terms_accepted", values.terms_accepted ? "1" : "0");
 
       setSubmit(true);
 
@@ -516,6 +522,28 @@ const ProfileEdit = () => {
                           />
                         </Row>
                       )}
+                    </div>
+
+                    <div className="mb-3 border rounded p-2 p-sm-3 bg-light">
+                      <div className="form-check">
+                        <Field
+                          type="checkbox"
+                          name="terms_accepted"
+                          id="terms_accepted"
+                          className="form-check-input"
+                        />
+                        <label className="form-check-label small" htmlFor="terms_accepted">
+                          I accept the{" "}
+                          <Link
+                            to="/society/terms-and-conditions"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            Terms and Conditions
+                          </Link>
+                          . You can also read and accept them from the Terms and Conditions tab in the sidebar.
+                        </label>
+                      </div>
                     </div>
 
                     <button

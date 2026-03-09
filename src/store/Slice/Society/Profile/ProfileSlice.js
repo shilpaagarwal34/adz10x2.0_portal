@@ -4,7 +4,7 @@ import {
   updateProfile,
 } from "../../../Actions/Society/Profile/ProfileActions.js";
 
-/** Compute profile completion (0–100). Basic 5 fields 30%, contact 3 fields 35%, location 4 fields 35%. Billing, photos, documents, Google URL not required for 100%. */
+/** Compute profile completion (0–100). Basic 5 fields 30%, contact 3 fields 35%, location 4 fields 35%. Billing, photos, documents, Google URL not required for 100%. Only 100% when terms_accepted is true. */
 function computeProfileCompletion(reg) {
   if (!reg || typeof reg !== "object") return 0;
   const profile = reg.society_profile || {};
@@ -24,7 +24,9 @@ function computeProfileCompletion(reg) {
     filled
   ).length;
   completion += (location / 4) * 35;
-  return Math.round(Math.min(100, completion));
+  const raw = Math.round(Math.min(100, completion));
+  const termsAccepted = Boolean(reg.terms_accepted ?? profile.terms_accepted);
+  return termsAccepted ? raw : Math.min(raw, 99);
 }
 
 const initialState = {

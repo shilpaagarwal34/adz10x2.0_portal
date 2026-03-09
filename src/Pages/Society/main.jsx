@@ -23,6 +23,7 @@ import Settings from "./Settings.jsx";
 import Footer from "./Footer.jsx";
 import Notifications from "./Notifications.jsx";
 import Report from "./Report.jsx";
+import TermsAndConditions from "./TermsAndConditions.jsx";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
 import { ProtectedActionRoute } from "../../utils/ProtectedRoutes.jsx";
 import { AdsModalProvider } from "../../Context/AdsModalContext.jsx";
@@ -169,6 +170,11 @@ function Society() {
                 <Report />
               </PermissionRoute>
             }
+          />
+
+          <Route
+            path="/terms-and-conditions"
+            element={<TermsAndConditions />}
           />
 
           <Route path="*" element={<NotFoundPage to="/society" />} />

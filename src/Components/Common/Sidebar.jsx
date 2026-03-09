@@ -269,6 +269,15 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               reportMenu.children,
               true
             )}
+
+          {hasPrivilege("profile") &&
+            renderListItem(
+              "/society/terms-and-conditions",
+              "Terms and Conditions",
+              <ViewList />,
+              location.pathname === "/society/terms-and-conditions",
+              true
+            )}
         </div>
 
         {/* Bottom Items */}
