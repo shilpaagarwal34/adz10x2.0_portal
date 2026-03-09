@@ -949,8 +949,8 @@ const AdvertisementSetting = ({
                     >
                       {mediaHeadings[item.media_type] || item.label}
                     </div>
-                    <div className="row g-3">
-                      <div className="col-12">
+                    <div className="row g-3 align-items-start">
+                      <div className="col-12 col-md-6 col-lg-5">
                         <label
                           className="d-block mb-2"
                           style={{
@@ -1014,7 +1014,7 @@ const AdvertisementSetting = ({
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
                         )}
                       </div>
-                      <div className="col-12">
+                      <div className="col-12 col-md-6 col-lg-7">
                         <div
                           className="small fw-bold text-uppercase mb-2"
                           style={{ color: "#059669", letterSpacing: "0.5px", fontSize: "12px" }}
@@ -1027,7 +1027,10 @@ const AdvertisementSetting = ({
                             borderRadius: 12,
                             padding: 16,
                             background: "rgba(1, 170, 35, 0.04)",
-                            textAlign: "center",
+                            display: "flex",
+                            justifyContent: "flex-end",
+                            alignItems: "center",
+                            minHeight: 200,
                           }}
                         >
                           {getMediaImageSrc(item.media_type, item.media_image) ? (
@@ -1035,15 +1038,17 @@ const AdvertisementSetting = ({
                               src={getMediaImageSrc(item.media_type, item.media_image)}
                               alt="Media"
                               style={{
-                                maxWidth: 220,
-                                maxHeight: 140,
+                                maxWidth: "100%",
+                                width: 320,
+                                maxHeight: 220,
                                 objectFit: "contain",
                                 borderRadius: 8,
                                 border: "1px solid rgba(0,0,0,0.1)",
+                                display: "block",
                               }}
                             />
                           ) : (
-                            <span style={{ fontSize: "13px", color: "#94a3b8" }}>
+                            <span style={{ fontSize: "13px", color: "#94a3b8", marginLeft: "auto" }}>
                               No media image configured
                             </span>
                           )}
