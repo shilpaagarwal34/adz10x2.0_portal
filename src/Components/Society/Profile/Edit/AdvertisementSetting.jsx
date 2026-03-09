@@ -1023,10 +1023,6 @@ const AdvertisementSetting = ({
                         </div>
                         <div
                           style={{
-                            border: "2px dashed rgba(1, 170, 35, 0.4)",
-                            borderRadius: 12,
-                            padding: 12,
-                            background: "rgba(1, 170, 35, 0.06)",
                             flex: 1,
                             minHeight: 260,
                             display: "flex",
