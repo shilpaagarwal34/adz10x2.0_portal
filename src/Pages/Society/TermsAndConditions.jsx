@@ -2,10 +2,11 @@ import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchProfileData } from "../../store/Actions/Society/Profile/ProfileActions.js";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
+import "../Styles/RulesAndRegulations.css";
 
 const T_C_SECTIONS = [
   {
-    title: "1. Society Rules for All Media Activities",
+    title: "Society Rules for All Media Activities",
     intro: "These rules apply to all promotional activities conducted within the society premises.",
     points: [
       "All promotional activities must be carried out only in the area allocated by the society.",
@@ -23,7 +24,7 @@ const T_C_SECTIONS = [
     ],
   },
   {
-    title: "2. Adz10x Platform Rules for Societies",
+    title: "Adz10x Platform Rules for Societies",
     intro: "These rules ensure smooth campaign execution between societies and companies.",
     points: [
       "The society must approve or reject campaign requests within the specified time.",
@@ -48,24 +49,35 @@ function TermsAndConditions() {
 
   return (
     <PermissionRoute permission="profile">
-      <div className="p-2 p-sm-3 pt-2 pb-5">
-        <h4 className="fw-bold mb-2">Generic Rules for Society Media (Adz10x Platform)</h4>
-        <p className="text-secondary small mb-4">
-          The following rules and regulations are for reference. No acceptance is required.
-        </p>
-        {T_C_SECTIONS.map((section, sIdx) => (
-          <div key={sIdx} className="mb-4">
-            <h6 className="fw-bold text-dark mb-2">{section.title}</h6>
-            <p className="small text-secondary mb-2">{section.intro}</p>
-            <ul className="list-unstyled mb-0">
-              {section.points.map((point, pIdx) => (
-                <li key={pIdx} className="d-flex align-items-start gap-2 mb-2">
-                  <span className="text-primary" style={{ minWidth: "0.4rem" }}>•</span>
-                  <span className="small text-body">{point}</span>
-                </li>
-              ))}
-            </ul>
+      <div className="rules-page">
+        <header className="rules-header">
+          <div className="rules-header-icon" aria-hidden="true">
+            ✓
           </div>
+          <h1>Generic Rules for Society Media (Adz10x Platform)</h1>
+          <p>The following rules and regulations are for reference. No acceptance is required.</p>
+        </header>
+
+        {T_C_SECTIONS.map((section, sIdx) => (
+          <section key={sIdx} className="rules-section-card">
+            <div className="rules-section-header">
+              <span className="rules-section-number">{sIdx + 1}</span>
+              <div className="rules-section-title-wrap">
+                <h2>{section.title}</h2>
+                <p className="rules-section-intro">{section.intro}</p>
+              </div>
+            </div>
+            <div className="rules-section-body">
+              <ul className="rules-list">
+                {section.points.map((point, pIdx) => (
+                  <li key={pIdx}>
+                    <span className="rules-list-icon" aria-hidden="true">✓</span>
+                    <span>{point}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </section>
         ))}
       </div>
     </PermissionRoute>

@@ -72,6 +72,8 @@ const api_routes = {
   common: {
     otp_verify: `${api_url}/verify-otp`,
     post_login: `${api_url}/login`,
+    send_login_otp: `${api_url}/send-login-otp`,
+    verify_login_otp: `${api_url}/verify-login-otp`,
     post_forget_password: `${api_url}/forgot-password`,
     post_change_password: `${api_url}/change-password`,
     chatbot_query: `/chatbot/query`,

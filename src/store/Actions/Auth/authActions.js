@@ -7,6 +7,51 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
 import { Navigate } from "react-router-dom";
 
+/** Send OTP to mobile for login. Payload: { mobile } (10-digit string). */
+export const sendLoginOtp = async (mobile) => {
+  const response = await axios.post(api_routes.common.send_login_otp, {
+    mobile: mobile.replace(/\D/g, "").slice(-10),
+  });
+  return response.data;
+};
+
+/** Verify OTP and log in. Same response shape as login (token, user_type, etc.). */
+const loginWithOtp = (mobile, otp, navigate) => async (dispatch) => {
+  try {
+    dispatch(setLoading(true));
+    const response = await axios.post(api_routes.common.verify_login_otp, {
+      mobile: mobile.replace(/\D/g, "").slice(-10),
+      otp: typeof otp === "string" ? otp : otp.join(""),
+    });
+    const data = response.data?.data;
+    const token = data?.token;
+    const userType = data?.user_type;
+    if (token && response.status === 200) {
+      localStorage.setItem("user_data", JSON.stringify(data));
+      localStorage.setItem("auth_token", token);
+      localStorage.setItem("user_type", userType);
+      window.dispatchEvent(new Event("storage"));
+      dispatch(setUser(data));
+      if (userType === "Company_Admin" || userType === "Company_User") {
+        navigate("/company");
+      } else if (userType === "Society_Admin" || userType === "Society_User") {
+        navigate("/society");
+      } else {
+        navigate("/login");
+      }
+    } else {
+      navigate("/login");
+    }
+    dispatch(setLoading(false));
+  } catch (error) {
+    dispatch(setLoading(false));
+    const msg = error.response?.data?.message || "Invalid OTP or mobile.";
+    toast.error(msg);
+    dispatch(setError(msg));
+    throw new Error(msg);
+  }
+};
+
 const societyResendOtp = async () => {
   try {
     // Send POST request using axios
@@ -245,6 +290,8 @@ export {
   societyResendOtp,
   postCompanyRegister,
   loginUser,
+  loginWithOtp,
+  sendLoginOtp,
   handleResetPassword,
   societyChangePassword,
   societyAdminAccountDelete,
