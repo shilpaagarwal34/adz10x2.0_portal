@@ -58,6 +58,7 @@ function TermsAndConditions() {
           <p>The following rules and regulations are for reference. No acceptance is required.</p>
         </header>
 
+        <div className="rules-sections-grid">
         {T_C_SECTIONS.map((section, sIdx) => (
           <section key={sIdx} className="rules-section-card">
             <div className="rules-section-header">
@@ -79,6 +80,7 @@ function TermsAndConditions() {
             </div>
           </section>
         ))}
+        </div>
       </div>
     </PermissionRoute>
   );
