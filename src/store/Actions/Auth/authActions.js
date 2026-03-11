@@ -291,7 +291,6 @@ export {
   postCompanyRegister,
   loginUser,
   loginWithOtp,
-  sendLoginOtp,
   handleResetPassword,
   societyChangePassword,
   societyAdminAccountDelete,
