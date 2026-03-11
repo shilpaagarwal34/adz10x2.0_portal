@@ -124,6 +124,17 @@ function CampaignView() {
                   userType="company"
                 />
               )}
+
+              {completedCampaigns.length > 0 && (
+                <CampaignCard
+                  heading="Completed Campaign"
+                  data={completedCampaigns}
+                  metaData={campaignData}
+                  companyDetails={companyDetails}
+                  status="completed"
+                  userType="company"
+                />
+              )}
               {cancelledCampaigns.length > 0 && (
                 <CampaignCard
                   heading="Cancelled Campaign"

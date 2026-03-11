@@ -1,7 +1,5 @@
 import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
-import { Button } from "@mui/material";
 import { fetchProfileData } from "../../store/Actions/Society/Profile/ProfileActions.js";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
 
@@ -39,34 +37,9 @@ const T_C_SECTIONS = [
       "Vendor vehicles must be allowed access for loading and unloading campaign materials.",
     ],
   },
-  {
-    title: "3. Adz10x Platform Rules for Companies / Advertisers",
-    intro: "These rules apply to all companies using the Adz10x platform.",
-    points: [
-      "Companies must follow all society rules and guidelines during campaign execution.",
-      "Promotional staff must behave professionally and respectfully with residents and society staff.",
-      "Door-to-door marketing or entry into residential buildings is not permitted without explicit approval.",
-      "Companies must not force or pressure residents to purchase any product or service.",
-      "All campaign payments must be completed through the Adz10x platform before execution.",
-      "Any damage caused during the activity must be compensated by the company.",
-      "Adz10x does not guarantee sales or business outcomes from campaigns.",
-      "If the campaign cannot be executed due to company-side delays, no additional time or refund may be granted.",
-      "Violation of society rules may lead to immediate termination of the campaign without refund.",
-    ],
-  },
-  {
-    title: "4. Standard Deliverables for Campaign Execution",
-    intro: "For every booked media activity, the following deliverables will be provided:",
-    points: [
-      "Official permission confirmation through Adz10x platform",
-      "Payment receipt issued by Adz10x",
-      "Proof of campaign execution (photos/videos) if execution partner is Adz10x Team",
-    ],
-  },
 ];
 
 function TermsAndConditions() {
-  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -75,47 +48,25 @@ function TermsAndConditions() {
 
   return (
     <PermissionRoute permission="profile">
-      <div
-        className="p-3 p-sm-4 bg-white rounded shadow-sm d-flex flex-column"
-        style={{
-          maxWidth: 720,
-          margin: "0 auto",
-          minHeight: "calc(100vh - 140px)",
-          boxSizing: "border-box",
-        }}
-      >
+      <div className="p-2 p-sm-3 pt-2 pb-5">
         <h4 className="fw-bold mb-2">Generic Rules for Society Media (Adz10x Platform)</h4>
-        <p className="text-secondary small mb-3">
+        <p className="text-secondary small mb-4">
           The following rules and regulations are for reference. No acceptance is required.
         </p>
-        <div
-          className="overflow-auto mb-3"
-          style={{ flex: "1 1 0", minHeight: 0 }}
-        >
-          {T_C_SECTIONS.map((section, sIdx) => (
-            <div key={sIdx} className="mb-4">
-              <h6 className="fw-bold text-dark mb-2">{section.title}</h6>
-              <p className="small text-secondary mb-2">{section.intro}</p>
-              <ul className="list-unstyled mb-0">
-                {section.points.map((point, pIdx) => (
-                  <li key={pIdx} className="d-flex align-items-start gap-2 mb-2">
-                    <span className="text-primary" style={{ minWidth: "0.4rem" }}>•</span>
-                    <span className="small text-body">{point}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-        </div>
-        <div className="d-flex gap-2 flex-wrap flex-shrink-0">
-          <Button
-            variant="outlined"
-            onClick={() => navigate("/society/profile")}
-            sx={{ textTransform: "none", fontWeight: 600 }}
-          >
-            Back to Profile
-          </Button>
-        </div>
+        {T_C_SECTIONS.map((section, sIdx) => (
+          <div key={sIdx} className="mb-4">
+            <h6 className="fw-bold text-dark mb-2">{section.title}</h6>
+            <p className="small text-secondary mb-2">{section.intro}</p>
+            <ul className="list-unstyled mb-0">
+              {section.points.map((point, pIdx) => (
+                <li key={pIdx} className="d-flex align-items-start gap-2 mb-2">
+                  <span className="text-primary" style={{ minWidth: "0.4rem" }}>•</span>
+                  <span className="small text-body">{point}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))}
       </div>
     </PermissionRoute>
   );
