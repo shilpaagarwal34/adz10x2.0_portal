@@ -50,14 +50,6 @@ function TermsAndConditions() {
   return (
     <PermissionRoute permission="profile">
       <div className="rules-page">
-        <header className="rules-header">
-          <div className="rules-header-icon" aria-hidden="true">
-            ✓
-          </div>
-          <h1>Generic Rules for Society Media (Adz10x Platform)</h1>
-          <p>The following rules and regulations are for reference. No acceptance is required.</p>
-        </header>
-
         <div className="rules-sections-grid">
         {T_C_SECTIONS.map((section, sIdx) => (
           <section key={sIdx} className="rules-section-card">
