@@ -862,7 +862,7 @@ const AdvertisementSetting = ({
               <p className="small mb-3" style={{ color: "#64748b" }}>
                 Set your rates per 15-day slot and select which platforms to include in your rate card.
               </p>
-              <div className="row g-3">
+              <div className="row g-3 align-items-start">
               {mediaRates.map((item, idx) => (
                 <div key={`wrap-${item.media_type}-${idx}`} className="col-12 col-lg-6">
                 <Accordion
@@ -1023,59 +1023,52 @@ const AdvertisementSetting = ({
                           style={{
                             minHeight: 180,
                             display: "flex",
+                            flexDirection: "column",
                             justifyContent: "center",
                             alignItems: "center",
-                            position: "relative",
                           }}
                         >
                           {getMediaImageSrc(item.media_type, item.media_image) ? (
                             <>
-                              <span
-                                className="fw-bold text-uppercase"
+                              <img
+                                src={getMediaImageSrc(item.media_type, item.media_image)}
+                                alt="Media"
                                 style={{
-                                  position: "absolute",
-                                  top: 0,
-                                  left: 0,
+                                  width: "100%",
+                                  maxWidth: 280,
+                                  height: "auto",
+                                  maxHeight: 220,
+                                  objectFit: "contain",
+                                  borderRadius: 8,
+                                  border: "1px solid rgba(0,0,0,0.08)",
+                                  display: "block",
+                                }}
+                              />
+                              <span
+                                className="fw-bold mt-2"
+                                style={{
                                   color: "#059669",
                                   letterSpacing: "0.5px",
                                   fontSize: "12px",
-                                  zIndex: 1,
                                 }}
                               >
-                                Media Pic
+                                Sample Image
                               </span>
-                              <img
-                              src={getMediaImageSrc(item.media_type, item.media_image)}
-                              alt="Media"
-                              style={{
-                                width: "100%",
-                                maxWidth: 280,
-                                height: "auto",
-                                maxHeight: 220,
-                                objectFit: "contain",
-                                borderRadius: 8,
-                                border: "1px solid rgba(0,0,0,0.08)",
-                                display: "block",
-                              }}
-                            />
                             </>
                           ) : (
                             <>
+                              <span style={{ fontSize: "13px", color: "#94a3b8" }}>
+                                No media image configured
+                              </span>
                               <span
-                                className="fw-bold text-uppercase"
+                                className="fw-bold mt-2"
                                 style={{
-                                  position: "absolute",
-                                  top: 0,
-                                  left: 0,
                                   color: "#059669",
                                   letterSpacing: "0.5px",
                                   fontSize: "12px",
                                 }}
                               >
-                                Media Pic
-                              </span>
-                              <span style={{ fontSize: "13px", color: "#94a3b8", marginLeft: "auto" }}>
-                                No media image configured
+                                Sample Image
                               </span>
                             </>
                           )}
