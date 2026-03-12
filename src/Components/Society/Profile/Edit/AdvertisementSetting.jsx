@@ -1467,7 +1467,6 @@ const AdvertisementSetting = ({
                     )}
                     </div>
                       </div>
-                    </div>
                     </>
                   );
                 })()}
