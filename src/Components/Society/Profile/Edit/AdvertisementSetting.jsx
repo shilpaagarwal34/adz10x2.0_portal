@@ -862,7 +862,9 @@ const AdvertisementSetting = ({
               <p className="small mb-3" style={{ color: "#64748b" }}>
                 Set your rates per 15-day slot and select which platforms to include in your rate card.
               </p>
+              <div className="row g-3">
               {mediaRates.map((item, idx) => (
+                <div key={`wrap-${item.media_type}-${idx}`} className="col-12 col-lg-6">
                 <Accordion
                   key={`${item.media_type}-${idx}`}
                   expanded={expandedMediaType === item.media_type}
@@ -949,8 +951,8 @@ const AdvertisementSetting = ({
                     >
                       {mediaHeadings[item.media_type] || item.label}
                     </div>
-                    <div className="row g-3 align-items-stretch">
-                      <div className="col-12 col-md-6 col-lg-5">
+                    <div className="row g-3 align-items-start">
+                      <div className="col-12 col-sm-5 col-md-5">
                         <label
                           className="d-block mb-2"
                           style={{
@@ -1016,13 +1018,12 @@ const AdvertisementSetting = ({
                           <small className="text-danger d-block mt-1">Enter rate for this platform</small>
                         )}
                       </div>
-                      <div className="col-12 col-md-6 col-lg-7 d-flex flex-column">
+                      <div className="col-12 col-sm-7 col-md-7 d-flex flex-column">
                         <div
                           style={{
-                            flex: 1,
-                            minHeight: 260,
+                            minHeight: 180,
                             display: "flex",
-                            justifyContent: "flex-end",
+                            justifyContent: "center",
                             alignItems: "center",
                             position: "relative",
                           }}
@@ -1048,9 +1049,9 @@ const AdvertisementSetting = ({
                               alt="Media"
                               style={{
                                 width: "100%",
-                                maxWidth: 420,
+                                maxWidth: 280,
                                 height: "auto",
-                                maxHeight: 280,
+                                maxHeight: 220,
                                 objectFit: "contain",
                                 borderRadius: 8,
                                 border: "1px solid rgba(0,0,0,0.08)",
@@ -1370,7 +1371,9 @@ const AdvertisementSetting = ({
                     </div>
                   </AccordionDetails>
                 </Accordion>
+                </div>
               ))}
+              </div>
               <div className="d-flex gap-2 flex-wrap mt-4">
                 <Button
                   variant="outlined"

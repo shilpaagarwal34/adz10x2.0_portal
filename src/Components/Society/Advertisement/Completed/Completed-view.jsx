@@ -1,12 +1,11 @@
 import { useEffect, useState } from "react";
 
-import { Row, Col, Card, Button, Badge } from "react-bootstrap";
+import { Row, Col, Card, Badge } from "react-bootstrap";
 
 import Details from "../Adv-details.jsx";
 import ApprovedDetail from "../Approved/ApprovedDetail.jsx";
 import { fetchAdByID } from "../../../../store/Actions/Society/Campaign/CampaignActions.js";
 import { useParams } from "react-router-dom";
-import { useAdsModal } from "../../../../Context/AdsModalContext.jsx";
 import CreativeTypeRender from "../../../../utils/CreativeTypeRender.jsx";
 import ManagerInfo from "../../../Common/Manager-info.jsx";
 import ManagerInfoSkeleton from "../../../Skeletons/ManagerInfoSkeleton.jsx";
@@ -16,7 +15,6 @@ import LiveCardSkeleton from "../../../Skeletons/Campaign/LiveCardSkeleton.jsx";
 
 const CompletedView = () => {
   const { advertisementId } = useParams();
-  const { openAdsModal } = useAdsModal();
   const [loading, setLoading] = useState(false);
 
   const [campaignData, setCampaignData] = useState({
@@ -99,33 +97,11 @@ const CompletedView = () => {
                 <hr className="m-0" style={{ color: "gray" }} />
                 <Row className="p-3">
                   <Col className="p-0">
-                    <Card className="px-2 py-1 border-0 position-relative">
-                      <div className="position-relative">
-                        <CreativeTypeRender
-                          data={campaignData?.logs}
-                          type={campaignData?.campaign?.creative_type}
-                        />
-
-                        <Button
-                          variant="dark"
-                          className="position-absolute bottom-0 end-0 m-2"
-                          style={{
-                            zIndex: 2,
-                            fontSize: "12px",
-                            padding: "3px 13px",
-                          }}
-                          onClick={() =>
-                            openAdsModal(
-                              campaignData?.logs?.upload_societies_images_path,
-                              campaignData?.campaign?.creative_type,
-                              campaignData?.logs?.societies_text,
-                              campaignData?.campaign?.media_type
-                            )
-                          }
-                        >
-                          <img src="/eye.svg" className="me-1" alt="" /> Preview Ads
-                        </Button>
-                      </div>
+                    <Card className="px-2 py-1 border-0">
+                      <CreativeTypeRender
+                        data={campaignData?.logs}
+                        type={campaignData?.campaign?.creative_type}
+                      />
                     </Card>
                   </Col>
                 </Row>
