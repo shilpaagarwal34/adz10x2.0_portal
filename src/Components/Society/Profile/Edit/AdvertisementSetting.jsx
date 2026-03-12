@@ -17,8 +17,10 @@ import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
+  Drawer,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import CloseIcon from "@mui/icons-material/Close";
 import { toast } from "react-toastify";
 import { adminHasPrivilege } from "../../../../helper/helper.js";
 import { useNavigate } from "react-router-dom";
@@ -106,6 +108,8 @@ const AdvertisementSetting = ({
   const [availabilityDatePickerByType, setAvailabilityDatePickerByType] =
     useState({});
   const [expandedMediaType, setExpandedMediaType] = useState(null);
+  const [drawerItemIndex, setDrawerItemIndex] = useState(null);
+  const [bulkRateInput, setBulkRateInput] = useState("");
   const { days, loading: campaignLoading } = useSelector(
     (state) => state.society.campaignDays
   );
@@ -413,6 +417,20 @@ const AdvertisementSetting = ({
         };
       })
     );
+  };
+
+  const applyBulkRate = () => {
+    const val = bulkRateInput.trim();
+    const num = val === "" ? 0 : Number(val);
+    if (Number.isNaN(num) || num < 0) {
+      toast.error("Enter a valid rate.");
+      return;
+    }
+    mediaRates.forEach((item) => {
+      if (item.is_offered) updateSocietyRate(item.media_type, String(num));
+    });
+    setBulkRateInput("");
+    toast.success("Bulk rate applied to all active platforms.");
   };
 
   const saveMediaRates = async (mode = "submit") => {
@@ -862,96 +880,182 @@ const AdvertisementSetting = ({
               <p className="small mb-3" style={{ color: "#64748b" }}>
                 Set your rates per 15-day slot and select which platforms to include in your rate card.
               </p>
-              <div className="row g-3 align-items-start">
-              {mediaRates.map((item, idx) => (
-                <div key={`wrap-${item.media_type}-${idx}`} className="col-12 col-lg-6">
-                <Accordion
-                  key={`${item.media_type}-${idx}`}
-                  expanded={expandedMediaType === item.media_type}
-                  onChange={() =>
-                    setExpandedMediaType((prev) =>
-                      prev === item.media_type ? null : item.media_type
-                    )
-                  }
-                  disableGutters
+
+              <div
+                className="d-flex flex-wrap align-items-center gap-3 mb-4 p-3 rounded-3"
+                style={{
+                  background: "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)",
+                  border: "1px solid rgba(1, 170, 35, 0.2)",
+                }}
+              >
+                <span className="fw-semibold" style={{ color: "#0f172a", fontSize: "14px" }}>
+                  Apply bulk rate to all active platforms:
+                </span>
+                <span style={{ color: "#0f172a", fontWeight: 700 }}>₹</span>
+                <input
+                  type="number"
+                  min="0"
+                  placeholder="0"
+                  value={bulkRateInput}
+                  onChange={(e) => setBulkRateInput(e.target.value)}
+                  className="form-control form-control-sm"
+                  style={{ width: 100, display: "inline-block" }}
+                />
+                <Button
+                  size="small"
+                  variant="contained"
+                  onClick={applyBulkRate}
                   sx={{
-                    border: "1px solid #cbd5e1",
-                    borderRadius: "12px !important",
-                    "&:not(:last-child)": { mb: 1.5 },
-                    "&:before": { display: "none" },
-                    overflow: "hidden",
-                    boxShadow: "0 1px 3px rgba(0,0,0,0.06)",
+                    textTransform: "none",
+                    fontWeight: 600,
+                    background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
+                    "&:hover": { background: "linear-gradient(97.02deg, #019a20 0%, #0077d4 100%)" },
                   }}
                 >
-                  <AccordionSummary
-                    expandIcon={<ExpandMoreIcon />}
-                    sx={{
-                      background: "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)",
-                      "& .MuiAccordionSummary-content": {
-                        alignItems: "center",
-                        gap: 2,
-                        flexWrap: "wrap",
-                      },
+                  Apply
+                </Button>
+              </div>
+
+              <div
+                style={{
+                  display: "grid",
+                  gridTemplateColumns: "repeat(3, 1fr)",
+                  gap: "1rem",
+                  marginBottom: "1.5rem",
+                }}
+                className="media-bento-grid"
+              >
+                {mediaRates.map((item, idx) => (
+                  <div
+                    key={`bento-${item.media_type}-${idx}`}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setDrawerItemIndex(idx)}
+                    onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); setDrawerItemIndex(idx); } }}
+                    style={{
+                      borderRadius: 18,
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.08)",
+                      overflow: "hidden",
+                      background: item.is_offered ? "#fff" : "rgba(248,250,252,0.95)",
+                      opacity: item.is_offered ? 1 : 0.85,
+                      border: "1px solid #e2e8f0",
+                      cursor: "pointer",
+                      display: "flex",
+                      flexDirection: "column",
+                      minHeight: 280,
                     }}
                   >
-                    <span
-                      style={{
-                        fontWeight: 600,
-                        fontSize: "1rem",
-                        color: "#0f172a",
-                        flex: 1,
-                        minWidth: "140px",
-                      }}
-                    >
-                      {item.label}
-                    </span>
-                    <Chip
-                      size="small"
-                      label={item.is_offered ? "In rate card" : "Excluded"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        toggleOffered(idx, !item.is_offered);
-                      }}
-                      sx={{
-                        cursor: "pointer",
-                        fontWeight: 600,
-                        fontSize: "0.75rem",
-                        background: item.is_offered
-                          ? "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)"
-                          : "#e2e8f0",
-                        color: item.is_offered ? "#fff" : "#64748b",
-                        border: "none",
-                      }}
-                    />
-                    {item.is_offered && (
-                      <span
-                        style={{
-                          fontWeight: 700,
-                          background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
-                          WebkitBackgroundClip: "text",
-                          WebkitTextFillColor: "transparent",
-                          fontSize: "0.95rem",
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                      >
-                        {item.society_rate !== "" && item.society_rate != null && Number(item.society_rate) > 0
-                          ? `₹ ${Number(item.society_rate)}${item.media_type === "whatsapp_promotional_day" ? " / ad" : " / 15 days"}`
-                          : "—"}
-                      </span>
-                    )}
-                  </AccordionSummary>
-                  <AccordionDetails sx={{ pt: 0, pb: 2, px: 2 }}>
-                    <div
-                      className="mb-3 pb-2 border-bottom"
-                      style={{
-                        fontSize: "1.1rem",
-                        fontWeight: 700,
-                        color: "#0f172a",
-                      }}
-                    >
-                      {mediaHeadings[item.media_type] || item.label}
+                    <div style={{ flex: "0 0 60%", minHeight: 168, background: "#f8fafc", display: "flex", alignItems: "center", justifyContent: "center", padding: 12 }}>
+                      {getMediaImageSrc(item.media_type, item.media_image) ? (
+                        <img
+                          src={getMediaImageSrc(item.media_type, item.media_image)}
+                          alt=""
+                          style={{ width: "100%", height: "100%", objectFit: "contain", borderRadius: 8 }}
+                        />
+                      ) : (
+                        <span style={{ fontSize: 12, color: "#94a3b8" }}>No image</span>
+                      )}
                     </div>
-                    <div className="row g-3 align-items-start">
+                    <div style={{ flex: "1 1 auto", padding: "12px 14px", display: "flex", flexDirection: "column", gap: 8 }}>
+                      <div className="d-flex justify-content-between align-items-center flex-wrap gap-1">
+                        <span style={{ fontWeight: 700, fontSize: "0.95rem", color: "#0f172a" }}>{item.label}</span>
+                        <span
+                          style={{
+                            fontSize: 10,
+                            fontWeight: 700,
+                            padding: "3px 8px",
+                            borderRadius: 20,
+                            background: item.is_offered ? "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)" : "#e2e8f0",
+                            color: item.is_offered ? "#fff" : "#64748b",
+                          }}
+                        >
+                          {item.is_offered ? "Active" : "Excluded"}
+                        </span>
+                      </div>
+                      <div
+                        className="d-flex align-items-center"
+                        style={{ fontSize: "1rem", fontWeight: 700, color: "#0f172a" }}
+                        onClick={(e) => { e.stopPropagation(); }}
+                      >
+                        <span>₹ </span>
+                        <input
+                          type="number"
+                          min="0"
+                          value={item.society_rate !== "" && item.society_rate != null ? Number(item.society_rate) : ""}
+                          onChange={(e) => updateSocietyRate(item.media_type, e.target.value)}
+                          onClick={(e) => e.stopPropagation()}
+                          style={{
+                            width: 72,
+                            border: "none",
+                            background: "transparent",
+                            fontSize: "1rem",
+                            fontWeight: 700,
+                            outline: "none",
+                            padding: "2px 4px",
+                            borderRadius: 4,
+                          }}
+                          onFocus={(e) => { e.target.style.background = "rgba(1,170,35,0.08)"; e.target.style.border = "1px solid #01AA23"; }}
+                          onBlur={(e) => { e.target.style.background = "transparent"; e.target.style.border = "none"; }}
+                        />
+                        <span style={{ fontSize: 11, color: "#64748b", marginLeft: 4 }}>
+                          {item.media_type === "whatsapp_promotional_day" ? "/ ad" : "/ 15 days"}
+                        </span>
+                      </div>
+                      <button
+                        type="button"
+                        className="btn btn-sm"
+                        onClick={(e) => { e.stopPropagation(); setDrawerItemIndex(idx); }}
+                        style={{
+                          fontSize: 12,
+                          fontWeight: 600,
+                          color: "#0193FF",
+                          background: "transparent",
+                          border: "none",
+                          padding: "4px 0",
+                          cursor: "pointer",
+                          textAlign: "left",
+                        }}
+                      >
+                        Edit Details →
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <Drawer
+                anchor="right"
+                open={drawerItemIndex !== null}
+                onClose={() => setDrawerItemIndex(null)}
+                PaperProps={{
+                  sx: { width: { xs: "100%", sm: 420 }, borderRadius: "16px 0 0 16px", boxShadow: "-8px 0 24px rgba(0,0,0,0.12)" },
+                }}
+              >
+                {drawerItemIndex !== null && mediaRates[drawerItemIndex] && (() => {
+                  const item = mediaRates[drawerItemIndex];
+                  const idx = drawerItemIndex;
+                  return (
+                    <>
+                      <div className="d-flex align-items-center justify-content-between p-3 border-bottom" style={{ borderColor: "#e2e8f0" }}>
+                        <h6 className="mb-0 fw-bold" style={{ color: "#0f172a" }}>{mediaHeadings[item.media_type] || item.label}</h6>
+                        <Button size="small" onClick={() => setDrawerItemIndex(null)} sx={{ minWidth: 36 }}><CloseIcon /></Button>
+                      </div>
+                      <div className="p-3 overflow-auto" style={{ maxHeight: "calc(100vh - 80px)" }}>
+                        <div className="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom" style={{ borderColor: "#e2e8f0" }}>
+                          <span style={{ fontSize: "0.95rem", fontWeight: 600, color: "#475569" }}>Include in rate card</span>
+                          <FormControlLabel
+                            control={
+                              <Switch
+                                checked={item.is_offered}
+                                onChange={(e) => toggleOffered(idx, e.target.checked)}
+                                size="small"
+                                sx={{ "& .MuiSwitch-switchBase.Mui-checked": { color: "#01AA23" }, "& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": { backgroundColor: "#01AA23" } }}
+                              />
+                            }
+                            label=""
+                          />
+                        </div>
+                        <div className="row g-3 align-items-start">
                       <div className="col-12 col-sm-5 col-md-5">
                         <label
                           className="d-block mb-2"
@@ -1362,11 +1466,13 @@ const AdvertisementSetting = ({
                       </div>
                     )}
                     </div>
-                  </AccordionDetails>
-                </Accordion>
-                </div>
-              ))}
-              </div>
+                      </div>
+                    </div>
+                    </>
+                  );
+                })()}
+              </Drawer>
+
               <div className="d-flex gap-2 flex-wrap mt-4">
                 <Button
                   variant="outlined"

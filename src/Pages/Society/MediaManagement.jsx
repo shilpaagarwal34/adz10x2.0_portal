@@ -2,6 +2,7 @@ import AdvertisementSetting from "../../Components/Society/Profile/Edit/Advertis
 import { useEffect } from "react";
 import { useDispatch } from "react-redux";
 import { fetchProfileData } from "../../store/Actions/Society/Profile/ProfileActions.js";
+import "../../Pages/Styles/Society-Dashboard.css";
 
 const MediaManagement = () => {
   const dispatch = useDispatch();
