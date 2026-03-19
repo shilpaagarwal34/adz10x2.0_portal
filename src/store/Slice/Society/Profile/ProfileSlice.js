@@ -55,7 +55,10 @@ const ProfileSlice = createSlice({
       })
       .addCase(fetchProfileData.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload || action.error.message;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.payload?.message || action.error.message;
       })
       // Profile Update Promise Handler
       .addCase(updateProfile.pending, (state) => {
@@ -67,7 +70,10 @@ const ProfileSlice = createSlice({
       })
       .addCase(updateProfile.rejected, (state, action) => {
         state.status = "failed";
-        state.error = action.payload || action.error.message;
+        state.error =
+          typeof action.payload === "string"
+            ? action.payload
+            : action.payload?.message || action.error.message;
       });
   },
 });
