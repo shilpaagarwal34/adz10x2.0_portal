@@ -7,7 +7,7 @@ import { fetchSocietyById } from "../../../store/Actions/Admin/Society/SocietyAc
 //component iumports
 import ImageGallery from "../../../Components/Common/SocietyImageSlider.jsx";
 import SocietyMap from "../../../Components/Admin/Society/SocietyMap.jsx";
-import SocietyDetailsCard from "../../../Components/Admin/Society/SocietyView/SocietyDetailsCard.jsx";
+import SocietyProfileSnapshot from "../../../Components/Admin/Society/SocietyView/SocietyProfileSnapshot.jsx";
 import SocietyStatusUpdateForm from "../../../Components/Admin/Society/SocietyView/SocietyStatusUpdateForm.jsx";
 import SocietyDocumentCard from "../../../Components/Admin/Society/SocietyView/SocietyDocumentCard.jsx";
 import OtherSocietyDocumentsCard from "../../../Components/Admin/Society/SocietyView/OtherSocietyDocumentsCard.jsx";
@@ -67,38 +67,7 @@ const SocietyView = () => {
           {loading ? (
             <DetailCardSkeleton />
           ) : (
-            <SocietyDetailsCard
-              avatarUrl={selectedSociety?.society_profile_img_path}
-              societyId={id}
-              isEditable={selectedSociety?.allow_edit}
-              societyName={selectedSociety?.society_name}
-              societyAddress={selectedSociety?.address}
-              kyc_status={selectedSociety?.kyc_status}
-              google_page={selectedSociety?.google_page_url}
-              details={{
-                name: selectedSociety?.society_name,
-                flats: selectedSociety?.number_of_flat || "N/A",
-                email: selectedSociety?.society_email || "N/A",
-                members: selectedSociety?.number_of_members || "N/A",
-                whatsapp: selectedSociety?.whatsapp_group_name || "N/A",
-                address1: selectedSociety?.address_line_1 || "N/A",
-                address2: selectedSociety?.address_line_2 || "N/A",
-              }}
-              contact={{
-                name: selectedSociety?.name,
-                mobile: selectedSociety?.mobile_number,
-                email: selectedSociety?.email,
-              }}
-              billing={{
-                holder: selectedSociety?.account_holder_name || "N/A",
-                bank: selectedSociety?.bank_name || "N/A",
-                account: selectedSociety?.account_no || "N/A",
-                branch: selectedSociety?.branch_name || "N/A",
-                ifsc: selectedSociety?.bank_ifsc_code || "N/A",
-                address1: selectedSociety?.billing_address_line_1 || "N/A",
-                address2: selectedSociety?.billing_address_line_2 || "N/A",
-              }}
-            />
+            <SocietyProfileSnapshot society={selectedSociety} societyId={id} />
           )}
 
           {/* Update Society Status */}
