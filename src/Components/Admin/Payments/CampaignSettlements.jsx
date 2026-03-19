@@ -40,6 +40,7 @@ const CampaignSettlements = () => {
   const [status, setStatus] = useState("pending");
   const [transferAmounts, setTransferAmounts] = useState({});
   const [remarks, setRemarks] = useState({});
+  const [transactionScreenshots, setTransactionScreenshots] = useState({});
 
   const effectiveParams = useMemo(
     () => ({ page, limit, search, status }),
@@ -95,11 +96,15 @@ const CampaignSettlements = () => {
 
     setSubmittingId(row.campaign_log_id);
     try {
-      await axiosInstance.post(api_routes.admin.post_campaign_settlement_transfer, {
-        campaign_log_id: row.campaign_log_id,
-        transfer_amount: amount,
-        remark: remarks[row.campaign_log_id] || "",
-      });
+      const payload = new FormData();
+      payload.append("campaign_log_id", row.campaign_log_id);
+      payload.append("transfer_amount", amount);
+      payload.append("remark", remarks[row.campaign_log_id] || "");
+      if (transactionScreenshots[row.campaign_log_id]) {
+        payload.append("transaction_path", transactionScreenshots[row.campaign_log_id]);
+      }
+
+      await axiosInstance.post(api_routes.admin.post_campaign_settlement_transfer, payload);
       toast.success("Settlement transferred successfully");
       await refreshAll();
     } catch (error) {
@@ -285,6 +290,7 @@ const CampaignSettlements = () => {
                 <TableCell>Status</TableCell>
                 <TableCell>Transfer Amount</TableCell>
                 <TableCell>Remark</TableCell>
+                <TableCell>Screenshot</TableCell>
                 <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
@@ -362,6 +368,41 @@ const CampaignSettlements = () => {
                   </TableCell>
                   <TableCell>
                     {row.settlement_status === "paid" ? (
+                      row.transaction_path ? (
+                        <a
+                          href={`${import.meta.env.VITE_API_URL}/${row.transaction_path}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          style={{ color: "#0369a1", fontWeight: 600, fontSize: 13 }}
+                        >
+                          {row.transaction_name || "View screenshot"}
+                        </a>
+                      ) : (
+                        <span style={{ color: "#94a3b8", fontSize: 13 }}>Not uploaded</span>
+                      )
+                    ) : (
+                      <TextField
+                        size="small"
+                        type="file"
+                        fullWidth
+                        inputProps={{ accept: "image/*" }}
+                        onChange={(e) =>
+                          setTransactionScreenshots((prev) => ({
+                            ...prev,
+                            [row.campaign_log_id]: e.target.files?.[0] || null,
+                          }))
+                        }
+                        sx={{
+                          "& .MuiOutlinedInput-root": {
+                            borderRadius: 2,
+                            backgroundColor: "#ffffff",
+                          },
+                        }}
+                      />
+                    )}
+                  </TableCell>
+                  <TableCell>
+                    {row.settlement_status === "paid" ? (
                       <Chip
                         size="small"
                         label="Transferred"
@@ -400,7 +441,7 @@ const CampaignSettlements = () => {
               ))}
               {!rows.length && (
                 <TableRow>
-                  <TableCell colSpan={11} align="center">
+                  <TableCell colSpan={12} align="center">
                     {loading ? "Loading..." : "No settlement records found"}
                   </TableCell>
                 </TableRow>
