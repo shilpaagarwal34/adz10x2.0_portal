@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import {
+  Chip,
   Box,
   Button,
   Grid,
@@ -20,6 +21,7 @@ import Pagination from "../../Common/Pagination";
 import { formatCampaignType, formatNumberWithCommas } from "../../../helper/helper";
 
 const defaultTransfer = (row) => row?.default_society_amount || 0;
+const money = (value) => `₹ ${formatNumberWithCommas(value || 0)}`;
 
 const CampaignSettlements = () => {
   const [summary, setSummary] = useState({
@@ -112,37 +114,69 @@ const CampaignSettlements = () => {
       <Paper sx={{ p: 2, m: 3 }}>
         <Grid container spacing={2}>
           <Grid item xs={12} md={3}>
-            <Box sx={{ p: 2, border: "1px solid #e3e3e3", borderRadius: 2, background: "#f4f8ff" }}>
+            <Box
+              sx={{
+                p: 2,
+                border: "1px solid #dbeafe",
+                borderRadius: 3,
+                background: "linear-gradient(145deg, #f0f7ff 0%, #f8fbff 100%)",
+                boxShadow: "0 4px 16px rgba(2, 132, 199, 0.08)",
+              }}
+            >
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Platform Holding
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 700, color: "#0d47a1" }}>
-                ₹ {formatNumberWithCommas(summary?.platform_holding_amount || 0)}
+                {money(summary?.platform_holding_amount)}
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Box sx={{ p: 2, border: "1px solid #e3e3e3", borderRadius: 2, background: "#f4fff8" }}>
+            <Box
+              sx={{
+                p: 2,
+                border: "1px solid #d1fae5",
+                borderRadius: 3,
+                background: "linear-gradient(145deg, #f0fff4 0%, #f8fffb 100%)",
+                boxShadow: "0 4px 16px rgba(16, 185, 129, 0.08)",
+              }}
+            >
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Platform Revenue
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 700, color: "#0f9d58" }}>
-                ₹ {formatNumberWithCommas(summary?.platform_revenue_amount || 0)}
+                {money(summary?.platform_revenue_amount)}
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Box sx={{ p: 2, border: "1px solid #e3e3e3", borderRadius: 2, background: "#fffaf2" }}>
+            <Box
+              sx={{
+                p: 2,
+                border: "1px solid #ffedd5",
+                borderRadius: 3,
+                background: "linear-gradient(145deg, #fff8f1 0%, #fffdf8 100%)",
+                boxShadow: "0 4px 16px rgba(245, 158, 11, 0.08)",
+              }}
+            >
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Society Transferred
               </Typography>
               <Typography variant="h6" sx={{ fontWeight: 700, color: "#ef6c00" }}>
-                ₹ {formatNumberWithCommas(summary?.society_transferred_amount || 0)}
+                {money(summary?.society_transferred_amount)}
               </Typography>
             </Box>
           </Grid>
           <Grid item xs={12} md={3}>
-            <Box sx={{ p: 2, border: "1px solid #e3e3e3", borderRadius: 2, background: "#f6f6f6" }}>
+            <Box
+              sx={{
+                p: 2,
+                border: "1px solid #e5e7eb",
+                borderRadius: 3,
+                background: "linear-gradient(145deg, #f8fafc 0%, #ffffff 100%)",
+                boxShadow: "0 4px 16px rgba(15, 23, 42, 0.06)",
+              }}
+            >
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
                 Pending Settlements
               </Typography>
@@ -154,7 +188,7 @@ const CampaignSettlements = () => {
         </Grid>
       </Paper>
 
-      <Paper sx={{ p: 2, m: 3 }}>
+      <Paper sx={{ p: 2, m: 3, borderRadius: 3 }}>
         <Grid container spacing={2} sx={{ mb: 2 }}>
           <Grid item xs={12} md={4}>
             <TextField
@@ -165,6 +199,12 @@ const CampaignSettlements = () => {
               onChange={(e) => {
                 setPage(1);
                 setSearch(e.target.value);
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2.5,
+                  backgroundColor: "#f8fafc",
+                },
               }}
             />
           </Grid>
@@ -177,6 +217,12 @@ const CampaignSettlements = () => {
               onChange={(e) => {
                 setPage(1);
                 setStatus(e.target.value);
+              }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2.5,
+                  backgroundColor: "#f8fafc",
+                },
               }}
             >
               <MenuItem value="pending">Pending</MenuItem>
@@ -193,6 +239,12 @@ const CampaignSettlements = () => {
                 setPage(1);
                 setLimit(Number(e.target.value));
               }}
+              sx={{
+                "& .MuiOutlinedInput-root": {
+                  borderRadius: 2.5,
+                  backgroundColor: "#f8fafc",
+                },
+              }}
             >
               {[10, 20, 50, 100].map((entry) => (
                 <MenuItem key={entry} value={entry}>
@@ -204,7 +256,23 @@ const CampaignSettlements = () => {
         </Grid>
 
         <div className="table-responsive">
-          <Table sx={{ minWidth: 1300 }}>
+          <Table
+            sx={{
+              minWidth: 1300,
+              "& .MuiTableHead-root .MuiTableCell-root": {
+                fontWeight: 700,
+                color: "#334155",
+                backgroundColor: "#f8fafc",
+                borderBottom: "1px solid #e2e8f0",
+              },
+              "& .MuiTableBody-root .MuiTableRow-root:hover": {
+                backgroundColor: "#f8fafc",
+              },
+              "& .MuiTableBody-root .MuiTableCell-root": {
+                borderBottom: "1px solid #eef2f7",
+              },
+            }}
+          >
             <TableHead>
               <TableRow>
                 <TableCell>Ad Code</TableCell>
@@ -231,10 +299,24 @@ const CampaignSettlements = () => {
                   </TableCell>
                   <TableCell>{row.society_name || "NA"}</TableCell>
                   <TableCell>{row.company_name || "NA"}</TableCell>
-                  <TableCell align="right">₹ {formatNumberWithCommas(row.company_amount || 0)}</TableCell>
-                  <TableCell align="right">₹ {formatNumberWithCommas(row.default_society_amount || 0)}</TableCell>
-                  <TableCell align="right">₹ {formatNumberWithCommas(row.platform_amount || 0)}</TableCell>
-                  <TableCell sx={{ textTransform: "capitalize" }}>{row.settlement_status}</TableCell>
+                  <TableCell align="right">{money(row.company_amount)}</TableCell>
+                  <TableCell align="right">{money(row.default_society_amount)}</TableCell>
+                  <TableCell align="right">{money(row.platform_amount)}</TableCell>
+                  <TableCell sx={{ textTransform: "capitalize" }}>
+                    <Chip
+                      size="small"
+                      label={row.settlement_status}
+                      sx={{
+                        textTransform: "capitalize",
+                        fontWeight: 700,
+                        borderRadius: 2,
+                        backgroundColor:
+                          row.settlement_status === "paid" ? "#dcfce7" : "#fef3c7",
+                        color:
+                          row.settlement_status === "paid" ? "#166534" : "#92400e",
+                      }}
+                    />
+                  </TableCell>
                   <TableCell>
                     <TextField
                       type="number"
@@ -248,6 +330,13 @@ const CampaignSettlements = () => {
                           [row.campaign_log_id]: e.target.value,
                         }))
                       }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          backgroundColor:
+                            row.settlement_status === "paid" ? "#f8fafc" : "#ffffff",
+                        },
+                      }}
                     />
                   </TableCell>
                   <TableCell>
@@ -262,17 +351,46 @@ const CampaignSettlements = () => {
                           [row.campaign_log_id]: e.target.value,
                         }))
                       }
+                      sx={{
+                        "& .MuiOutlinedInput-root": {
+                          borderRadius: 2,
+                          backgroundColor:
+                            row.settlement_status === "paid" ? "#f8fafc" : "#ffffff",
+                        },
+                      }}
                     />
                   </TableCell>
                   <TableCell>
                     {row.settlement_status === "paid" ? (
-                      "Transferred"
+                      <Chip
+                        size="small"
+                        label="Transferred"
+                        sx={{
+                          fontWeight: 700,
+                          borderRadius: 2,
+                          backgroundColor: "#e0f2fe",
+                          color: "#075985",
+                        }}
+                      />
                     ) : (
                       <Button
                         variant="contained"
                         size="small"
                         onClick={() => onTransfer(row)}
                         disabled={submittingId === row.campaign_log_id || loading}
+                        sx={{
+                          borderRadius: 2,
+                          fontWeight: 700,
+                          textTransform: "none",
+                          px: 2,
+                          background:
+                            "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
+                          boxShadow: "0 8px 18px rgba(1,147,255,0.25)",
+                          "&:hover": {
+                            background:
+                              "linear-gradient(97.02deg, #019a20 0%, #0077d4 100%)",
+                          },
+                        }}
                       >
                         Transfer
                       </Button>
