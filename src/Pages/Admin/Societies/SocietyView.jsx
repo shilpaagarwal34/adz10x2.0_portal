@@ -21,9 +21,7 @@ import RMFormSkeleton from "../../../Components/Skeletons/RMFormSkeleton.jsx";
 import DocumentsSkeleton from "../../../Components/Skeletons/DocumentsSkeleton.jsx";
 import GallerySkeleton from "../../../Components/Skeletons/Society/GallerySkeleton.jsx";
 import MapSkeleton from "../../../Components/Skeletons/Society/MapSkeleton.jsx";
-import AdvertisementSettingsSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/AdvertisementSettingsSkeleton.jsx";
 import ApproveRejectCardSkeleton from "../../../Components/Skeletons/Admin/ApproveRejectCardSkeleton.jsx";
-import AdvertisementSetting from "../../../Components/Society/Profile/Edit/AdvertisementSetting.jsx";
 import { downloadFile } from "../../../helper/helper.js";
 
 const SocietyView = () => {
@@ -183,21 +181,6 @@ const SocietyView = () => {
             </Card>
           </Box>
 
-          {/* Advertisement Settings */}
-          {loading ? (
-            <AdvertisementSettingsSkeleton />
-          ) : (
-            // <AdvertisementSettings />
-            <AdvertisementSetting
-              onAdsSlotChange={setAdsSlot}
-              userType="admin"
-              societyId={id}
-              adsPerDay={adsPerDay}
-              adsSlot={adsSlot}
-              setAdsPerDay={setAdsPerDay}
-              selectedSociety={selectedSociety}
-            />
-          )}
         </Grid>
       </Grid>
     </Box>

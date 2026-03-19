@@ -10,21 +10,6 @@ export default function ApprovedDetailsCard({ approvedDetails }) {
     approvedDetails?.user_type === "Society_Admin" ||
     approvedDetails?.user_type === "Society_User";
 
-  const getCommissionValue = (type) => {
-    const value = isSocietyUser
-      ? approvedDetails?.[`society_${type}`]
-      : approvedDetails?.[type];
-
-    const unit =
-      approvedDetails?.society_commission === "INR"
-        ? "₹"
-        : approvedDetails?.society_commission || "₹";
-
-    // const unit = approvedDetails?.society_commission || "INR";
-
-    return `${value ?? "-"} ${unit}`;
-  };
-
   const getRawCommissionValue = (key) =>
     isSocietyUser
       ? approvedDetails?.[`society_${key}`]
@@ -35,12 +20,6 @@ export default function ApprovedDetailsCard({ approvedDetails }) {
     "Lead Generation": getRawCommissionValue("lead_generation"),
     Survey: getRawCommissionValue("survey"),
   };
-
-  const fields = [
-    { label: "Brand Promotion", key: "brand_promotion" },
-    { label: "Lead Generation", key: "lead_generation" },
-    { label: "Survey", key: "survey" },
-  ];
 
   return (
     <>
@@ -97,17 +76,6 @@ export default function ApprovedDetailsCard({ approvedDetails }) {
                 {approvedDetails?.approved_reject_date_time}
               </Typography>
             </Grid>
-
-            {fields.map((field) => (
-              <Grid item md={4} xs={12} key={field.key}>
-                <Typography>
-                  <strong>{field.label}</strong>
-                </Typography>
-                <Typography variant="body1">
-                  {getCommissionValue(field.key)}
-                </Typography>
-              </Grid>
-            ))}
           </Grid>
         </CardContent>
       </Card>
