@@ -241,11 +241,17 @@ const SocietyPhotosFields = () => {
           ) : null
         )}
       </div>
-      <ErrorMessage
-        name="society_profile_img_1_5_path"
-        component="div"
-        className="text-danger formik-error"
-      />
+      <ErrorMessage name="society_profile_img_1_5_path">
+        {(msg) => (
+          <div className="text-danger formik-error">
+            {typeof msg === "string"
+              ? msg
+              : Array.isArray(msg)
+                ? "Please check the uploaded photos."
+                : msg?.message || "Please check the uploaded photos."}
+          </div>
+        )}
+      </ErrorMessage>
     </>
   );
 };
