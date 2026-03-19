@@ -380,8 +380,10 @@ const ProfileEdit = () => {
         await dispatch(fetchProfileData());
         navigate("/society/profile");
       } else {
-        // console.log(result.payload);
-        const errorMsg = "Failed to update profile";
+        const errorMsg =
+          typeof result.payload === "string"
+            ? result.payload
+            : "Failed to update profile";
         toast.error(errorMsg);
       }
     } catch (err) {
@@ -421,7 +423,7 @@ const ProfileEdit = () => {
     );
   }
 
-  if (status === "failed") {
+  if (status === "failed" && !profileData?.society_name) {
     return (
       <div className="text-danger px-3">
         Error loading profile: {typeof error === "string" ? error : "Unable to load profile data"}
