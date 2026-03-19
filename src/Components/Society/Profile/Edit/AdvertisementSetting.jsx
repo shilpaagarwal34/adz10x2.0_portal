@@ -109,7 +109,6 @@ const AdvertisementSetting = ({
     useState({});
   const [expandedMediaType, setExpandedMediaType] = useState(null);
   const [drawerItemIndex, setDrawerItemIndex] = useState(null);
-  const [bulkRateInput, setBulkRateInput] = useState("");
   const { days, loading: campaignLoading } = useSelector(
     (state) => state.society.campaignDays
   );
@@ -417,20 +416,6 @@ const AdvertisementSetting = ({
         };
       })
     );
-  };
-
-  const applyBulkRate = () => {
-    const val = bulkRateInput.trim();
-    const num = val === "" ? 0 : Number(val);
-    if (Number.isNaN(num) || num < 0) {
-      toast.error("Enter a valid rate.");
-      return;
-    }
-    mediaRates.forEach((item) => {
-      if (item.is_offered) updateSocietyRate(item.media_type, String(num));
-    });
-    setBulkRateInput("");
-    toast.success("Bulk rate applied to all active platforms.");
   };
 
   const saveMediaRates = async (mode = "submit") => {
@@ -882,41 +867,6 @@ const AdvertisementSetting = ({
               </p>
 
               <div
-                className="d-flex flex-wrap align-items-center gap-3 mb-4 p-3 rounded-3"
-                style={{
-                  background: "linear-gradient(135deg, #f0fdf4 0%, #ecfeff 100%)",
-                  border: "1px solid rgba(1, 170, 35, 0.2)",
-                }}
-              >
-                <span className="fw-semibold" style={{ color: "#0f172a", fontSize: "14px" }}>
-                  Apply bulk rate to all active platforms:
-                </span>
-                <span style={{ color: "#0f172a", fontWeight: 700 }}>₹</span>
-                <input
-                  type="number"
-                  min="0"
-                  placeholder="0"
-                  value={bulkRateInput}
-                  onChange={(e) => setBulkRateInput(e.target.value)}
-                  className="form-control form-control-sm"
-                  style={{ width: 100, display: "inline-block" }}
-                />
-                <Button
-                  size="small"
-                  variant="contained"
-                  onClick={applyBulkRate}
-                  sx={{
-                    textTransform: "none",
-                    fontWeight: 600,
-                    background: "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)",
-                    "&:hover": { background: "linear-gradient(97.02deg, #019a20 0%, #0077d4 100%)" },
-                  }}
-                >
-                  Apply
-                </Button>
-              </div>
-
-              <div
                 style={{
                   display: "grid",
                   gridTemplateColumns: "repeat(3, 1fr)",
@@ -1037,8 +987,37 @@ const AdvertisementSetting = ({
                   const idx = drawerItemIndex;
                   return (
                     <>
-                      <div className="d-flex align-items-center justify-content-between p-3 border-bottom" style={{ borderColor: "#e2e8f0" }}>
-                        <h6 className="mb-0 fw-bold" style={{ color: "#0f172a" }}>{mediaHeadings[item.media_type] || item.label}</h6>
+                      <div
+                        className="d-flex align-items-start justify-content-between p-3 border-bottom"
+                        style={{
+                          borderColor: "#e2e8f0",
+                          background: "linear-gradient(160deg, #f8fffe 0%, #f8fafc 100%)",
+                        }}
+                      >
+                        <div className="d-flex flex-column gap-1">
+                          <div className="d-flex align-items-center gap-2 flex-wrap">
+                            <h6 className="mb-0 fw-bold" style={{ color: "#0f172a", letterSpacing: "-0.01em" }}>
+                              {mediaHeadings[item.media_type] || item.label}
+                            </h6>
+                            <span
+                              style={{
+                                fontSize: 11,
+                                fontWeight: 700,
+                                padding: "3px 9px",
+                                borderRadius: 999,
+                                background: item.is_offered
+                                  ? "linear-gradient(97.02deg, #01AA23 0%, #0193FF 100%)"
+                                  : "#e2e8f0",
+                                color: item.is_offered ? "#fff" : "#64748b",
+                              }}
+                            >
+                              {item.is_offered ? "Active" : "Excluded"}
+                            </span>
+                          </div>
+                          <span style={{ fontSize: 12, color: "#64748b" }}>
+                            Configure rates, media and availability without changing the grid layout.
+                          </span>
+                        </div>
                         <Button size="small" onClick={() => setDrawerItemIndex(null)} sx={{ minWidth: 36 }}><CloseIcon /></Button>
                       </div>
                       <div className="p-3 overflow-auto" style={{ maxHeight: "calc(100vh - 80px)" }}>
