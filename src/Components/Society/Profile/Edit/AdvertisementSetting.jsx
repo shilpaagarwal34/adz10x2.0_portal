@@ -986,7 +986,8 @@ const AdvertisementSetting = ({
                           onClick={(e) => e.stopPropagation()}
                           style={{
                             width: 72,
-                            border: "none",
+                            border: "1px solid transparent",
+                            boxSizing: "border-box",
                             background: "transparent",
                             fontSize: "1rem",
                             fontWeight: 700,
@@ -994,8 +995,8 @@ const AdvertisementSetting = ({
                             padding: "2px 4px",
                             borderRadius: 4,
                           }}
-                          onFocus={(e) => { e.target.style.background = "rgba(1,170,35,0.08)"; e.target.style.border = "1px solid #01AA23"; }}
-                          onBlur={(e) => { e.target.style.background = "transparent"; e.target.style.border = "none"; }}
+                          onFocus={(e) => { e.target.style.background = "rgba(1,170,35,0.08)"; e.target.style.borderColor = "#01AA23"; }}
+                          onBlur={(e) => { e.target.style.background = "transparent"; e.target.style.borderColor = "transparent"; }}
                         />
                         <span style={{ fontSize: 11, color: "#64748b", marginLeft: 4 }}>
                           {item.media_type === "whatsapp_promotional_day" ? "/ ad" : "/ 15 days"}
