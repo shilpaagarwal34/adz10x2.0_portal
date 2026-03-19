@@ -24,6 +24,23 @@ const LoctionFieldsData = ({
 }) => {
   const { values, setFieldValue } = useFormikContext();
   const dispatch = useDispatch();
+  const buildGoogleMapPreviewSrc = (googlePageUrl, coordinates) => {
+    const rawUrl = String(googlePageUrl || "").trim();
+
+    // If user entered Google page URL, always prioritize it for live preview.
+    if (rawUrl) {
+      if (rawUrl.includes("/maps/embed")) {
+        return rawUrl;
+      }
+      return `https://www.google.com/maps?q=${encodeURIComponent(rawUrl)}&z=15&output=embed`;
+    }
+
+    if (coordinates?.lat && coordinates?.lng) {
+      return `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}&z=15&output=embed`;
+    }
+
+    return "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.284749831874!2d73.85625557505002!3d18.520430376270936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c068f3f53b91%3A0x3b4c08f37e6c5a3c!2sNexus%20Gulmohar!5e0!3m2!1sen!2sin!4v1648899238475";
+  };
 
   useEffect(() => {
     dispatch(fetchCities());
@@ -156,12 +173,7 @@ const LoctionFieldsData = ({
       <div className="rounded overflow-hidden">
         <iframe
           title="Society Location"
-          src={
-            selectedCoordinates
-              ? `https://www.google.com/maps?q=${selectedCoordinates.lat},${selectedCoordinates.lng}&z=15&output=embed`
-              : values.google_page_url ||
-                "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.284749831874!2d73.85625557505002!3d18.520430376270936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c068f3f53b91%3A0x3b4c08f37e6c5a3c!2sNexus%20Gulmohar!5e0!3m2!1sen!2sin!4v1648899238475"
-          }
+          src={buildGoogleMapPreviewSrc(values.google_page_url, selectedCoordinates)}
           width="100%"
           height="150"
           style={{ border: "0" }}
