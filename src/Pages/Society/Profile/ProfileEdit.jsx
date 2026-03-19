@@ -424,7 +424,7 @@ const ProfileEdit = () => {
   if (status === "failed") {
     return (
       <div className="text-danger px-3">
-        Error loading profile: {error || "Unable to load profile data"}
+        Error loading profile: {typeof error === "string" ? error : "Unable to load profile data"}
       </div>
     );
   }

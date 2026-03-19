@@ -45,7 +45,7 @@ const updateProfile = createAsyncThunk(
       return null;
     } catch (error) {
       return rejectWithValue(
-        error.response ? error.response.data : error.message
+        error?.response?.data?.message || error.message || "Failed to update profile"
       );
     }
   }
