@@ -22,7 +22,6 @@ import Users from "./Users/Users.jsx";
 import Settings from "./Settings.jsx";
 import Footer from "./Footer.jsx";
 import Notifications from "./Notifications.jsx";
-import Report from "./Report.jsx";
 import TermsAndConditions from "./TermsAndConditions.jsx";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
 import { ProtectedActionRoute } from "../../utils/ProtectedRoutes.jsx";
@@ -163,14 +162,7 @@ function Society() {
 
           <Route path="/notifications" element={<Notifications />} />
 
-          <Route
-            path="/report/:type"
-            element={
-              <PermissionRoute permission="report">
-                <Report />
-              </PermissionRoute>
-            }
-          />
+          {/* Reports temporarily hidden in society portal */}
 
           <Route
             path="/terms-and-conditions"

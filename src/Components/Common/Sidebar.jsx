@@ -63,6 +63,9 @@ const reportMenu = {
   ],
 };
 
+// Temporary feature flag: keep Reports hidden in Society portal.
+const SHOW_SOCIETY_REPORTS = false;
+
 const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
   const location = useLocation();
   const isActive = location.pathname.includes("/dashboard/campaign-view");
@@ -261,7 +264,7 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
               true
             )}
 
-          {hasPrivilege("reports") &&
+          {SHOW_SOCIETY_REPORTS && hasPrivilege("reports") &&
             renderSingleLevelMenu(
               reportMenu.key,
               reportMenu.label,
