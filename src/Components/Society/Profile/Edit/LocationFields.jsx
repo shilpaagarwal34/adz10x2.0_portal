@@ -24,19 +24,64 @@ const LoctionFieldsData = ({
 }) => {
   const { values, setFieldValue } = useFormikContext();
   const dispatch = useDispatch();
-  const buildGoogleMapPreviewSrc = (googlePageUrl, coordinates) => {
+  const buildGoogleMapPreviewSrc = (googlePageUrl, coordinates, formValues) => {
     const rawUrl = String(googlePageUrl || "").trim();
+    const addressFallback = [
+      formValues?.address,
+      formValues?.area_name,
+      safeCities.find((city) => city.id === formValues?.city_id)?.city_name,
+      formValues?.pincode,
+    ]
+      .filter(Boolean)
+      .join(", ");
+
+    const buildEmbedByQuery = (queryText) =>
+      `https://www.google.com/maps?q=${encodeURIComponent(queryText)}&z=15&output=embed`;
 
     // If user entered Google page URL, always prioritize it for live preview.
     if (rawUrl) {
       if (rawUrl.includes("/maps/embed")) {
         return rawUrl;
       }
-      return `https://www.google.com/maps?q=${encodeURIComponent(rawUrl)}&z=15&output=embed`;
+
+      try {
+        const parsed = new URL(rawUrl);
+        const host = parsed.hostname.toLowerCase();
+        const path = decodeURIComponent(parsed.pathname || "");
+        const qParam = parsed.searchParams.get("q");
+
+        // Some short/share pages can't be embedded directly. Use address fallback instead.
+        if (host.includes("share.google")) {
+          if (addressFallback) return buildEmbedByQuery(addressFallback);
+          return buildEmbedByQuery(rawUrl);
+        }
+
+        if (qParam) {
+          return buildEmbedByQuery(qParam);
+        }
+
+        const atMatch = path.match(/@(-?\d+(\.\d+)?),(-?\d+(\.\d+)?)/);
+        if (atMatch) {
+          return `https://www.google.com/maps?q=${atMatch[1]},${atMatch[3]}&z=15&output=embed`;
+        }
+
+        const placeMatch = path.match(/\/place\/([^/]+)/);
+        if (placeMatch?.[1]) {
+          return buildEmbedByQuery(placeMatch[1].replace(/\+/g, " "));
+        }
+      } catch {
+        // Not a valid URL; treat as plain query text.
+      }
+
+      return buildEmbedByQuery(rawUrl);
     }
 
     if (coordinates?.lat && coordinates?.lng) {
       return `https://www.google.com/maps?q=${coordinates.lat},${coordinates.lng}&z=15&output=embed`;
+    }
+
+    if (addressFallback) {
+      return buildEmbedByQuery(addressFallback);
     }
 
     return "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3945.284749831874!2d73.85625557505002!3d18.520430376270936!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bc2c068f3f53b91%3A0x3b4c08f37e6c5a3c!2sNexus%20Gulmohar!5e0!3m2!1sen!2sin!4v1648899238475";
@@ -173,7 +218,11 @@ const LoctionFieldsData = ({
       <div className="rounded overflow-hidden">
         <iframe
           title="Society Location"
-          src={buildGoogleMapPreviewSrc(values.google_page_url, selectedCoordinates)}
+          src={buildGoogleMapPreviewSrc(
+            values.google_page_url,
+            selectedCoordinates,
+            values
+          )}
           width="100%"
           height="150"
           style={{ border: "0" }}
