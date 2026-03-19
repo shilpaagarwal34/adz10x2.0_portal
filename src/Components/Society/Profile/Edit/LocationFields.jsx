@@ -39,15 +39,20 @@ const LoctionFieldsData = ({
   const { cities, areas, status, areaSuggestions } = useSelector(
     (state) => state.common
   );
+  const safeCities = Array.isArray(cities) ? cities : [];
+  const safeAreas = Array.isArray(areas) ? areas : [];
+  const safeAreaSuggestions = Array.isArray(areaSuggestions)
+    ? areaSuggestions
+    : [];
 
   useEffect(() => {
-    if (values.area_id && areas.length > 0 && !values.area_name) {
-      const area = areas.find((area) => area.id === values.area_id);
+    if (values.area_id && safeAreas.length > 0 && !values.area_name) {
+      const area = safeAreas.find((area) => area.id === values.area_id);
       if (area) {
         setFieldValue("area_name", area.area_name, false);
       }
     }
-  }, [areas, values.area_id, values.area_name, setFieldValue]);
+  }, [safeAreas, values.area_id, values.area_name, setFieldValue]);
 
   const handleCityChange = (selectedOption) => {
     dispatch(setAreaSuggestions([]));
@@ -67,7 +72,7 @@ const LoctionFieldsData = ({
       return;
     }
 
-    const filteredAreas = areas.filter((area) =>
+    const filteredAreas = safeAreas.filter((area) =>
       area.area_name.toLowerCase().startsWith(query.toLowerCase())
     );
 
@@ -196,14 +201,14 @@ const LoctionFieldsData = ({
               classNamePrefix="react-select"
               styles={selectCustomStyle}
               name="city_id"
-              options={cities}
+              options={safeCities}
               getOptionLabel={(option) => option.city_name}
               getOptionValue={(option) => option.id}
               isLoading={status === "loading"}
               placeholder={
                 status === "loading" ? "Loading Cities..." : "Select City"
               }
-              value={cities.find((city) => city.id === values.city_id) || null}
+              value={safeCities.find((city) => city.id === values.city_id) || null}
               onChange={handleCityChange}
               isClearable
             />
@@ -231,7 +236,7 @@ const LoctionFieldsData = ({
               autoComplete="off"
             />
             <SuggestionsDropdown
-              areaSuggestions={areaSuggestions}
+              areaSuggestions={safeAreaSuggestions}
               handleAreaSelect={handleAreaSelect}
               setFieldValue={setFieldValue}
             />
