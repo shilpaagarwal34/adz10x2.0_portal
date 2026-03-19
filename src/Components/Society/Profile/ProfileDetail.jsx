@@ -7,6 +7,7 @@ import { base_url } from "../../../config/api.js";
 import { Avatar } from "@mui/material";
 import { useAdsModal } from "../../../Context/AdsModalContext.jsx";
 import CompleteProfileModal from "../../Common/CompleteProfileModal.jsx";
+import { toast } from "react-toastify";
 
 const ProfileDetail = ({ profileData, percentage = 0 }) => {
   const navigate = useNavigate();
@@ -15,6 +16,8 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
   const { openSampleModal } = useAdsModal();
   const [showBilling, setShowBilling] = useState(false);
   const [showCompleteProfileModal, setShowCompleteProfileModal] = useState(false);
+  const { user } = useSelector((state) => state.auth);
+  const editLocked = user?.kyc_status === "approved" && !profileData?.edit_permission;
 
   useEffect((state) => {
     dispatch(fetchAreasByCity(profileData?.city_id));
@@ -102,8 +105,13 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
             <img
               src="/edit.svg"
               alt="Edit"
-              style={{ cursor: "pointer" }}
+              style={{ cursor: editLocked ? "not-allowed" : "pointer", opacity: editLocked ? 0.45 : 1 }}
+              title={editLocked ? "Edit permission not granted by admin" : "Edit profile"}
               onClick={() => {
+                if (editLocked) {
+                  toast.info("Profile editing is currently disabled. Please contact the admin to enable it.");
+                  return;
+                }
                 if (Number(percentage || 0) < 100) {
                   setShowCompleteProfileModal(true);
                 } else {

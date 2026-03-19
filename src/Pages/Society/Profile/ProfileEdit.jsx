@@ -53,6 +53,9 @@ const ProfileEdit = () => {
   const { profileData, status, error } = useSelector(
     (state) => state.society.profile
   );
+  const { user } = useSelector((state) => state.auth);
+  const editLocked =
+    user?.kyc_status === "approved" && profileData?.edit_permission === false;
 
   const [showMap, setShowMap] = useState(false);
   const [selectedLocation, setSelectedLocation] = useState("");
@@ -419,6 +422,18 @@ const ProfileEdit = () => {
           <SocietyLocationSkeleton />
           <AdvertisementSettingsSkeleton />
         </div>
+      </div>
+    );
+  }
+
+  if (editLocked) {
+    return (
+      <div className="d-flex flex-column align-items-center justify-content-center px-4 py-5 text-center" style={{ minHeight: "60vh" }}>
+        <img src="/edit.svg" alt="locked" style={{ width: 48, opacity: 0.35, marginBottom: 16 }} />
+        <h6 className="fw-bold mb-2" style={{ color: "#0f172a" }}>Profile editing is disabled</h6>
+        <p className="mb-0 small" style={{ color: "#64748b", maxWidth: 340 }}>
+          Your profile is currently locked for editing. Please contact the admin to grant edit permission.
+        </p>
       </div>
     );
   }
