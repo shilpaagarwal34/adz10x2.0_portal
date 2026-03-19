@@ -53,7 +53,19 @@ export default function Gallery({ profileData }) {
     position: "absolute",
   };
 
-  if (!society_profile || imagePaths.length === 0) return null;
+  if (!society_profile || imagePaths.length === 0) {
+    return (
+      <div className="my-4 p-3 bg-white rounded shadow">
+        <h5 className="fw-bold mb-2">Society Photos</h5>
+        <div
+          className="d-flex align-items-center justify-content-center rounded"
+          style={{ height: 140, background: "#f8fafc", border: "1.5px dashed #cbd5e1", color: "#94a3b8", fontSize: 13 }}
+        >
+          No photos uploaded yet.
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="my-4 p-3 bg-white rounded shadow">

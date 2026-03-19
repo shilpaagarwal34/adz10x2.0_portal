@@ -75,23 +75,27 @@ export default function SocietyDetailModal({
           <Row>
             <Col xs={3}>
               <img
-                src={society?.logo || "/fallback_img.jpg"} // Use society logo if available
+                src={
+                  society?.society_profile_img_path
+                    ? `${base_url}/${society.society_profile_img_path}`
+                    : "/fallback_img.jpg"
+                }
                 alt="Society"
                 className="thumbnail-img rounded"
-                style={{ width: "70px", height: "70px" }}
+                style={{ width: "70px", height: "70px", objectFit: "cover" }}
               />
             </Col>
             <Col xs={9}>
               <h4 className="mb-0 fw-bold ps-2">
-                {society?.name || "Society Name"}
+                {society?.society_name || "Society Name"}
               </h4>
               <p className="text-muted mb-0 custom-label ps-2">
-                {profile?.totalFlats
-                  ? `${profile.totalFlats} Total Flats`
+                {profile?.number_of_flat
+                  ? `${profile.number_of_flat} Total Flats`
                   : "0 Total Flats"}
               </p>
               <p className="verified-text custom-label mb-0 ps-2">
-                Verified by {society?.verifiedBy || "Adz10x.com"}
+                Verified by Adz10x.com
               </p>
               <button
                 onClick={handleClose}
@@ -115,6 +119,14 @@ export default function SocietyDetailModal({
         <Row>
           <Col xs={12} lg={7}>
             <h5 className="fw-bold">Society Photos</h5>
+            {images.length === 0 && (
+              <div
+                className="d-flex align-items-center justify-content-center rounded mb-3"
+                style={{ height: 180, background: "#f8fafc", border: "1.5px dashed #cbd5e1", color: "#94a3b8", fontSize: 14 }}
+              >
+                No photos uploaded by this society yet.
+              </div>
+            )}
           </Col>
           <Col xs={5} className="d-none d-lg-block">
             <div className="d-flex">
@@ -154,7 +166,7 @@ export default function SocietyDetailModal({
             </div>
           </Col>
           <Col xs={12} lg={7}>
-            <div
+            {images.length > 0 && <div
               id="societyCarousel"
               ref={carouselRef}
               className="carousel slide"
@@ -207,10 +219,10 @@ export default function SocietyDetailModal({
                   style={icon}
                 ></span>
               </button>
-            </div>
+            </div>}
 
             {/* Thumbnail Images */}
-            <div className="d-flex justify-content-center mt-2">
+            {images.length > 0 && <div className="d-flex justify-content-center mt-2">
               {images.map((image, index) => (
                 <img
                   key={index}
@@ -225,7 +237,7 @@ export default function SocietyDetailModal({
                   onClick={() => handleThumbnailClick(index)}
                 />
               ))}
-            </div>
+            </div>}
           </Col>
           <Col xs={12} lg={5}>
             <div className="d-flex d-block d-lg-none mt-4">

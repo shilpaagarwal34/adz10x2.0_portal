@@ -30,7 +30,9 @@ const ImageGallery = ({ imageData = {} }) => {
     },
   ];
 
-  const availableImages = images.filter((img) => img.path !== null);
+  const availableImages = images.filter(
+    (img) => img.path && String(img.path).trim() !== ""
+  );
 
   const [activeIndex, setActiveIndex] = useState(0);
   const [openModal, setOpenModal] = useState(false);
