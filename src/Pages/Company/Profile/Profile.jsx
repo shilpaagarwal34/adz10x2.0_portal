@@ -88,6 +88,7 @@ const Profile = () => {
               />
               <CompanyDetails
                 companyDetails={draftProfileData?.company_profile}
+                profileData={draftProfileData}
                 isLoading={false}
               />
               <CompanyContactInfo contactInfo={draftProfileData} isLoading={false} />
@@ -129,6 +130,7 @@ const Profile = () => {
           />
           <CompanyDetails
             companyDetails={profileData?.company_profile}
+            profileData={profileData}
             isLoading={isLoading}
           />
           <CompanyContactInfo contactInfo={profileData} isLoading={isLoading} />

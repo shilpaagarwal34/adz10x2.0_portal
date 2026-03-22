@@ -27,7 +27,7 @@ export default function CompanyDetail({ profileData }) {
 
   useEffect(() => {
     dispatch(fetchSectors());
-  }, [dispatch, fetchSectors]);
+  }, [dispatch]);
 
   return (
     <div>

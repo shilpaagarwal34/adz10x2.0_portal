@@ -43,7 +43,7 @@ import React from "react";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
 
-export default function CompanyDetails({ companyDetails, isLoading }) {
+export default function CompanyDetails({ companyDetails, profileData, isLoading }) {
   // const isLoading = loading === "idle" || loading === "loading";
 
   return (
@@ -53,6 +53,35 @@ export default function CompanyDetails({ companyDetails, isLoading }) {
       <h5 className="fw-bold mt-3">
         {isLoading ? <Skeleton width={150} /> : "Company Details"}
       </h5>
+
+      {/* Brand & Sector */}
+      <div className="row">
+        <div className="col-md-4">
+          {isLoading ? (
+            <Skeleton width={120} height={20} className="mb-2" />
+          ) : (
+            <>
+              <p className="m-0">
+                <strong>Brand Name</strong>
+              </p>
+              <p className="fw-medium">{profileData?.company_brand_name || "-"}</p>
+            </>
+          )}
+        </div>
+
+        <div className="col-md-4">
+          {isLoading ? (
+            <Skeleton width={120} height={20} className="mb-2" />
+          ) : (
+            <>
+              <p className="m-0">
+                <strong>Sector</strong>
+              </p>
+              <p className="fw-medium">{profileData?.sector || "-"}</p>
+            </>
+          )}
+        </div>
+      </div>
 
       <div className="row">
         {/* Mobile Number */}

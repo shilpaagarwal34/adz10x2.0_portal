@@ -57,7 +57,7 @@ const CompanyDetails = ({ company, isEditable }) => {
           <Typography>{company_name || "N/A"}</Typography>{" "}
           {/* Fallback value if missing */}
           <Typography variant="body2" mt={1}>
-            <strong>Mo. No.:</strong>
+            <strong>Mobile. No.:</strong>
           </Typography>
           <Typography>{mobile_number || "N/A"}</Typography>{" "}
           {/* Fallback value */}
