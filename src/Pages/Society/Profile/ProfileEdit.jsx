@@ -306,10 +306,16 @@ const ProfileEdit = () => {
 
   const handleSubmit = async (values) => {
     try {
+      const resolvedLatitude =
+        selectedCoordinates?.lat ?? (values.latitude !== "" ? values.latitude : "");
+      const resolvedLongitude =
+        selectedCoordinates?.lng ?? (values.longitude !== "" ? values.longitude : "");
+
       values = {
         ...values,
-        latitude: selectedCoordinates?.lat || "", // Use `lat`
-        longitude: selectedCoordinates?.lng || "", // Use `lng`
+        // Preserve previously saved coordinates unless user picked a new map point.
+        latitude: resolvedLatitude,
+        longitude: resolvedLongitude,
       };
 
       const formData = new FormData();

@@ -54,6 +54,17 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
     fontWeight: 500,
     wordBreak: "break-word",
   };
+  const hasValidCoordinates =
+    profileData?.latitude !== null &&
+    profileData?.latitude !== undefined &&
+    profileData?.latitude !== "" &&
+    profileData?.longitude !== null &&
+    profileData?.longitude !== undefined &&
+    profileData?.longitude !== "";
+
+  const mapRedirectUrl = hasValidCoordinates
+    ? `https://www.google.com/maps?q=${profileData.latitude},${profileData.longitude}`
+    : society_profile?.google_page_url || `https://www.google.com/maps?q=${encodeURIComponent(profileData?.address || "")}`;
 
   return (
     <div className="card shadow-sm p-3 rounded border-0 col-12 col-lg-9">
@@ -74,7 +85,7 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
             <div>
               <h5 className="mb-0 fw-bold ">{profileData.society_name}</h5>
               <a
-                href={`https://www.google.com/maps?q=${profileData.latitude},${profileData.longitude}`}
+                href={mapRedirectUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{ textDecoration: "none" }}
