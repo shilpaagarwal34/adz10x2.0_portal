@@ -114,7 +114,11 @@ const Profile = () => {
   }
 
   if (status === "failed")
-    return <div className="text-danger">Error: {error}</div>;
+    return (
+      <div className="text-danger px-2">
+        Error: {typeof error === "string" ? error : "Unable to load profile data"}
+      </div>
+    );
 
   if (isLoading || status === "loading") {
     return (
