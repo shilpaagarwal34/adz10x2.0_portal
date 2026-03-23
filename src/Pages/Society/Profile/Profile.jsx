@@ -96,7 +96,11 @@ const Profile = () => {
           <div className="col-12 col-lg-3 ps-lg-3 pt-1 mt-lg-0 mt-3">
             <StatusCard kyc_status="pending" />
             <DocumentCard profileData={draftProfileData} />
-            <SocietyMap coordinates={null} />
+            <SocietyMap
+              coordinates={null}
+              googlePageUrl={draftProfileData?.society_profile?.google_page_url}
+              address={draftProfileData?.address}
+            />
           </div>
         </div>
         <AuthPromptModal
@@ -146,6 +150,8 @@ const Profile = () => {
             latitude: profileData?.latitude,
             longitude: profileData?.longitude,
           }}
+          googlePageUrl={profileData?.society_profile?.google_page_url}
+          address={profileData?.address}
         />
       </div>
     </div>
