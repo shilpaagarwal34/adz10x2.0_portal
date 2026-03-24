@@ -23,7 +23,6 @@ import Slider from "../Components/Common/Slider.jsx";
 //pages
 import SocietyRegisterForm from "./SocietyRegisterForm.jsx";
 import OTPVerificationPage from "./OTPVerificationPage .jsx";
-import CompanyRegsiterForm from "./CompanyRegsiterForm.jsx";
 import { useSelector } from "react-redux";
 
 const Register = () => {
@@ -41,20 +40,19 @@ const Register = () => {
   const [selectedCard, setSelectedCard] = useState(
     signupType === "society"
       ? 1
-      : signupType === "company"
-      ? 2
       : persistedCard
       ? parseInt(persistedCard, 10)
-      : null
+      : 1
   );
 
   useEffect(() => {
     if (signupType === "society") {
       setSelectedCard(1);
       localStorage.setItem("selectedCard", "1");
-    } else if (signupType === "company") {
-      setSelectedCard(2);
-      localStorage.setItem("selectedCard", "2");
+    } else {
+      // Registration is society-only on this screen.
+      setSelectedCard(1);
+      localStorage.setItem("selectedCard", "1");
     }
   }, [signupType]);
 
@@ -137,17 +135,10 @@ const Register = () => {
 
             {currentStep === 2 && (
               <>
-                {selectedCard === 1 ? (
-                  <SocietyRegisterForm
-                    handleNextStep={handleNextStep}
-                    registrationData={registrationData}
-                  />
-                ) : (
-                  <CompanyRegsiterForm
-                    handleNextStep={handleNextStep}
-                    registrationData={registrationData}
-                  />
-                )}
+                <SocietyRegisterForm
+                  handleNextStep={handleNextStep}
+                  registrationData={registrationData}
+                />
               </>
             )}
 
