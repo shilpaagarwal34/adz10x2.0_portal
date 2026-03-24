@@ -26,6 +26,15 @@ const LoctionFieldsData = ({
   const dispatch = useDispatch();
   const buildGoogleMapPreviewSrc = (googlePageUrl, coordinates, formValues) => {
     const rawUrl = String(googlePageUrl || "").trim();
+    const isShareGoogleUrl = (() => {
+      if (!rawUrl) return false;
+      try {
+        const host = new URL(rawUrl).hostname.toLowerCase();
+        return host.includes("share.google");
+      } catch {
+        return false;
+      }
+    })();
     const addressFallback = [
       formValues?.address,
       formValues?.area_name,
@@ -38,7 +47,8 @@ const LoctionFieldsData = ({
     const buildEmbedByQuery = (queryText) =>
       `https://www.google.com/maps?q=${encodeURIComponent(queryText)}&z=15&output=embed`;
 
-    if (rawUrl) {
+    // share.google URLs often don't render correctly inside iframe embed.
+    if (rawUrl && !isShareGoogleUrl) {
       if (rawUrl.includes("/maps/embed")) {
         return rawUrl;
       }
@@ -48,11 +58,6 @@ const LoctionFieldsData = ({
         const host = parsed.hostname.toLowerCase();
         const path = decodeURIComponent(parsed.pathname || "");
         const qParam = parsed.searchParams.get("q");
-
-        // Share links usually resolve to the exact place when passed as query text.
-        if (host.includes("share.google")) {
-          return buildEmbedByQuery(rawUrl);
-        }
 
         if (qParam) {
           return buildEmbedByQuery(qParam);

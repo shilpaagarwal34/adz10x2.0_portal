@@ -3,7 +3,17 @@ import React from "react";
 const SocietyMap = ({ coordinates, googlePageUrl, address }) => {
   const buildMapEmbedSrc = () => {
     const rawUrl = String(googlePageUrl || "").trim();
-    if (rawUrl) {
+    const isShareGoogleUrl = (() => {
+      if (!rawUrl) return false;
+      try {
+        const host = new URL(rawUrl).hostname.toLowerCase();
+        return host.includes("share.google");
+      } catch {
+        return false;
+      }
+    })();
+
+    if (rawUrl && !isShareGoogleUrl) {
       if (rawUrl.includes("/maps/embed")) {
         return rawUrl;
       }
