@@ -62,11 +62,13 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
     profileData?.longitude !== undefined &&
     profileData?.longitude !== "";
 
-  const mapRedirectUrl = society_profile?.google_page_url
-    ? society_profile.google_page_url
-    : hasValidCoordinates
-      ? `https://www.google.com/maps?q=${profileData.latitude},${profileData.longitude}`
-      : `https://www.google.com/maps?q=${encodeURIComponent(profileData?.address || "")}`;
+  const mapRedirectUrl = hasValidCoordinates
+    ? `https://www.google.com/maps?q=${profileData.latitude},${profileData.longitude}`
+    : profileData?.address
+      ? `https://www.google.com/maps?q=${encodeURIComponent(profileData.address)}`
+      : society_profile?.google_page_url
+        ? society_profile.google_page_url
+        : "https://www.google.com/maps";
 
   return (
     <div className="card shadow-sm p-3 rounded border-0 col-12 col-lg-9">
