@@ -62,12 +62,12 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
     profileData?.longitude !== undefined &&
     profileData?.longitude !== "";
 
-  const mapRedirectUrl = hasValidCoordinates
-    ? `https://www.google.com/maps?q=${profileData.latitude},${profileData.longitude}`
-    : profileData?.address
-      ? `https://www.google.com/maps?q=${encodeURIComponent(profileData.address)}`
-      : society_profile?.google_page_url
-        ? society_profile.google_page_url
+  const mapRedirectUrl = society_profile?.google_page_url
+    ? society_profile.google_page_url
+    : hasValidCoordinates
+      ? `https://www.google.com/maps?q=${profileData.latitude},${profileData.longitude}`
+      : profileData?.address
+        ? `https://www.google.com/maps?q=${encodeURIComponent(profileData.address)}`
         : "https://www.google.com/maps";
 
   return (
