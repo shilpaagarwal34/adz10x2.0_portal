@@ -174,21 +174,6 @@ const ProfileDetail = ({ profileData, percentage = 0 }) => {
             <p style={labelStyle}>Pincode</p>
             <p style={valueStyle}>{profileData?.pincode || "-"}</p>
           </div>
-          <div className="col-sm-6 col-lg-4 col-12">
-            <p style={labelStyle}>Google Page</p>
-            {society_profile?.google_page_url ? (
-              <a
-                href={society_profile.google_page_url}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{ textDecoration: "none" }}
-              >
-                <p style={valueStyle}>{society_profile.google_page_url}</p>
-              </a>
-            ) : (
-              <p style={valueStyle}>-</p>
-            )}
-          </div>
           <div className="col-12">
             <p style={labelStyle}>Address</p>
             <p style={valueStyle}>

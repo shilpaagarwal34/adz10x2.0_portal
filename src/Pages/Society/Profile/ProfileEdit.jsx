@@ -17,12 +17,10 @@ import ContactFieldsData from "../../../Components/Society/Profile/Edit/ContactF
 import BillingFieldsData from "../../../Components/Society/Profile/Edit/BillingFieldsData.jsx";
 import SocietyDocuments from "../../../Components/Society/Profile/Edit/SocietyDocuments.jsx";
 import SocietyPhotosFields from "../../../Components/Society/Profile/Edit/SocietyPhotosFields.jsx";
-import GoogleMapUrlField from "../../../Components/Society/Profile/Edit/GoogleMapUrlField.jsx";
 import LoctionFieldsData from "../../../Components/Society/Profile/Edit/LocationFields.jsx";
 
 // skeleton
 import AdvertisementSettingsSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/AdvertisementSettingsSkeleton.jsx";
-import GoogleMapUrlFieldSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/GoogleMapUrlFieldSkeleton.jsx";
 import PdfUploadSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/PdfUploadSkeleton.jsx";
 import SocietyDetailsSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/SocietyDetailsSkeleton.jsx";
 import SocietyLocationSkeleton from "../../../Components/Skeletons/Society/Profile/Edit/SocietyLocationSkeleton.jsx";
@@ -415,7 +413,6 @@ const ProfileEdit = () => {
             <ContactFieldsSkeleton />
             <BillingDetailsSkeleton />
             <SocietyPhotosSkeleton />
-            <GoogleMapUrlFieldSkeleton />
 
             <Row className="mb-3">
               <PdfUploadSkeleton />
@@ -481,7 +478,6 @@ const ProfileEdit = () => {
                     {/* 2 fields pending in societyForm to convert as Field */}
                     <SocietyFormData values={values} />
                     <ContactFieldsData values={values} />
-                    <GoogleMapUrlField values={values} />
 
                     <div className="mb-3 border rounded">
                       <button
