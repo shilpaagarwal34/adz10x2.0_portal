@@ -11,7 +11,6 @@ import CampaignList from "../../Components/Society/Dashboard/Campaings/CampaignL
 import StatusCard from "../../Components/Society/Dashboard/AccountStatus/StatusCard.jsx";
 import ManagerInfo from "../../Components/Common/Manager-info.jsx";
 import Gallery from "../../Components/Society/Dashboard/Gallery/gallery.jsx";
-import SocietyMap from "../../Components/Society/Dashboard/Map/SocietyMap.jsx";
 import { fetchDashboardData } from "../../store/Actions/Society/Dashboard/DashboardActions.js";
 import { fetchProfileData } from "../../store/Actions/Society/Profile/ProfileActions.js";
 import DashboardProfileSkeleton from "../../Components/Skeletons/Dashboard/DashboardProfileSkeleton.jsx";
@@ -21,7 +20,6 @@ import KYCStatusSkeleton from "../../Components/Skeletons/KYCStatusSkeleton.jsx"
 import ManagerInfoSkeleton from "../../Components/Skeletons/ManagerInfoSkeleton.jsx";
 
 import GallerySkeleton from "../../Components/Skeletons/Society/GallerySkeleton.jsx";
-import MapSkeleton from "../../Components/Skeletons/Society/MapSkeleton.jsx";
 import axiosInstance from "../../utils/axiosInstance.js";
 import api_routes from "../../config/api.js";
 
@@ -150,8 +148,6 @@ export default function Dashboard() {
           ) : (
             <Gallery profileData={profileData} />
           )}
-
-          {status === "loading" ? <MapSkeleton /> : <SocietyMap />}
         </div>
       </div>
     </div>
