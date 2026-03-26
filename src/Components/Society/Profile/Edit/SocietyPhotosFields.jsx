@@ -22,10 +22,6 @@ const SocietyPhotosFields = () => {
   const { setFieldValue } = useFormikContext();
   const { profileData, status } = useSelector((state) => state.society.profile);
 
-  if (status === "loading")
-    return <p className="text-danger">Loading Images ....</p>;
-  if (status === "failed") return <p>Failed to load Images</p>;
-
   const { society_profile } = profileData;
 
   // Initialize images based on profile data with proper image IDs
@@ -48,9 +44,13 @@ const SocietyPhotosFields = () => {
     setImages(initialImages);
     setFieldValue(
       "society_profile_img_1_5_path",
-      initialImages.map((img) => img.preview) // use URL for server images
+      initialImages.map((img) => img.preview), // use URL for server images
     );
   }, [society_profile]);
+
+  if (status === "loading")
+    return <p className="text-danger">Loading Images ....</p>;
+  if (status === "failed") return <p>Failed to load Images</p>;
 
   const handleFileChange = (e) => {
     const selectedFiles = Array.from(e.target.files);
@@ -98,8 +98,8 @@ const SocietyPhotosFields = () => {
     setFieldValue(
       "society_profile_img_1_5_path",
       updatedImages.map((image) =>
-        image.fromServer ? image.preview : image.file
-      )
+        image.fromServer ? image.preview : image.file,
+      ),
     );
 
     // ✅ Reset file input so same files can be selected again if needed
@@ -142,12 +142,12 @@ const SocietyPhotosFields = () => {
       try {
         const response = await deleteSocietyImage(
           society_profile?.id,
-          image.image_id
+          image.image_id,
         );
 
         if (response.status === 200) {
           const updatedImages = images.filter(
-            (img) => img.image_id !== image.image_id
+            (img) => img.image_id !== image.image_id,
           );
           setImages(updatedImages);
           // setFieldValue(
@@ -156,7 +156,7 @@ const SocietyPhotosFields = () => {
           // );
           setFieldValue(
             "society_profile_img_1_5_path",
-            updatedImages.map((img) => img.file || img.preview).filter(Boolean)
+            updatedImages.map((img) => img.file || img.preview).filter(Boolean),
           );
           // console.log(updatedImages);
 
@@ -171,12 +171,12 @@ const SocietyPhotosFields = () => {
     } else {
       // Local image → just remove from state
       const updatedImages = images.filter(
-        (img) => img.image_id !== image.image_id
+        (img) => img.image_id !== image.image_id,
       );
       setImages(updatedImages);
       setFieldValue(
         "society_profile_img_1_5_path",
-        updatedImages.map((img) => img.file).filter(Boolean)
+        updatedImages.map((img) => img.file).filter(Boolean),
       );
     }
   };
@@ -238,7 +238,7 @@ const SocietyPhotosFields = () => {
                 className="rounded-1"
               />
             </div>
-          ) : null
+          ) : null,
         )}
       </div>
       <ErrorMessage name="society_profile_img_1_5_path">
