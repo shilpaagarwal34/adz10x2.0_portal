@@ -136,7 +136,7 @@ const ProfileEdit = () => {
       .required("Email Address is required."),
     address_line_1: Yup.string().required("Address is required."),
     address_line_2: Yup.string(),
-    society_profile_img_path: Yup.string().required(
+    society_profile_img_path: Yup.mixed().required(
       "Society Profile Image is required."
     ),
 
@@ -303,6 +303,7 @@ const ProfileEdit = () => {
   // };
 
   const handleSubmit = async (values) => {
+    console.log("Submit clicked",values);
     try {
       const resolvedLatitude =
         selectedCoordinates?.lat ?? (values.latitude !== "" ? values.latitude : "");

@@ -21,14 +21,24 @@ export default function AddressFields() {
     (state) => state.common
   );
 
+  // useEffect(() => {
+  //   if (values.area_id && areas.length > 0) {
+  //     const area = areas.find((area) => area.id === values.area_id);
+  //     if (area) {
+  //       setFieldValue("area_name", area.area_name, false);
+  //     }
+  //   }
+  // }, [areas, values.area_id, values.area_name, setFieldValue]);
+
   useEffect(() => {
-    if (values.area_id && areas.length > 0 && !values.area_name) {
-      const area = areas.find((area) => area.id === values.area_id);
-      if (area) {
-        setFieldValue("area_name", area.area_name, false);
-      }
+  if (values.area_id && areas.length > 0) {
+    const area = areas.find((area) => area.id === values.area_id);
+
+    if (area && values.area_name !== area.area_name) {
+      setFieldValue("area_name", area.area_name, false);
     }
-  }, [areas, values.area_id, values.area_name, setFieldValue]);
+  }
+}, [areas, values.area_id, setFieldValue]);
 
   const handleCityChange = (e) => {
     dispatch(setAreaSuggestions([]));
