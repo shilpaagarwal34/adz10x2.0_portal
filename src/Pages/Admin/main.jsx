@@ -33,7 +33,6 @@ import CompanyView from "./Company/CompanyView.jsx";
 
 // PAYMENT OUTES
 import CompanyPayments from "../../Components/Admin/Payments/Company.jsx";
-import SocietyPayments from "../../Components/Admin/Payments/Society.jsx";
 import CampaignSettlements from "../../Components/Admin/Payments/CampaignSettlements.jsx";
 
 // CAMPAIGN VIEWS
@@ -292,7 +291,7 @@ const AdminRoutes = () => {
               path="/payments/society"
               element={
                 adminHasPrivilege("society_payments_view") ? (
-                  <SocietyPayments />
+                  <Navigate to="/admin/payments/settlements" replace />
                 ) : (
                   <Navigate to="/admin/unauthorized" />
                 )

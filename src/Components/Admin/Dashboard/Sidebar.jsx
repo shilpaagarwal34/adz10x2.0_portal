@@ -334,8 +334,8 @@ const Sidebar = ({ open }) => {
 
           {/* Payments */}
 
-          {(adminHasPrivilege("society_payments_view") ||
-            adminHasPrivilege("company_payments_view") ||
+          {(adminHasPrivilege("company_payments_view") ||
+            adminHasPrivilege("society_payments_view") ||
             adminHasPrivilege("company_wallet_view")) && (
             <>
               <ListItem
@@ -359,21 +359,6 @@ const Sidebar = ({ open }) => {
                 unmountOnExit
               >
                 <List component="div" disablePadding>
-                  {/* Society Payment */}
-                  {adminHasPrivilege("society_payments_view") && (
-                    <ListItem
-                      component={Link}
-                      to="/admin/payments/society"
-                      className={
-                        location.pathname === "/admin/payments/society"
-                          ? "active-dropdown"
-                          : "custom-hover-remove  custom-margin"
-                      }
-                    >
-                      <ListItemText primary="Society Payments" />
-                    </ListItem>
-                  )}
-
                   {/* company Payment */}
                   {adminHasPrivilege("company_payments_view") && (
                     <ListItem
