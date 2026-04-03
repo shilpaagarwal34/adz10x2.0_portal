@@ -22,6 +22,7 @@ import Slider from "../Components/Common/Slider.jsx";
 
 //pages
 import SocietyRegisterForm from "./SocietyRegisterForm.jsx";
+import CompanyRegsiterForm from "./CompanyRegsiterForm.jsx";
 import OTPVerificationPage from "./OTPVerificationPage .jsx";
 import { useSelector } from "react-redux";
 
@@ -38,7 +39,9 @@ const Register = () => {
   // Check if selectedCard exists in localStorage
   const persistedCard = localStorage.getItem("selectedCard");
   const [selectedCard, setSelectedCard] = useState(
-    signupType === "society"
+    signupType === "company"
+      ? 2
+      : signupType === "society"
       ? 1
       : persistedCard
       ? parseInt(persistedCard, 10)
@@ -46,21 +49,22 @@ const Register = () => {
   );
 
   useEffect(() => {
+    if (signupType === "company") {
+      setSelectedCard(2);
+      localStorage.setItem("selectedCard", "2");
+      return;
+    }
+
     if (signupType === "society") {
-      setSelectedCard(1);
-      localStorage.setItem("selectedCard", "1");
-    } else {
-      // Registration is society-only on this screen.
       setSelectedCard(1);
       localStorage.setItem("selectedCard", "1");
     }
   }, [signupType]);
 
   useEffect(() => {
-    const nextParams = { step: currentStep.toString() };
-    if (signupType) nextParams.type = signupType;
-    setSearchParams(nextParams);
-  }, [currentStep, setSearchParams, signupType]);
+    const typeFromCard = selectedCard === 2 ? "company" : "society";
+    setSearchParams({ step: currentStep.toString(), type: typeFromCard });
+  }, [currentStep, selectedCard, setSearchParams]);
 
   // Ensure proper navigation for back/forward browser buttons
   useEffect(() => {
@@ -84,9 +88,8 @@ const Register = () => {
 
   // Handle next step
   const handleNextStep = () => {
-    const nextParams = { step: (currentStep + 1).toString() };
-    if (signupType) nextParams.type = signupType;
-    setSearchParams(nextParams);
+    const typeFromCard = selectedCard === 2 ? "company" : "society";
+    setSearchParams({ step: (currentStep + 1).toString(), type: typeFromCard });
   };
 
   const { fullLogo } = useSelector((state) => state.settings);
@@ -135,10 +138,17 @@ const Register = () => {
 
             {currentStep === 2 && (
               <>
-                <SocietyRegisterForm
-                  handleNextStep={handleNextStep}
-                  registrationData={registrationData}
-                />
+                {selectedCard === 2 ? (
+                  <CompanyRegsiterForm
+                    handleNextStep={handleNextStep}
+                    registrationData={registrationData}
+                  />
+                ) : (
+                  <SocietyRegisterForm
+                    handleNextStep={handleNextStep}
+                    registrationData={registrationData}
+                  />
+                )}
               </>
             )}
 
