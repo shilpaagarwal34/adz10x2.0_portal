@@ -90,6 +90,11 @@ const Register = () => {
   };
 
   const { fullLogo } = useSelector((state) => state.settings);
+  const [authLogoSrc, setAuthLogoSrc] = useState(logo);
+
+  useEffect(() => {
+    setAuthLogoSrc(fullLogo || logo);
+  }, [fullLogo]);
 
   return (
     <>
@@ -101,9 +106,10 @@ const Register = () => {
               <div>
                 <img
                   onClick={() => navigate("/register")}
-                  src={fullLogo || logo}
+                  src={authLogoSrc}
                   alt="Logo"
                   style={{ width: 130 }}
+                  onError={() => setAuthLogoSrc(logo)}
                 />
               </div>
             </div>
