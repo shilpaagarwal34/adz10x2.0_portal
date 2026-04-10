@@ -6,7 +6,6 @@ import api_routes from "../../../config/api.js";
 import { toast } from "react-toastify";
 import { useNavigate, useParams } from "react-router-dom";
 import { getCamapginAmount } from "../../../utils/getCamapginAmount.js";
-const RAZORPAY_KEY_ID = import.meta.env.VITE_RAZORPAY_KEY_ID;
 
 const AddCampaign = () => {
   const { campaignId } = useParams();
@@ -431,93 +430,6 @@ const AddCampaign = () => {
     }
   };
 
-  const loadRazorpayScript = () => {
-    return new Promise((resolve) => {
-      if (document.getElementById("razorpay-script")) {
-        resolve(true);
-        return;
-      }
-      const script = document.createElement("script");
-      script.id = "razorpay-script";
-      script.src = "https://checkout.razorpay.com/v1/checkout.js";
-      script.onload = () => resolve(true);
-      script.onerror = () => resolve(false);
-      document.body.appendChild(script);
-    });
-  };
-
-  const handlePayAndCreateCampaign = async (setSubmit) => {
-    const amount = Number(formData?.campaign_amount || 0);
-    if (!amount || amount <= 0) {
-      toast.error("Campaign amount must be greater than zero.");
-      setSubmit(false);
-      return;
-    }
-
-    if (!Array.isArray(formData?.society_ids) || formData.society_ids.length === 0) {
-      toast.error("Please select at least one society.");
-      setSubmit(false);
-      return;
-    }
-
-    try {
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        toast.error("Failed to load Razorpay SDK. Check your connection.");
-        setSubmit(false);
-        return;
-      }
-
-      const { data: orderData } = await axiosInstance.post("/create-order", {
-        amount: Math.round(amount),
-      });
-
-      const userData = JSON.parse(localStorage.getItem("user_data") || "null");
-      const options = {
-        key: RAZORPAY_KEY_ID,
-        amount: orderData?.amount,
-        currency: orderData?.currency || "INR",
-        name: "Adz10x",
-        description: "Campaign payment",
-        order_id: orderData?.id,
-        prefill: {
-          name: userData?.society_comany_name || userData?.name || "",
-          email: userData?.email || "",
-          contact: userData?.mobile_number || "",
-        },
-        handler: async (response) => {
-          try {
-            await axiosInstance.post("/verify-payment", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-              amount: orderData?.amount,
-            });
-
-            await handleCreateCampaign("pending", amount, setSubmit);
-          } catch (error) {
-            toast.error(
-              error?.response?.data?.message || "Payment verification failed."
-            );
-            setSubmit(false);
-          }
-        },
-        modal: {
-          ondismiss: () => setSubmit(false),
-        },
-        theme: {
-          color: "#00b294",
-        },
-      };
-
-      const razorpay = new window.Razorpay(options);
-      razorpay.open();
-    } catch (error) {
-      toast.error(error?.response?.data?.message || "Unable to start payment.");
-      setSubmit(false);
-    }
-  };
-
   return (
     <div className="pb-5">
       <div className="row g-0">
@@ -549,7 +461,6 @@ const AddCampaign = () => {
           setFormData={setFormData}
           loadingSocities={loadingSocities}
           setSubmitAttempted={setSubmitAttempted}
-          handlePayAndCreateCampaign={handlePayAndCreateCampaign}
         />
       </div>
     </div>

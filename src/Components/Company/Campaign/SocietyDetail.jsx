@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
+import { Form, Row, Col, Button, InputGroup, Modal } from "react-bootstrap";
+import { X } from "lucide-react";
 import SocietyDetailModal from "./AddCampaign/SocietyDetailModal.jsx";
 import "../../../Pages/Styles/Society-Dashboard.css";
 import { formatNumberWithCommas } from "../../../helper/helper.js";
@@ -30,7 +31,6 @@ const SocietyDeatil = ({
   setFormData,
   loadingSocities,
   setSubmitAttempted,
-  handlePayAndCreateCampaign,
 }) => {
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
@@ -39,6 +39,7 @@ const SocietyDeatil = ({
   const [campaignAmount, setCampaignAmount] = useState(0);
   const [loadingBalance, setLoadingBalance] = useState(false);
   const [submit, setSubmit] = useState(false);
+  const [showInsufficientBalanceModal, setShowInsufficientBalanceModal] = useState(false);
 
   // Wallet Balnce Fetch
   useEffect(() => {
@@ -429,13 +430,22 @@ const SocietyDeatil = ({
                   type="button"
                   onClick={() => {
                     setSubmitAttempted?.(true);
+                    const requiredAmount = Number(campaignAmount) || 0;
+                    const balance = Number(walletBalance) || 0;
+                    if (balance < requiredAmount) {
+                      setShowInsufficientBalanceModal(true);
+                      return;
+                    }
                     setSubmit(true);
-                    handlePayAndCreateCampaign?.(setSubmit);
+                    const amount = formatNumberWithCommas(
+                      getCamapginAmount(formData, campaignType) * (selectedSocieties?.length || 0)
+                    );
+                    handleCreateCampaign("pending", amount, setSubmit);
                   }}
                   className="campaign-btn"
                   disabled={!selectedSocieties?.length || submit}
                 >
-                  {submit ? "Processing..." : "PAY NOW"}
+                  {submit ? "Submitting" : "CREATE CAMPAIGN"}
                 </Button>
               }
             </Col>
@@ -453,6 +463,62 @@ const SocietyDeatil = ({
         />
       )}
 
+      {/* Insufficient balance modal - theme matched to society popup */}
+      <Modal
+        show={showInsufficientBalanceModal}
+        onHide={() => setShowInsufficientBalanceModal(false)}
+        centered
+        style={{ zIndex: 1500, background: "#32322f29" }}
+      >
+        <Modal.Header>
+          <Modal.Title className="fw-bold">Insufficient wallet balance</Modal.Title>
+          <button
+            type="button"
+            onClick={() => setShowInsufficientBalanceModal(false)}
+            style={{
+              position: "absolute",
+              right: "2px",
+              top: "2px",
+              background: "#fff",
+              border: "none",
+              fontSize: "20px",
+              cursor: "pointer",
+            }}
+            aria-label="Close"
+          >
+            <X size={20} />
+          </button>
+        </Modal.Header>
+        <Modal.Body>
+          <p className="mb-0 custom-label">
+            Your current wallet balance (₹ {formatNumberWithCommas(walletBalance)}) is less than the
+            campaign amount (₹ {formatNumberWithCommas(campaignAmount)}). Would you like to save the
+            campaign as draft and add funds later?
+          </p>
+        </Modal.Body>
+        <Modal.Footer className="border-0 pt-0">
+          <Button
+            variant="light"
+            className="save-draft-btn me-2"
+            onClick={() => setShowInsufficientBalanceModal(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            className="campaign-btn"
+            onClick={() => {
+              setShowInsufficientBalanceModal(false);
+              setSubmit(true);
+              const amount = formatNumberWithCommas(
+                getCamapginAmount(formData, campaignType) * (selectedSocieties?.length || 0)
+              );
+              handleCreateCampaign("draft", amount, setSubmit);
+            }}
+          >
+            Save as draft
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </div>
   );
 };
