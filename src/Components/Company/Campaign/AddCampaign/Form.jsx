@@ -204,24 +204,11 @@ export default function CampaignForm({
   };
 
   const handleCityChange = (selected) => {
-    const nextCityId = selected?.value ?? null;
-    setFormData((prev) => ({
-      ...prev,
-      campaign_city_id: nextCityId,
-      // Reset area and selections when city changes so stale area id
-      // from another city does not return empty society lists.
-      campaign_area_id: null,
-    }));
-    setSelectedSocieties([]);
-    setSocietyIds([]);
-    setSocieties([]);
+    setFormData((prev) => ({ ...prev, campaign_city_id: selected.value }));
   };
 
   const handleAreaChange = (selected) => {
-    setFormData((prev) => ({
-      ...prev,
-      campaign_area_id: selected?.value ?? null,
-    }));
+    setFormData((prev) => ({ ...prev, campaign_area_id: selected.value }));
     setSelectedSocieties([]); // Reset selected societies
     setSocietyIds([]);
   };
@@ -257,12 +244,6 @@ export default function CampaignForm({
     debounce(async (payload) => {
       setLoadingSocities(true);
       setSocieties([]);
-      const mapFallbackSocietyShape = (item) => ({
-        society: item,
-        profile: item?.profile || {},
-        media_rate: item?.media_rate || { company_rate: 0 },
-        disable: false,
-      });
       try {
         const res = await axiosInstance.post(
           `get-societies-within-radius`,
@@ -271,45 +252,8 @@ export default function CampaignForm({
         // console.log(res?.data?.data)
         setSocieties(res?.data?.data || []);
       } catch (error) {
-        // Fallback for city/area search:
-        // some API responses return "No societies found" when strict
-        // platform/date filters eliminate results. In that case, still
-        // show all societies from the selected area for manual selection.
-        if (
-          !payload?.search_by_google_location &&
-          payload?.campaign_city_id &&
-          payload?.campaign_area_id
-        ) {
-          try {
-            const fallbackRes = await axiosInstance.get(
-              `${api_routes.society.fetch_society_list}`
-            );
-            const allSocieties = Array.isArray(fallbackRes?.data?.data)
-              ? fallbackRes.data.data
-              : [];
-            const areaSocieties = allSocieties
-              .filter((society) => {
-                const cityId = Number(society?.city_id ?? society?.profile?.city_id);
-                const areaId = Number(society?.area_id ?? society?.profile?.area_id);
-                return (
-                  cityId === Number(payload.campaign_city_id) &&
-                  areaId === Number(payload.campaign_area_id)
-                );
-              })
-              .map(mapFallbackSocietyShape);
-
-            setSocieties(areaSocieties);
-            if (areaSocieties.length === 0) {
-              toast.error("No societies found in selected city and area.");
-            }
-            return;
-          } catch (fallbackError) {
-            console.error("Fallback society fetch failed:", fallbackError);
-          }
-        }
-
         console.error("Error fetching societies:", error);
-        toast.error(error?.response?.data?.message || "Failed to fetch societies.");
+        toast.error(error?.response?.data?.message);
       } finally {
         setLoadingSocities(false);
       }
@@ -357,7 +301,6 @@ export default function CampaignForm({
     if (hasFetchFields && Object.keys(errors).length === 0) {
       const payload = {
         ...formData,
-        campaign_date: formData?.campaignDate || "",
         day: formData?.campaignDate
           ? dayNames[new Date(formData.campaignDate).getDay()].toLowerCase()
           : "",
@@ -367,11 +310,6 @@ export default function CampaignForm({
         delete payload.campaign_city_id;
         delete payload.campaign_area_id;
       } else {
-        // Backward compatible aliases: some APIs expect city_id/area_id
-        // instead of campaign_city_id/campaign_area_id.
-        payload.city_id = formData?.campaign_city_id;
-        payload.area_id = formData?.campaign_area_id;
-
         delete payload.my_ads_location_latitude;
         delete payload.my_ads_location_longitude;
         delete payload.radius_km;
