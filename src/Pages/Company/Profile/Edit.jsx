@@ -114,15 +114,17 @@ function Edit() {
     address_line_2: Yup.string(),
 
     // Account Schema
-    gst_number: Yup.string(),
-    party_name: Yup.string(),
+    gst_number: Yup.string().required("GST Number is required"),
+    party_name: Yup.string().required("Party Name is required"),
     // bank_name: Yup.string().required("Bank Name is required"),
     // branch_name: Yup.string().required("Branch Name is required"),
     // bank_ifsc_code: Yup.string().required("IFSC Code is required"),
     pan_card_path: Yup.string().required("PAN Card is Required"),
 
     //billing
-    billing_address_line_1: Yup.string(),
+    billing_address_line_1: Yup.string().required(
+      "Billing Address is Required"
+    ),
   });
 
   const handleFormSubmit = async (values) => {

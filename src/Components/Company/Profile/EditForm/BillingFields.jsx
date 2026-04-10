@@ -42,7 +42,7 @@ export default function BillingFields() {
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              Billing Company Name 
+              Billing Company Name <span className="text-danger">*</span>
             </Form.Label>
             <Field
               as={Form.Control}
@@ -74,7 +74,7 @@ export default function BillingFields() {
         <Col md={4}>
           <Form.Group>
             <Form.Label className="fw-bold custom-label">
-              GST Number 
+              GST Number <span className="text-danger">*</span>
             </Form.Label>
             <Field
               as={Form.Control}
@@ -154,7 +154,7 @@ export default function BillingFields() {
           <Form.Group>
            
             <Form.Label className="fw-bold custom-label">
-              Billing Address Line 1 
+              Billing Address Line 1 <span className="text-danger">*</span>
             </Form.Label>
             <Field
               as={Form.Control}
