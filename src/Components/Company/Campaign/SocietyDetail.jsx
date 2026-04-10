@@ -322,10 +322,10 @@ const SocietyDeatil = ({
                     </p>
                     {formData?.media_type && (
                       <p className="mb-0 text-success" style={{ fontSize: "12px" }}>
-                        {/* Company Rate: ₹{" "} */}
-                        {/* {formatNumberWithCommas(
+                        Company Rate: ₹{" "}
+                        {formatNumberWithCommas(
                           Number(society?.media_rate?.company_rate || 0)
-                        )} */}
+                        )}
                       </p>
                     )}
                     {Array.isArray(society?.offered_media_types) &&
@@ -396,7 +396,7 @@ const SocietyDeatil = ({
 
           <Row className="align-items-center gap-2 gap-sm-0">
             <Col xs={12} sm={7}>
-              {/* <p className="fw-bold mb-1 custom-label">
+              <p className="fw-bold mb-1 custom-label">
                 Current Wallet Balance
               </p>
               <h5 className="fw-bold text-dark">
@@ -405,7 +405,7 @@ const SocietyDeatil = ({
                 ) : (
                   <>₹ {formatNumberWithCommas(walletBalance)}</>
                 )}
-              </h5> */}
+              </h5>
               <Button
                 type="button"
                 onClick={() => {
