@@ -180,7 +180,7 @@ const AddCampaign = () => {
     });
   }, [formData?.media_type]);
 
-  const buildFormData = (formData, status) => {
+  const buildFormData = (formData, status, paymentData) => {
     const fd = new FormData();
 
     // Helper function to append data if it exists
@@ -389,10 +389,16 @@ const AddCampaign = () => {
       }
     }
 
+    if (paymentData) {
+      appendIfExists("razorpay_payment_id", paymentData.razorpay_payment_id);
+      appendIfExists("razorpay_order_id", paymentData.razorpay_order_id);
+      appendIfExists("razorpay_signature", paymentData.razorpay_signature);
+    }
+
     return fd;
   };
 
-  const handleCreateCampaign = async (status, amount, setSubmit) => {
+  const handleCreateCampaign = async (status, amount, setSubmit, paymentData = null) => {
     const token = localStorage.getItem("auth_token");
     const userData = JSON.parse(localStorage.getItem("user_data") || "null");
     const isCompanyUser =
@@ -407,7 +413,7 @@ const AddCampaign = () => {
     }
 
     try {
-      const payload = buildFormData(formData, status, amount);
+      const payload = buildFormData(formData, status, paymentData);
 
       const res = await axiosInstance.post(
         api_routes.company.post_create_campaign,
@@ -494,7 +500,7 @@ const AddCampaign = () => {
               amount: orderData?.amount,
             });
 
-            await handleCreateCampaign("pending", amount, setSubmit);
+            await handleCreateCampaign("pending", amount, setSubmit, response);
           } catch (error) {
             toast.error(
               error?.response?.data?.message || "Payment verification failed."
