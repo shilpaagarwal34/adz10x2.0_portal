@@ -1,460 +1,330 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Form, Row, Col, Button, InputGroup } from "react-bootstrap";
+import { Form, Row, Col, Button, InputGroup, Table, Badge } from "react-bootstrap";
 import SocietyDetailModal from "./AddCampaign/SocietyDetailModal.jsx";
 import "../../../Pages/Styles/Society-Dashboard.css";
 import { formatNumberWithCommas } from "../../../helper/helper.js";
-import api_routes from "../../../config/api.js";
-import axiosInstance from "../../../utils/axiosInstance.js";
-import { toast } from "react-toastify";
-import { getCamapginAmount } from "../../../utils/getCamapginAmount.js";
 import Skeleton from "react-loading-skeleton";
 
-const MEDIA_TYPE_LABELS = {
-  lift_branding_panels: "Lift branding",
-  notice_board_sponsorship: "Notice Board Advertising",
-  gate_entry_exit_branding: "Main Gate Branding",
-  society_kiosk: "Society Kiosk Activities",
-  whatsapp_promotional_day: "WhatsApp Group Promotion",
-  event_sponsorship: "Society Event Sponsorship",
-};
+const WHATSAPP_KEY = "whatsapp_promotional_day";
 
-const SocietyDeatil = ({
-  societyIds,
+const SocietyDetail = ({
   societies,
-  selectedSocieties,
-  setSelectedSocieties,
-  formData,
-  campaignType,
-  handleCreateCampaign,
-  mode,
-  setFormData,
+  societyAssets,
+  setSocietyAssets,
   loadingSocities,
-  setSubmitAttempted,
-  handlePayAndCreateCampaign,
+  onProceedToReview,
 }) => {
   const [search, setSearch] = useState("");
   const [show, setShow] = useState(false);
   const [selectedSociety, setSelectedSociety] = useState(null);
-  const [walletBalance, setWalletBalance] = useState(0);
-  const [campaignAmount, setCampaignAmount] = useState(0);
-  const [loadingBalance, setLoadingBalance] = useState(false);
-  const [submit, setSubmit] = useState(false);
+  // whatsappCreatives: { [societyId]: { file, preview } }
+  const [whatsappCreatives, setWhatsappCreatives] = useState({});
+  const fileInputRefs = useRef({});
 
-  // Wallet Balnce Fetch
-  useEffect(() => {
-    setLoadingBalance(true);
-    const fetchWalletBalance = async () => {
-      try {
-        const response = await axiosInstance.get(
-          `${api_routes.company.get_wallet_amount}`
-        );
-
-        setWalletBalance(response?.data?.wallet_amount);
-      } catch (error) {
-        toast.error(error?.response?.data?.message);
-      } finally {
-        setLoadingBalance(false);
-      }
-    };
-
-    fetchWalletBalance();
-  }, []);
-
-  useEffect(() => {
-    if (!Array.isArray(societies) || societies.length === 0) return;
-    if (
-      !Array.isArray(formData?.society_ids) ||
-      formData.society_ids.length === 0
-    )
-      return;
-
-    const selected = societies.filter((s) =>
-      formData.society_ids.includes(Number(s?.society?.id))
-    );
-    setSelectedSocieties(selected);
-  }, [societies, formData?.society_ids]);
-
-  // useEffect(() => {
-  //   if (
-  //     !Array.isArray(formData?.society_ids) ||
-  //     formData?.society_ids.length === 0
-  //   )
-  //     return;
-
-  //   const singleAdAmount = getCamapginAmount(formData, campaignType);
-  //   const formattedAmount =
-  //     formatNumberWithCommas(singleAdAmount) * formData.society_ids.length;
-
-  //   setCampaignAmount(formattedAmount);
-  //   setFormData((prev) => ({
-  //     ...prev,
-  //     campaign_amount: formattedAmount,
-  //   }));
-  // }, [formData?.society_ids]);
-
-  useEffect(() => {
-
-    const totalAmount =
-      formData?.media_type && selectedSocieties.length > 0
-        ? selectedSocieties.reduce(
-            (sum, item) => sum + Number(item?.media_rate?.company_rate || 0),
-            0
-          )
-        : getCamapginAmount(formData, campaignType) * (formData?.society_ids?.length || 0);
-
-    setCampaignAmount(totalAmount); // still number
-    setFormData((prev) => ({
-      ...prev,
-      campaign_amount: totalAmount,
-    }));
-  }, [formData?.society_ids, formData?.campaignType, formData?.media_type, selectedSocieties]);
-
-  const handleClose = () => setShow(false);
   const handleShow = (society) => {
-    setSelectedSociety(society); // Set the selected society to show in the modal
+    setSelectedSociety(society);
     setShow(true);
   };
 
-  // Calculate total Flats
-  const totalFlats = selectedSocieties?.reduce((acc, society) => {
-    // Check if society has a profile and sum up the no_of_flats
-    if (society?.profile) {
-      const flatsInSociety = society.profile.number_of_flat || 0;
-      return acc + Number(flatsInSociety);
-    }
-    return acc;
-  }, 0);
+  const filteredSocieties = (societies || []).filter((s) =>
+    s?.society?.society_name?.toLowerCase().includes(search.toLowerCase())
+  );
 
-  const handleSearchChange = (e) => {
-    setSearch(e.target.value);
-  };
-
-  const filteredSocieties = (societies || [])
-    ?.filter((society) => {
-      const reasonCodes = Array.isArray(society?.disable_reason_codes)
-        ? society.disable_reason_codes
-        : [];
-      // Do not render societies that do not offer the selected platform.
-      if (formData?.media_type && reasonCodes.includes("platform_not_offered")) {
-        return false;
+  // Toggle a media asset checkbox for a society
+  const toggleAsset = (societyId, asset) => {
+    setSocietyAssets((prev) => {
+      const current = prev[societyId] || { selectedAssets: [] };
+      const exists = current.selectedAssets.some((a) => a.key === asset.key);
+      let updated;
+      if (exists) {
+        updated = current.selectedAssets.filter((a) => a.key !== asset.key);
+        // If removing WhatsApp, clear creative
+        if (asset.key === WHATSAPP_KEY) {
+          setWhatsappCreatives((c) => {
+            const next = { ...c };
+            delete next[societyId];
+            return next;
+          });
+        }
+      } else {
+        updated = [...current.selectedAssets, asset];
       }
-      return true;
-    })
-    ?.filter((society) =>
-      society?.society?.society_name?.toLowerCase().includes(search.toLowerCase())
+      return { ...prev, [societyId]: { ...current, selectedAssets: updated } };
+    });
+  };
+
+  const isAssetSelected = (societyId, assetKey) => {
+    return (societyAssets[societyId]?.selectedAssets || []).some((a) => a.key === assetKey);
+  };
+
+  const isWhatsAppSelected = (societyId) => isAssetSelected(societyId, WHATSAPP_KEY);
+
+  const societySubtotal = (societyId) =>
+    (societyAssets[societyId]?.selectedAssets || []).reduce(
+      (sum, a) => sum + Number(a.permission_cost || 0),
+      0
     );
-  const getDisableReasons = (society) => {
-    if (Array.isArray(society?.disable_reasons) && society.disable_reasons.length > 0) {
-      return society.disable_reasons;
+
+  const totalCampaignCost = Object.keys(societyAssets).reduce(
+    (sum, id) => sum + societySubtotal(Number(id)),
+    0
+  );
+
+  const selectedCount = Object.keys(societyAssets).filter(
+    (id) => (societyAssets[id]?.selectedAssets || []).length > 0
+  ).length;
+
+  // WhatsApp creative upload handlers
+  const handleCreativeFileChange = (e, societyId) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/") && !file.type.startsWith("video/")) {
+      alert("Please select an image or video file.");
+      e.target.value = "";
+      return;
     }
-    if (!society?.disable_message) return [];
-    return society.disable_message
-      .split("|")
-      .map((item) => item.trim())
-      .filter(Boolean);
+    const preview = URL.createObjectURL(file);
+    setWhatsappCreatives((prev) => ({
+      ...prev,
+      [societyId]: { file, preview, type: file.type.startsWith("video/") ? "video" : "image" },
+    }));
+    setSocietyAssets((prev) => ({
+      ...prev,
+      [societyId]: { ...(prev[societyId] || {}), whatsappCreative: file },
+    }));
+    e.target.value = "";
   };
 
-  const getAvailabilityHint = (society) => {
-    const preview = society?.availability_preview;
-    if (!preview) return null;
-
-    const fromText = preview?.effective_from || "Not set";
-    const toText = preview?.effective_to || "Open";
-    const weeklyText =
-      Array.isArray(preview?.availability_days_label) &&
-      preview.availability_days_label.length > 0
-        ? preview.availability_days_label.join(", ")
-        : "All weekdays";
-    const monthlyText =
-      Array.isArray(preview?.availability_month_days) &&
-      preview.availability_month_days.length > 0
-        ? preview.availability_month_days.join(", ")
-        : "All month dates";
-
-    return `Available From: ${fromText} | To: ${toText} | Weekly: ${weeklyText} | Monthly: ${monthlyText}`;
-  };
+  const canProceed = selectedCount > 0;
 
   return (
     <div className="col-12 col-lg-5 p-2 p-sm-3">
       <div className="card border-0 p-2 p-sm-3">
-        <h6 className="mb-2 fw-bold">Select Society</h6>
+        <h6 className="mb-2 fw-bold">Select Society &amp; Media Assets</h6>
 
-        {/* Search Input */}
+        {/* Search */}
         <InputGroup className="mb-3">
           <Form.Control
             type="text"
-            placeholder="Search By Name"
+            placeholder="Search by name"
             value={search}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearch(e.target.value)}
             className="form-control-sm px-3"
           />
         </InputGroup>
-        {/* <hr style={{ margin: "0 -17px 15px" }} /> */}
+
         <hr style={{ margin: "0px -17px 10px", borderColor: "#989898" }} />
+
+        {/* Disclaimer banner */}
+        <div
+          className="alert mb-3 py-2 px-3"
+          style={{ fontSize: "13px", backgroundColor: "#fff8e1", border: "1px solid #f9c74f", borderRadius: "6px" }}
+        >
+          <strong>Note:</strong> The costs shown below cover <strong>society permission fees only</strong>. Execution-related costs (vendors, materials, creative production) are separate. Contact the Adz10X execution team for support after booking confirmation.
+        </div>
 
         {/* Society List */}
-        <div className="px-3" style={{
-            maxHeight: "400px",
-            overflowY: "auto",
-          }}>
+        <div style={{ maxHeight: "480px", overflowY: "auto" }}>
           {loadingSocities ? (
             [...Array(4)].map((_, i) => (
-              <Row key={i} className="align-items-center mb-2">
-                <Col xs={1} className="ps-0">
-                  <Skeleton circle width={20} height={20} />
-                </Col>
-                <Col
-                  xs={11}
-                  className="d-flex justify-content-between align-items-center px-0"
-                >
-                  <div style={{ flex: 1 }}>
-                    <Skeleton width="80%" height={14} className="mb-1" />
-                    <Skeleton width="60%" height={12} />
-                  </div>
-                  <Skeleton width={60} height={20} />
-                </Col>
+              <div key={i} className="mb-3">
+                <Skeleton height={14} width="70%" className="mb-1" />
+                <Skeleton height={12} width="50%" className="mb-2" />
+                <Skeleton height={80} />
                 <hr />
-              </Row>
+              </div>
             ))
-          ) : filteredSocieties && filteredSocieties.length > 0 ? (
-            filteredSocieties?.map((society, i) => (
-              <Row key={i}>
-                <Col xs={1} className="ps-0">
-                  <Form.Check
-                    type="checkbox"
-                    disabled={society?.disable}
-                    className="custom-checkbox1"
-                    checked={
-                      society?.disable
-                        ? false
-                        : formData?.society_ids?.includes(
-                            Number(society?.society?.id)
-                          )
-                    }
-                    onChange={() => {
-                      const societyId = Number(society?.society?.id);
-                      const exists = formData?.society_ids?.includes(societyId);
-                      // console.log(societyId);
-                      if (exists) {
-                        setFormData((prev) => {
-                          // Destructure previous formData
-                          const newFormData = { ...prev };
+          ) : filteredSocieties.length > 0 ? (
+            filteredSocieties.map((item, i) => {
+              const society = item?.society;
+              const societyId = Number(society?.id);
+              const mediaAssets = item?.media_assets || [];
+              const members = item?.profile?.number_of_flat || 0;
+              const subtotal = societySubtotal(societyId);
+              const hasAnySelected = (societyAssets[societyId]?.selectedAssets || []).length > 0;
 
-                          // Remove from society_ids
-                          newFormData.society_ids = prev?.society_ids?.filter(
-                            (id) => id !== societyId
-                          );
-
-                          const updatedSocietiesText = Object.fromEntries(
-                            Object.entries(prev.societies_text || {}).filter(
-                              ([key]) => Number(key) !== societyId
-                            )
-                          );
-
-                          newFormData.societies_text = updatedSocietiesText;
-
-                          // console.log(newFormData);
-
-                          // Remove the image key
-                          const imageKey = `upload_societies_images_path[${societyId}]`;
-                          if (imageKey in newFormData) {
-                            delete newFormData[imageKey];
-                          }
-
-                          return newFormData;
-                        });
-
-                        // console.log(selectedSocieties);
-                        setSelectedSocieties((prev) =>
-                          [...prev]?.filter(
-                            (s) => Number(s?.society?.id) !== societyId
-                          )
-                        );
-                      } else {
-                        setFormData((prev) => ({
-                          ...prev,
-                          society_ids: [...prev?.society_ids, societyId],
-                        }));
-
-                        setSelectedSocieties((prev) => [...prev, society]);
-                      }
+              return (
+                <div key={i} className="mb-3">
+                  {/* Society header card */}
+                  <div
+                    className="p-2 rounded"
+                    style={{
+                      border: hasAnySelected ? "1px solid #00b294" : "1px solid #e5e7eb",
+                      backgroundColor: hasAnySelected ? "#f0fdfb" : "#fff",
                     }}
-                  />
-                </Col>
-
-                <Col
-                  xs={11}
-                  className="d-flex justify-content-between align-items-center px-0"
-                >
-                  <div style={{ flex: 1 }}>
-                    <p
-                      className="mb-0 fw-bold custom-label"
-                      onClick={() => handleShow(society)} // Set selected society on click
-                      style={{ cursor: "pointer" }}
-                    >
-                      {society?.society?.society_name}{" "}
-                      {society?.disable && (
-                        <span className="text-danger">
-                          ({getDisableReasons(society)[0] || society?.disable_message})
+                  >
+                    <div className="d-flex justify-content-between align-items-start">
+                      <div style={{ flex: 1 }}>
+                        <p
+                          className="mb-0 fw-bold"
+                          style={{ cursor: "pointer", color: "#00b294", fontSize: "14px" }}
+                          onClick={() => handleShow(item)}
+                        >
+                          {society?.society_name}
+                        </p>
+                        <p className="mb-0" style={{ fontSize: "13px", color: "#475569" }}>
+                          {society?.address}
+                        </p>
+                        <span
+                          className="badge mt-1"
+                          style={{ backgroundColor: "#e5e7eb", color: "#374151", fontSize: "12px" }}
+                        >
+                          {members} Members
                         </span>
-                      )}
-                    </p>
-                    {society?.disable && getDisableReasons(society).length > 1 && (
-                      <div className="mt-1">
-                        {getDisableReasons(society).slice(1).map((reason, idx) => (
-                          <p
-                            key={`${society?.society?.id}-reason-${idx}`}
-                            className="mb-0 text-danger"
-                            style={{ fontSize: "11px" }}
-                          >
-                            - {reason}
-                          </p>
-                        ))}
                       </div>
-                    )}
-                    {society?.disable && getAvailabilityHint(society) && (
-                      <p className="mb-0 mt-1" style={{ fontSize: "11px", color: "#0f766e" }}>
-                        {getAvailabilityHint(society)}
-                      </p>
-                    )}
-                    <p className="fw-medium " style={{ fontSize: "12px" }}>
-                      {society?.society?.address}
-                    </p>
-                    {formData?.media_type && (
-                      <p className="mb-0 text-success" style={{ fontSize: "12px" }}>
-                        {/* Company Rate: ₹{" "} */}
-                        {/* {formatNumberWithCommas(
-                          Number(society?.media_rate?.company_rate || 0)
-                        )} */}
-                      </p>
-                    )}
-                    {Array.isArray(society?.offered_media_types) &&
-                      society.offered_media_types.filter(
-                        (m) => m && m !== formData?.media_type
-                      ).length > 0 && (
-                      <p className="mb-0 mt-1" style={{ fontSize: "11px", color: "#666" }}>
-                        Also offers:{" "}
-                        {society.offered_media_types
-                          .filter((m) => m && m !== formData?.media_type)
-                          .map((m) => MEDIA_TYPE_LABELS[m] || m)
-                          .join(", ")}
+                      {hasAnySelected && (
+                        <div className="text-end">
+                          <p className="mb-0" style={{ fontSize: "13px", color: "#475569" }}>Subtotal</p>
+                          <p className="mb-0 fw-bold" style={{ fontSize: "15px", color: "#00b294" }}>
+                            ₹{formatNumberWithCommas(subtotal)}
+                          </p>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Media Assets Table */}
+                    {mediaAssets.length > 0 ? (
+                      <div className="mt-2">
+                        <Table size="sm" className="mb-0" style={{ fontSize: "13px" }}>
+                          <thead>
+                            <tr style={{ backgroundColor: "#f9fafb" }}>
+                              <th style={{ width: "32px", border: "none" }}></th>
+                              <th style={{ border: "none", color: "#374151" }}>Media Asset</th>
+                              <th className="text-end" style={{ border: "none", color: "#374151" }}>
+                                Permission Cost (₹)
+                              </th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {mediaAssets.map((asset) => {
+                              const checked = isAssetSelected(societyId, asset.key);
+                              return (
+                                <tr key={asset.key}>
+                                  <td style={{ border: "none", verticalAlign: "middle" }}>
+                                    <Form.Check
+                                      type="checkbox"
+                                      className="custom-checkbox1"
+                                      checked={checked}
+                                      onChange={() => toggleAsset(societyId, asset)}
+                                    />
+                                  </td>
+                                  <td style={{ border: "none", verticalAlign: "middle" }}>
+                                    {asset.label}
+                                  </td>
+                                  <td
+                                    className="text-end fw-medium"
+                                    style={{ border: "none", verticalAlign: "middle", color: "#047857" }}
+                                  >
+                                    ₹{formatNumberWithCommas(asset.permission_cost)}
+                                  </td>
+                                </tr>
+                              );
+                            })}
+                          </tbody>
+                        </Table>
+
+                        {/* WhatsApp creative upload (conditional) */}
+                        {isWhatsAppSelected(societyId) && (
+                          <div className="mt-2 p-2" style={{ backgroundColor: "#f0fdf4", borderRadius: "6px", border: "1px dashed #86efac" }}>
+                            <p className="mb-1 fw-medium" style={{ fontSize: "13px" }}>
+                              WhatsApp Creative Upload
+                              <span className="text-danger ms-1">*</span>
+                            </p>
+                            <div className="d-flex align-items-center gap-2">
+                              <Button
+                                size="sm"
+                                variant="outline-success"
+                                style={{ fontSize: "13px" }}
+                                onClick={() => fileInputRefs.current[societyId]?.click()}
+                              >
+                                {whatsappCreatives[societyId] ? "Change File" : "Upload Image/Video"}
+                              </Button>
+                              {whatsappCreatives[societyId] && (
+                                <span style={{ fontSize: "13px", color: "#16a34a" }}>
+                                  ✓ File selected
+                                </span>
+                              )}
+                            </div>
+                            {whatsappCreatives[societyId]?.preview && (
+                              <div className="mt-1">
+                                {whatsappCreatives[societyId].type === "video" ? (
+                                  <video
+                                    src={whatsappCreatives[societyId].preview}
+                                    style={{ width: "80px", height: "60px", objectFit: "cover", borderRadius: "4px" }}
+                                    muted
+                                  />
+                                ) : (
+                                  <img
+                                    src={whatsappCreatives[societyId].preview}
+                                    alt="Creative"
+                                    style={{ width: "80px", height: "60px", objectFit: "cover", borderRadius: "4px" }}
+                                  />
+                                )}
+                              </div>
+                            )}
+                            <input
+                              type="file"
+                              accept="image/*,video/*"
+                              style={{ display: "none" }}
+                              ref={(el) => (fileInputRefs.current[societyId] = el)}
+                              onChange={(e) => handleCreativeFileChange(e, societyId)}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ) : (
+                      <p className="mb-0 mt-2" style={{ fontSize: "13px", color: "#64748b" }}>
+                        No media assets available for this society on selected date.
                       </p>
                     )}
                   </div>
-                  <div>
-                    <span className="flats-badge">
-                      {society?.profile?.number_of_flat || "0"} Flats
-                    </span>
-                  </div>
-                </Col>
-                <hr />
-              </Row>
-            ))
+                  <hr style={{ margin: "8px 0", borderColor: "#e5e7eb" }} />
+                </div>
+              );
+            })
           ) : (
-            <p>No societies found</p> // Display message if no societies are found
+            <p className="text-muted" style={{ fontSize: "13px" }}>
+              No societies found. Please select a city/area or use Google Maps search.
+            </p>
           )}
         </div>
-        {/* <hr style={{ margin: "0 -17px 15px" }} /> */}
+
         <hr style={{ margin: "0px -17px 10px", borderColor: "#989898" }} />
 
-        {/* Selected Societies and Campaign Details */}
-        <div>
-          <Row className="align-items-center px-3">
-            <Col xs={7} className="p-0" style={{ fontSize: "12px" }}>
-              <p className="fw-bold mb-1">{`${
-                selectedSocieties.length > 0
-                  ? `${selectedSocieties.length} Society Selected`
-                  : "NA"
-              }`}</p>
-              <p className="fw-bold mb-1">Total {`${totalFlats}`} Flats</p>
-                <p className="fw-bold mb-0">
-                Per Society INR{" "}
-                {formData?.media_type && selectedSocieties.length > 0
-                  ? formatNumberWithCommas(
-                      Number(
-                        (
-                          selectedSocieties.reduce(
-                            (sum, item) =>
-                              sum + Number(item?.media_rate?.company_rate || 0),
-                            0
-                          ) / selectedSocieties.length
-                        ).toFixed(2)
-                      )
-                    )
-                  : getCamapginAmount(formData, campaignType)}
-              </p>
-            </Col>
-            <Col xs={5} className="text-end p-0">
-              <p className="fw-bold mb-0">Campaign Amount</p>
-              <h3 className="fw-bold text-dark mb-0">
-                ₹ {formatNumberWithCommas(campaignAmount)}
-              </h3>
-            </Col>
-          </Row>
-          {/* <hr style={{ margin: "15px -17px " }} /> */}
-          <hr style={{ margin: "15px -17px", borderColor: "#989898" }} />
+        {/* Summary & Actions */}
+        <Row className="align-items-center px-1 mb-2">
+          <Col xs={7} style={{ fontSize: "14px" }}>
+            <p className="fw-bold mb-1">
+              {selectedCount > 0 ? `${selectedCount} Society Selected` : "NA"}
+            </p>
+          </Col>
+          <Col xs={5} className="text-end">
+            <p className="fw-bold mb-0" style={{ fontSize: "13px" }}>Total Permission Cost</p>
+            <h4 className="fw-bold text-dark mb-0">
+              ₹{formatNumberWithCommas(totalCampaignCost)}
+            </h4>
+          </Col>
+        </Row>
 
-          <Row className="align-items-center gap-2 gap-sm-0">
-            <Col xs={12} sm={7}>
-              {/* <p className="fw-bold mb-1 custom-label">
-                Current Wallet Balance
-              </p>
-              <h5 className="fw-bold text-dark">
-                {loadingBalance ? (
-                  <Skeleton width={100} height={20} />
-                ) : (
-                  <>₹ {formatNumberWithCommas(walletBalance)}</>
-                )}
-              </h5> */}
-              <Button
-                type="button"
-                onClick={() => {
-                  setSubmitAttempted?.(true);
-                  setSubmit(true);
-                  const amount = formatNumberWithCommas(
-                    getCamapginAmount(formData, campaignType) * (selectedSocieties?.length || 0)
-                  );
-                  handleCreateCampaign("draft", amount, setSubmit);
-                }}
-                variant="light"
-                className="save-draft-btn"
-                disabled={!selectedSocieties?.length || submit}
-              >
-                Save Campaign as Draft
-              </Button>
-            </Col>
-            <Col xs={12} sm={5}>
-              {
-                <Button
-                  type="button"
-                  onClick={() => {
-                    setSubmitAttempted?.(true);
-                    setSubmit(true);
-                    handlePayAndCreateCampaign?.(setSubmit);
-                  }}
-                  className="campaign-btn"
-                  disabled={!selectedSocieties?.length || submit}
-                >
-                  {submit ? "Processing..." : "PAY NOW"}
-                </Button>
-              }
-            </Col>
-          </Row>
-          {/* <hr style={{ margin: "0 -17px 15px" }} /> */}
-        </div>
+        <Button
+          type="button"
+          className="campaign-btn w-100"
+          disabled={!canProceed}
+          onClick={onProceedToReview}
+        >
+          Proceed to Review →
+        </Button>
       </div>
 
-      {/* Society Detail Modal */}
       {selectedSociety && (
         <SocietyDetailModal
           show={show}
-          handleClose={handleClose}
-          selectedSociety={selectedSociety} // Pass the selected society as a prop
+          handleClose={() => setShow(false)}
+          selectedSociety={selectedSociety}
         />
       )}
-
     </div>
   );
 };
 
-export default SocietyDeatil;
+export default SocietyDetail;

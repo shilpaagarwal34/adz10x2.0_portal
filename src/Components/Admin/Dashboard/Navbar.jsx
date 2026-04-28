@@ -33,6 +33,11 @@ const Navbar = ({ toggleSidebar }) => {
 
   const { user, loading } = useSelector((state) => state.auth);
   const { fullLogo } = useSelector((state) => state.settings);
+  const [navbarLogoSrc, setNavbarLogoSrc] = useState(logo);
+
+  useEffect(() => {
+    setNavbarLogoSrc(fullLogo || logo);
+  }, [fullLogo]);
 
   const handleMenuOpen = (event) => {
     if (anchorEl) {
@@ -116,7 +121,12 @@ const Navbar = ({ toggleSidebar }) => {
             ☰
           </button>
           <Box className="navbar-logo">
-            <img src={fullLogo || logo} alt="Logo" className="logo-image" />
+            <img
+              src={navbarLogoSrc}
+              alt="Logo"
+              className="logo-image"
+              onError={() => setNavbarLogoSrc(logo)}
+            />
           </Box>
 
           <Box sx={{ flexGrow: 1 }} />

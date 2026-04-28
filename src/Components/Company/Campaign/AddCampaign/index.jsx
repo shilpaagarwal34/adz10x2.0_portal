@@ -1,17 +1,16 @@
 import Form from "./Form.jsx";
 import SelectedSociety from "./SelectedSociety.jsx";
+
 export default function Main({
   setSocieties,
-  societyIds,
-  selectedSocieties,
-  setSelectedSocieties,
+  societies,
+  societyAssets,
+  setSocietyAssets,
   formData,
   setFormData,
   setSocietyIds,
+  setSelectedSocieties,
   mode,
-  campaignLogs,
-  missingSocietiesUploadErr,
-  setMissingSocietiesUploadErr,
   setLoadingSocities,
   submitAttempted,
 }) {
@@ -26,20 +25,12 @@ export default function Main({
           setSocietyIds={setSocietyIds}
           mode={mode}
           setLoadingSocities={setLoadingSocities}
-          setMissingSocietiesUploadErr={setMissingSocietiesUploadErr}
-          selectedSocieties={selectedSocieties}
           submitAttempted={submitAttempted}
         />
         <SelectedSociety
-        societyIds={societyIds}
-        setSocietyIds={setSocietyIds}
-          selectedSocieties={selectedSocieties}
-          setSelectedSocieties={setSelectedSocieties}
-          formData={formData}
-          setFormData={setFormData}
-          missingSocietiesUploadErr={missingSocietiesUploadErr}
-          setMissingSocietiesUploadErr={setMissingSocietiesUploadErr}
-          mode={mode}
+          societyAssets={societyAssets}
+          setSocietyAssets={setSocietyAssets}
+          societies={societies}
         />
       </div>
     </div>

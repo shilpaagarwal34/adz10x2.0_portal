@@ -32,15 +32,6 @@ const dayNameToNumber = {
   Saturday: 6,
 };
 
-const DEFAULT_MEDIA_SLOT_OPTIONS = [
-  { value: "lift_branding_panels", label: "Lift branding panels" },
-  { value: "notice_board_sponsorship", label: "Notice Board Advertising" },
-  { value: "gate_entry_exit_branding", label: "Main Gate Branding" },
-  { value: "society_kiosk", label: "Society Kiosk Activities" },
-  { value: "whatsapp_promotional_day", label: "WhatsApp Group Promotion" },
-  { value: "event_sponsorship", label: "Society Event Sponsorship" },
-];
-
 export default function CampaignForm({
   setSocieties,
   formData,
@@ -62,8 +53,6 @@ export default function CampaignForm({
   const [loadingArea, setLoadingArea] = useState(false);
   const [campaignDays, setCampaignDays] = useState([]);
   const [allowedWeekdays, setAllowedWeekdays] = useState([]);
-  const [mediaPlatforms, setMediaPlatforms] = useState(DEFAULT_MEDIA_SLOT_OPTIONS);
-  const [platformRulesMap, setPlatformRulesMap] = useState({});
 
   // map backdrop issue
   useEffect(() => {
@@ -96,7 +85,7 @@ export default function CampaignForm({
       });
   }, [formData?.campaign_city_id]);
 
-  // date-pcicker
+  // date-picker: fetch allowed weekdays
   useEffect(() => {
     const fetchCampaignDays = async () => {
       try {
@@ -104,53 +93,24 @@ export default function CampaignForm({
           `${api_routes.company.get_campaign_days_for_calendar}`
         );
         const days = response.data.data || [];
-        const incomingPlatforms = Array.isArray(response?.data?.media_platforms)
-          ? response.data.media_platforms
-          : [];
-
         setCampaignDays(days);
-
-        if (incomingPlatforms.length) {
-          setMediaPlatforms(
-            incomingPlatforms.map((item) => ({
-              value: item.media_type,
-              label: item.label || item.media_type,
-            }))
-          );
-          const nextRules = {};
-          incomingPlatforms.forEach((item) => {
-            nextRules[item.media_type] = {
-              min_lead_days: Number(item.min_lead_days || 0),
-              min_active_days: Number(item.min_active_days || 0),
-            };
-          });
-          setPlatformRulesMap(nextRules);
-        }
-
         const allowed = days
           .filter((day) => day.is_checked)
           .map((day) => dayNameToNumber[day.day])
           .filter((n) => n !== undefined);
-
         setAllowedWeekdays(allowed.length > 0 ? allowed : [0, 1, 2, 3, 4, 5, 6]);
       } catch (error) {
         console.error("Error fetching campaign days:", error);
         setAllowedWeekdays([0, 1, 2, 3, 4, 5, 6]);
       }
     };
-
     fetchCampaignDays();
   }, []);
 
-  const selectedPlatformRule = formData?.media_type
-    ? platformRulesMap[formData.media_type] || null
-    : null;
-
   const computedMinDate = (() => {
-    const leadDays = Number(selectedPlatformRule?.min_lead_days || 0);
     const minDate = new Date();
     minDate.setHours(0, 0, 0, 0);
-    minDate.setDate(minDate.getDate() + leadDays);
+    minDate.setDate(minDate.getDate() + 1);
     return minDate;
   })();
 
@@ -226,13 +186,11 @@ export default function CampaignForm({
     setSocietyIds([]);
   };
 
-  // field validation (platform-first: media_type required, no campaign type)
+  // field validation
   const validateFields = () => {
     const newErrors = {};
     const isGoogle = formData?.search_by_google_location;
 
-    if (!formData?.media_type)
-      newErrors.media_type = "Platform is required";
     if (!formData.campaignName)
       newErrors.campaignName = "Campaign name is required";
     if (!formData.campaignDate)
@@ -341,48 +299,43 @@ export default function CampaignForm({
     }
   }, [selectedLocation]);
 
-  // used to check required fields
+  // Trigger society search whenever required location fields change
   useEffect(() => {
     const errors = validateFields();
+    setErrors(errors);
 
-    const fetchRequired =
-      formData.search_by_google_location
-        ? ["media_type", "campaignDate", "campaign_address", "radius_km"]
-        : ["media_type", "campaignDate", "campaign_city_id", "campaign_area_id"];
+    const fetchRequired = formData.search_by_google_location
+      ? ["campaignDate", "campaign_address", "radius_km"]
+      : ["campaignDate", "campaign_city_id", "campaign_area_id"];
 
     const hasFetchFields = fetchRequired.every((key) => formData?.[key]);
 
-    setErrors(errors);
-
     if (hasFetchFields && Object.keys(errors).length === 0) {
       const payload = {
-        ...formData,
         campaign_date: formData?.campaignDate || "",
+        campaignDate: formData?.campaignDate || "",
         day: formData?.campaignDate
           ? dayNames[new Date(formData.campaignDate).getDay()].toLowerCase()
           : "",
+        search_by_google_location: formData.search_by_google_location,
       };
 
       if (formData.search_by_google_location) {
-        delete payload.campaign_city_id;
-        delete payload.campaign_area_id;
+        payload.my_ads_location_latitude = formData.my_ads_location_latitude;
+        payload.my_ads_location_longitude = formData.my_ads_location_longitude;
+        payload.radius_km = formData.radius_km;
+        payload.campaign_address = formData.campaign_address;
       } else {
-        // Backward compatible aliases: some APIs expect city_id/area_id
-        // instead of campaign_city_id/campaign_area_id.
         payload.city_id = formData?.campaign_city_id;
         payload.area_id = formData?.campaign_area_id;
-
-        delete payload.my_ads_location_latitude;
-        delete payload.my_ads_location_longitude;
-        delete payload.radius_km;
-        delete payload.campaign_address;
+        payload.campaign_city_id = formData?.campaign_city_id;
+        payload.campaign_area_id = formData?.campaign_area_id;
       }
 
       debouncedFetch(payload);
     }
   }, [
     formData.campaignDate,
-    formData.media_type,
     formData.radius_km,
     formData.campaign_address,
     formData.campaign_city_id,
@@ -483,44 +436,6 @@ export default function CampaignForm({
   return (
     <>
       <Row className="mb-3">
-        <Col md={4}>
-          <Form.Group>
-            <Form.Label>
-              Platform <span className="text-danger">*</span>
-            </Form.Label>
-            <Form.Select
-              name="media_type"
-              className="form-select-sm"
-              onChange={(e) => {
-                handleChange(e);
-                setSelectedSocieties([]);
-                setSocietyIds([]);
-              }}
-              value={formData?.media_type || ""}
-            >
-              <option value="">Select platform</option>
-              {mediaPlatforms.map((slot) => (
-                <option key={slot.value} value={slot.value}>
-                  {slot.label}
-                </option>
-              ))}
-            </Form.Select>
-            {submitAttempted && errors.media_type && (
-              <div className="formik-error text-danger">{errors.media_type}</div>
-            )}
-            {selectedPlatformRule && (
-              <div className="mt-1" style={{ fontSize: "12px", color: "#64748b" }}>
-                Start date requires at least{" "}
-                <strong>{selectedPlatformRule.min_lead_days}</strong> day(s) lead
-                time. Minimum active period:{" "}
-                <strong>{selectedPlatformRule.min_active_days}</strong> day(s).
-              </div>
-            )}
-          </Form.Group>
-        </Col>
-      </Row>
-
-      <Row className="mb-3">
         <Col md={8}>
           <Form.Group>
             <Form.Label>
@@ -561,16 +476,10 @@ export default function CampaignForm({
             filterDate={isAllowedDay}
             minDate={computedMinDate}
             className="form-control form-control-sm"
-            placeholderText="Select a valid campaign date"
+            placeholderText="Select a campaign date"
             autoComplete="off"
             dateFormat="dd/MM/yyyy"
           />
-          {selectedPlatformRule && (
-            <small className="text-muted mt-1">
-              Earliest date based on platform rule:{" "}
-              {computedMinDate.toLocaleDateString("en-GB")}
-            </small>
-          )}
         </Col>
       </Row>
 

@@ -29,8 +29,13 @@ const Navbar = ({ handleLogout, toggleSidebar }) => {
   const hasFetchedOnce = useRef(false); // <-- new
 
   const { fullLogo } = useSelector((state) => state.settings);
+  const [navbarLogoSrc, setNavbarLogoSrc] = useState(logo);
   const hasAuthToken = Boolean(localStorage.getItem("auth_token"));
   const [showAuthPrompt, setShowAuthPrompt] = useState(false);
+
+  useEffect(() => {
+    setNavbarLogoSrc(fullLogo || logo);
+  }, [fullLogo]);
 
   // Mapping paths to titles
   const pageTitles = {
@@ -132,7 +137,12 @@ const Navbar = ({ handleLogout, toggleSidebar }) => {
             ☰
           </button>
           <Box className="navbar-logo">
-            <img src={fullLogo || logo} alt="Logo" className="logo-image" />
+            <img
+              src={navbarLogoSrc}
+              alt="Logo"
+              className="logo-image"
+              onError={() => setNavbarLogoSrc(logo)}
+            />
           </Box>
           <Box sx={{ flexGrow: 1 }} />
         </div>
