@@ -128,7 +128,7 @@ export default function Dashboard() {
           {status === "loading" ? (
             <KYCStatusSkeleton />
           ) : (
-            <StatusCard kyc_status={user?.kyc_status} />
+            <StatusCard />
           )}
 
           {status === "loading" ? (
