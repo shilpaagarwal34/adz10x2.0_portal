@@ -538,19 +538,27 @@ const ProfileEdit = () => {
                       )}
                     </div>
 
-                    <div className="mb-3 border rounded p-2 p-sm-3 bg-light">
-                      <span className="small text-secondary">
-                        View{" "}
-                        <Link
-                          to="/society/terms-and-conditions"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Rules and Regulations
-                        </Link>
-                        {" "}(informational).
-                      </span>
-                    </div>
+                    {profileData?.is_agree_terms_condition ? (
+                      <div className="mb-3 border rounded p-2 p-sm-3" style={{ background: "#f0fdf4", borderColor: "#86efac" }}>
+                        <span className="small" style={{ color: "#15803d" }}>
+                          ✅ <strong>Platform Agreement Accepted.</strong>{" "}
+                          <Link to="/society/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: "#15803d" }}>
+                            View Agreement
+                          </Link>
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="mb-3 border rounded p-2 p-sm-3" style={{ background: "#fff7ed", borderColor: "#fdba74" }}>
+                        <span className="small" style={{ color: "#92400e" }}>
+                          ⚠️ <strong>Platform Agreement not accepted.</strong>{" "}
+                          You must{" "}
+                          <Link to="/society/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: "#b45309", fontWeight: 600 }}>
+                            read and accept the Agreement
+                          </Link>{" "}
+                          to mark your profile as 100% complete.
+                        </span>
+                      </div>
+                    )}
 
                     <button
                       type="submit"
