@@ -14,6 +14,8 @@ import CompanyBillingInfo from "../../../Components/Company/Profile/CompanyBilli
 import ManagerInfo from "../../../Components/Common/Manager-info.jsx";
 import Documents from "../../../Components/Company/Profile/Documents.jsx";
 import StatusCard from "../../../Components/Society/Dashboard/AccountStatus/StatusCard.jsx";
+import ProfileCompleteBanner from "../../../Components/Company/Profile/ProfileCompleteBanner.jsx";
+
 
 // Skeletons
 import KYCStatusSkeleton from "../../../Components/Skeletons/KYCStatusSkeleton.jsx";
@@ -78,14 +80,17 @@ const Profile = () => {
 
     return (
       <>
+        <div className="custom-label pb-3">
+          <CompanyInfo
+            profileData={draftProfileData}
+            percentage={0}
+            isLoading={false}
+          />
+        </div>
+
         <div className="row g-0 custom-label pb-5">
-          <div className="col-12 col-lg-8 p-2 p-sm-3">
-            <div className="card shadow-sm p-2 p-sm-3 rounded border-0 ">
-              <CompanyInfo
-                profileData={draftProfileData}
-                percentage={0}
-                isLoading={false}
-              />
+          <div className="col-12 col-lg-8 pe-lg-3">
+            <div className="card shadow-sm p-3 p-sm-4 rounded-4 border-0 ">
               <CompanyDetails
                 companyDetails={draftProfileData?.company_profile}
                 profileData={draftProfileData}
@@ -97,9 +102,10 @@ const Profile = () => {
                 isLoading={false}
               />
             </div>
+            <ProfileCompleteBanner percentage={0} />
           </div>
 
-          <div className="col-12 col-lg-4 p-2 p-sm-3">
+          <div className="col-12 col-lg-4 mt-3 mt-lg-0">
             <StatusCard kyc_status="pending" />
             <Documents documents={draftProfileData} />
           </div>
@@ -120,42 +126,48 @@ const Profile = () => {
   // }
 
   return (
-    <div className="row g-0 custom-label pb-5">
-      <div className="col-12 col-lg-8 p-2 p-sm-3">
-        <div className="card shadow-sm p-2 p-sm-3 rounded border-0 ">
-          <CompanyInfo
-            profileData={profileData}
-            percentage={profileCompletedPercentage}
-            isLoading={isLoading}
-          />
-          <CompanyDetails
-            companyDetails={profileData?.company_profile}
-            profileData={profileData}
-            isLoading={isLoading}
-          />
-          <CompanyContactInfo contactInfo={profileData} isLoading={isLoading} />
-          <CompanyBillingInfo
-            billingInfo={profileData?.company_profile}
-            isLoading={isLoading}
-          />
+    <>
+      <div className="custom-label pb-3">
+        <CompanyInfo
+          profileData={profileData}
+          percentage={profileCompletedPercentage}
+          isLoading={isLoading}
+        />
+      </div>
+
+      <div className="row g-0 custom-label pb-5">
+        <div className="col-12 col-lg-8 pe-lg-3">
+          <div className="card shadow-sm p-3 p-sm-4 rounded-4 border-0 ">
+            <CompanyDetails
+              companyDetails={profileData?.company_profile}
+              profileData={profileData}
+              isLoading={isLoading}
+            />
+            <CompanyContactInfo contactInfo={profileData} isLoading={isLoading} />
+            <CompanyBillingInfo
+              billingInfo={profileData?.company_profile}
+              isLoading={isLoading}
+            />
+          </div>
+          {!isLoading && <ProfileCompleteBanner percentage={profileCompletedPercentage} />}
+        </div>
+
+        <div className="col-12 col-lg-4 mt-3 mt-lg-0">
+          {isLoading ? (
+            <KYCStatusSkeleton />
+          ) : (
+            <StatusCard kyc_status={profileData?.kyc_status} />
+          )}
+          {isLoading ? <ManagerInfoSkeleton /> : <ManagerInfo />}
+
+          {isLoading ? (
+            <DocumentsSkeleton />
+          ) : (
+            <Documents documents={profileData} />
+          )}
         </div>
       </div>
-
-      <div className="col-12 col-lg-4 p-2 p-sm-3">
-        {isLoading ? (
-          <KYCStatusSkeleton />
-        ) : (
-          <StatusCard kyc_status={profileData?.kyc_status} />
-        )}
-        {isLoading ? <ManagerInfoSkeleton /> : <ManagerInfo />}
-
-        {isLoading ? (
-          <DocumentsSkeleton />
-        ) : (
-          <Documents documents={profileData} />
-        )}
-      </div>
-    </div>
+    </>
   );
 };
 

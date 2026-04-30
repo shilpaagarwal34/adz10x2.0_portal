@@ -6,20 +6,28 @@ const ActiveStatus = ({ kyc_status }) => {
  
   return (
     <div
-      className="py-1 px-3 rounded-3 shadow-sm d-flex justify-content-between"
+      className="p-3 mb-3 rounded-4 shadow-sm d-flex justify-content-between align-items-center"
       style={{
         backgroundColor:
           kyc_status === "approved"
-            ? "rgba(20, 174, 92, 1)"
-            : "rgb(255, 176, 28)",
+            ? "#1BAE5C"
+            : "#ffb01c",
       }}
     >
-      <small className="mb-0 text-white fw-bold">
-        Your KYC Account Status <br />
-        <span className="fw-medium fs-5 text-white">
+      <div className="text-white">
+        <p className="mb-1 fw-medium" style={{fontSize: '13px', opacity: 0.9}}>
+          Your KYC Account Status
+        </p>
+        <h5 className="fw-bold mb-0 text-white d-flex align-items-center">
           {kyc_status === "approved" ? "Active" : "Pending"}
-        </span>
-      </small>
+          {kyc_status === "approved" && (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="ms-2" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" fill="white"/>
+              <path d="M8 12.5L10.5 15L16 9" stroke="#1BAE5C" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          )}
+        </h5>
+      </div>
 
       <OverlayTrigger
         trigger="click"
