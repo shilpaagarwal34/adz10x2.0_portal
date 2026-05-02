@@ -125,6 +125,7 @@ const ProfileEdit = () => {
     area_name: profileData?.area_name || "",
     pincode: profileData?.pincode || "",
     society_profile_img_1_5_path: [],
+    is_agree_terms_condition: profileData?.is_agree_terms_condition === true || profileData?.is_agree_terms_condition === 1 || profileData?.is_agree_terms_condition === "1" ? true : (profileData?.is_agree_terms_condition === false || profileData?.is_agree_terms_condition === 0 || profileData?.is_agree_terms_condition === "0" ? false : null),
   };
 
   const validationSchema = Yup.object().shape({
@@ -458,7 +459,7 @@ const ProfileEdit = () => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ values, errors, submitCount }) => {
+        {({ values, errors, submitCount, setFieldValue }) => {
           useEffect(() => {
             if (submitCount > 0 && Object.keys(errors).length > 0) {
               const firstErrorField = Object.keys(errors)[0];
@@ -538,27 +539,48 @@ const ProfileEdit = () => {
                       )}
                     </div>
 
-                    {profileData?.is_agree_terms_condition ? (
-                      <div className="mb-3 border rounded p-2 p-sm-3" style={{ background: "#f0fdf4", borderColor: "#86efac" }}>
-                        <span className="small" style={{ color: "#15803d" }}>
-                          ✅ <strong>Platform Agreement Accepted.</strong>{" "}
-                          <Link to="/society/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: "#15803d" }}>
-                            View Agreement
-                          </Link>
-                        </span>
+                    <div className="mb-3 border rounded p-2 p-sm-3">
+                      <div className="d-flex justify-content-between align-items-center mb-2">
+                        <span className="fw-bold">Platform Agreement</span>
+                        <Link to="/society/terms-and-conditions" target="_blank" rel="noopener noreferrer" className="small">
+                          View Agreement
+                        </Link>
                       </div>
-                    ) : (
-                      <div className="mb-3 border rounded p-2 p-sm-3" style={{ background: "#fff7ed", borderColor: "#fdba74" }}>
-                        <span className="small" style={{ color: "#92400e" }}>
-                          ⚠️ <strong>Platform Agreement not accepted.</strong>{" "}
-                          You must{" "}
-                          <Link to="/society/terms-and-conditions" target="_blank" rel="noopener noreferrer" style={{ color: "#b45309", fontWeight: 600 }}>
-                            read and accept the Agreement
-                          </Link>{" "}
-                          to mark your profile as 100% complete.
-                        </span>
+                      <div className="d-flex gap-2 mb-2">
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          style={{
+                            background: values.is_agree_terms_condition === true ? "#15803d" : "#e5e7eb",
+                            color: values.is_agree_terms_condition === true ? "white" : "black"
+                          }}
+                          onClick={() => setFieldValue("is_agree_terms_condition", true)}
+                        >
+                          Accept Agreement
+                        </button>
+                        <button
+                          type="button"
+                          className="btn btn-sm"
+                          style={{
+                            background: values.is_agree_terms_condition === false ? "#dc2626" : "#e5e7eb",
+                            color: values.is_agree_terms_condition === false ? "white" : "black"
+                          }}
+                          onClick={() => setFieldValue("is_agree_terms_condition", false)}
+                        >
+                          Decline Agreement
+                        </button>
                       </div>
-                    )}
+                      {values.is_agree_terms_condition === true && (
+                        <div className="small p-2 rounded" style={{ background: "#f0fdf4", color: "#15803d", border: "1px solid #86efac" }}>
+                          ✅ <strong>Success!</strong> Platform Agreement Accepted.
+                        </div>
+                      )}
+                      {values.is_agree_terms_condition === false && (
+                        <div className="small p-2 rounded" style={{ background: "#fef2f2", color: "#dc2626", border: "1px solid #fca5a5" }}>
+                          ⚠️ <strong>Warning!</strong> Platform Agreement Declined. You must accept the agreement to mark your profile as 100% complete.
+                        </div>
+                      )}
+                    </div>
 
                     <button
                       type="submit"
