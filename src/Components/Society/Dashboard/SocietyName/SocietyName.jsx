@@ -16,9 +16,7 @@ const SocietyName = ({ kyc_account_status }) => {
 
   return (
     <>
-      {kyc_account_status === "pending" && (
-        <PendingStatusLabel userType="society" />
-      )}
+      <PendingStatusLabel userType="society" />
       <div className="d-flex align-items-center mb-3">
         <img
           className="me-3"

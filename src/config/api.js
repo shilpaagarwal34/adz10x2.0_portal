@@ -42,6 +42,7 @@ const api_routes = {
     // society change password
     post_change_password: `/society/change-password`,
     post_delete_society_admin_account: `/society/delete-account `,
+    post_accept_agreement: `/society/accept-agreement`,
 
     // campaign
     fetch_campaign_datatable: `/society/advertisement-datatable`,

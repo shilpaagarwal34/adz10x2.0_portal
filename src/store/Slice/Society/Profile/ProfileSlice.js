@@ -4,7 +4,11 @@ import {
   updateProfile,
 } from "../../../Actions/Society/Profile/ProfileActions.js";
 
-/** Compute profile completion (0–100). Basic 5 fields 30%, contact 3 fields 35%, location 4 fields 35%. Billing, photos, documents, Google URL not required for 100%. */
+/**
+ * Compute profile completion (0–100).
+ * Basic 4 fields → 28.5%, contact 3 fields → 33.25%, location 4 fields → 33.25%, agreement → 5%.
+ * Profile only reaches 100% when the society has accepted the platform agreement.
+ */
 function computeProfileCompletion(reg) {
   if (!reg || typeof reg !== "object") return 0;
   const profile = reg.society_profile || {};
@@ -15,15 +19,15 @@ function computeProfileCompletion(reg) {
     profile.number_of_flat,
     profile.society_email,
     profile.address_line_1,
-    profile.address_line_2,
   ].filter(filled).length;
-  completion += (basic / 5) * 30;
+  completion += (basic / 4) * 28.5;
   const contact = [reg.name, reg.mobile_number, reg.email].filter(filled).length;
-  completion += (contact / 3) * 35;
+  completion += (contact / 3) * 33.25;
   const location = [reg.address, reg.city_id, reg.area_id, reg.pincode].filter(
     filled
   ).length;
-  completion += (location / 4) * 35;
+  completion += (location / 4) * 33.25;
+  if (reg.is_agree_terms_condition) completion += 5;
   return Math.round(Math.min(100, completion));
 }
 

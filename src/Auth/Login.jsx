@@ -120,6 +120,11 @@ const LoginPage = () => {
 
   const { loading } = useSelector((state) => state.auth);
   const { fullLogo } = useSelector((state) => state.settings);
+  const [authLogoSrc, setAuthLogoSrc] = useState(logo);
+
+  useEffect(() => {
+    setAuthLogoSrc(fullLogo || logo);
+  }, [fullLogo]);
 
   return (
     <>
@@ -129,7 +134,12 @@ const LoginPage = () => {
           <Col md={7} className="auth-col-1">
             <div>
               <Link to="/register">
-                <img src={fullLogo || logo} alt="Logo" style={{ width: 130 }} />
+                <img
+                  src={authLogoSrc}
+                  alt="Logo"
+                  style={{ width: 130 }}
+                  onError={() => setAuthLogoSrc(logo)}
+                />
               </Link>
             </div>
 
