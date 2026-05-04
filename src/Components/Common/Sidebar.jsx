@@ -275,10 +275,10 @@ const Sidebar = ({ open, toggleDrawer, handleLogout }) => {
 
           {hasPrivilege("profile") &&
             renderListItem(
-              "/society/terms-and-conditions",
+              "/society/rules-and-regulations",
               "Rules and Regulations",
               <ViewList />,
-              location.pathname === "/society/terms-and-conditions",
+              location.pathname === "/society/rules-and-regulations",
               true
             )}
         </div>

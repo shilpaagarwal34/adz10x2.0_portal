@@ -6,19 +6,20 @@ import api_routes from "../../config/api.js";
 import PermissionRoute from "../../utils/PermissionRoute.jsx";
 import { toast } from "react-toastify";
 
-const AGREEMENT_SECTIONS = [
-  {
-    title: "PREAMBLE",
-    content: `This Agreement is entered into electronically through the ADZ10X Platform (www.adz10x.com), by and between:
+function getAgreementSections(societyName) {
+  return [
+    {
+      title: "PREAMBLE",
+      content: `This Agreement is entered into electronically through the ADZ10X Platform (www.adz10x.com), by and between:
 
 PARTY A: ADZ10X, a brand of Ananta Consultancy, registered at 305, Nyati Enthral, Kharadi Bypass Road, Pune, Maharashtra, India (the "Platform", including its successors, assigns, and affiliates);
 
 AND
 
-PARTY B: The Co-operative Housing Society / RWA (the "Society", including its office bearers, managing committee, authorized signatories, and successors), being the entity that registers on the Platform and consents to this Agreement.
+PARTY B: ${societyName || 'The Co-operative Housing Society / RWA'} (the "Society", including its office bearers, managing committee, authorized signatories, and successors), being the entity that registers on the Platform and consents to this Agreement.
 
 The Platform operates a community advertising marketplace connecting brand partners with residential societies for campaign deployment across multiple media assets. The Society desires to monetize its community media assets under the terms herein.`,
-  },
+    },
   {
     title: "1. ELECTRONIC CONSENT AND LEGAL VALIDITY",
     points: [
@@ -153,6 +154,7 @@ The Platform operates a community advertising marketplace connecting brand partn
     ],
   },
 ];
+}
 
 function TermsAndConditions() {
   const dispatch = useDispatch();
@@ -246,7 +248,7 @@ function TermsAndConditions() {
         )}
 
         {/* Agreement sections */}
-        {AGREEMENT_SECTIONS.map((section, idx) => (
+        {getAgreementSections(profileData?.society_name).map((section, idx) => (
           <div key={idx} style={{
             background: "#fff",
             border: "1px solid #e2e8f0",
@@ -295,7 +297,15 @@ function TermsAndConditions() {
           <p style={{ margin: "0 0 2px" }}><strong>Platform:</strong> ADZ10X, a brand of Ananta Consultancy</p>
           <p style={{ margin: "0 0 2px" }}><strong>Platform Address:</strong> 305, Nyati Enthral, Kharadi Bypass Road, Pune, Maharashtra, India</p>
           <p style={{ margin: "0 0 2px" }}><strong>Society Name:</strong> {profileData?.society_name || "[Auto-populated from registration]"}</p>
-          <p style={{ margin: 0 }}><strong>Consent Timestamp:</strong> {isAlreadyAccepted ? "Already recorded" : "[Will be recorded upon acceptance]"}</p>
+          <p style={{ margin: 0 }}><strong>Consent Timestamp:</strong> {profileData?.agreement_accepted_at ? new Date(profileData.agreement_accepted_at).toLocaleString('en-IN', { 
+            day: '2-digit', 
+            month: '2-digit', 
+            year: 'numeric', 
+            hour: '2-digit', 
+            minute: '2-digit',
+            hour12: true,
+            timeZone: 'Asia/Kolkata'
+          }) : "Not accepted yet"}</p>
         </div>
 
         {/* Accept button */}

@@ -125,7 +125,7 @@ const ProfileEdit = () => {
     area_name: profileData?.area_name || "",
     pincode: profileData?.pincode || "",
     society_profile_img_1_5_path: [],
-    is_agree_terms_condition: profileData?.is_agree_terms_condition === true || profileData?.is_agree_terms_condition === 1 || profileData?.is_agree_terms_condition === "1" ? true : (profileData?.is_agree_terms_condition === false || profileData?.is_agree_terms_condition === 0 || profileData?.is_agree_terms_condition === "0" ? false : null),
+    is_agree_terms_condition: profileData?.is_agree_terms_condition === true || profileData?.is_agree_terms_condition === 1 || profileData?.is_agree_terms_condition === "1" ? true : false,
   };
 
   const validationSchema = Yup.object().shape({
@@ -546,29 +546,28 @@ const ProfileEdit = () => {
                           View Agreement
                         </Link>
                       </div>
-                      <div className="d-flex gap-2 mb-2">
-                        <button
-                          type="button"
-                          className="btn btn-sm"
-                          style={{
-                            background: values.is_agree_terms_condition === true ? "#15803d" : "#e5e7eb",
-                            color: values.is_agree_terms_condition === true ? "white" : "black"
+                      <div className="d-flex align-items-center gap-2 mb-2">
+                        <input
+                          type="checkbox"
+                          id="is_agree_terms_condition"
+                          name="is_agree_terms_condition"
+                          checked={values.is_agree_terms_condition}
+                          disabled={
+                            values.is_agree_terms_condition === true && 
+                            !!profileData?.agreement_accepted_at
+                          }
+                          onChange={(e) => {
+                            // Prevent unchecking if agreement has been accepted and saved
+                            if (values.is_agree_terms_condition === true && profileData?.agreement_accepted_at && !e.target.checked) {
+                              return;
+                            }
+                            setFieldValue("is_agree_terms_condition", e.target.checked);
                           }}
-                          onClick={() => setFieldValue("is_agree_terms_condition", true)}
-                        >
-                          Accept Agreement
-                        </button>
-                        <button
-                          type="button"
-                          className="btn btn-sm"
-                          style={{
-                            background: values.is_agree_terms_condition === false ? "#dc2626" : "#e5e7eb",
-                            color: values.is_agree_terms_condition === false ? "white" : "black"
-                          }}
-                          onClick={() => setFieldValue("is_agree_terms_condition", false)}
-                        >
-                          Decline Agreement
-                        </button>
+                          style={{ width: "16px", height: "16px", cursor: "pointer" }}
+                        />
+                        <label htmlFor="is_agree_terms_condition" style={{ cursor: "pointer", margin: 0 }}>
+                          I agree to the Platform Agreement
+                        </label>
                       </div>
                       {values.is_agree_terms_condition === true && (
                         <div className="small p-2 rounded" style={{ background: "#f0fdf4", color: "#15803d", border: "1px solid #86efac" }}>

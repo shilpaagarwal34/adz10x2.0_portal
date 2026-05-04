@@ -52,7 +52,7 @@ const Navbar = ({ handleLogout, toggleSidebar }) => {
     "/society/report/ad-performance": "Performance Report",
     "/society/report/ad-log": "Ads Log Report",
     "/society/report/ad-payment":"Ads Payment Report",
-    "/society/terms-and-conditions": "Rules and Regulations",
+    "/society/rules-and-regulations": "Rules and Regulations",
     "/society/settings": "Settings",
     "/society/advertisement/*": "Advertisement",
     "/society/notifications": "Notifications",
