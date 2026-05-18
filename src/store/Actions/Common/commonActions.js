@@ -40,9 +40,14 @@ export const checkIfEmailExists = createAsyncThunk(
       await axios.get(api_routes.society.email_exist, { params: { email } });
       return ""; // No error
     } catch (error) {
-      return rejectWithValue(
-        error?.response?.data?.errors?.email || "Error checking email."
-      );
+      const msg =
+        error?.response?.data?.errors?.email ||
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        (error.request && !error.response
+          ? "Unable to reach server. Check your connection."
+          : "Error checking email.");
+      return rejectWithValue(msg);
     }
   }
 );  
@@ -57,10 +62,14 @@ export const checkIfMobileExists = createAsyncThunk(
       });
       return ""; // No error
     } catch (error) {
-      return rejectWithValue(
-        error.response?.data?.errors?.mobile_number ||
-          "Error checking mobile number."
-      );
+      const msg =
+        error?.response?.data?.errors?.mobile_number ||
+        error?.response?.data?.error ||
+        error?.response?.data?.message ||
+        (error.request && !error.response
+          ? "Unable to reach server. Check your connection."
+          : "Error checking mobile number.");
+      return rejectWithValue(msg);
     }
   }
 );

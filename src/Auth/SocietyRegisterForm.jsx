@@ -56,20 +56,20 @@ const SocietyRegisterForm = ({ handleNextStep, registrationData }) => {
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (emailValue) {
+      if (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(emailValue)) {
         dispatch(checkIfEmailExists(emailValue));
       }
-    }, 500); // 500ms debounce
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [emailValue, dispatch]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      if (mobileValue) {
+      if (/^\d{10}$/.test(mobileValue)) {
         dispatch(checkIfMobileExists(mobileValue));
       }
-    }, 500); // 500ms debounce
+    }, 500);
 
     return () => clearTimeout(handler);
   }, [mobileValue, dispatch]);
